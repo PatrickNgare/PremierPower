@@ -1,23 +1,42 @@
 import { Helmet } from 'react-helmet-async'
-import SectionHeader from '../components/SectionHeader'
-import ServicesList from '../components/ServicesList'
-import CTABanner from '../components/CTABanner'
+import PageHero from '@/components/ui/PageHero'
+import ServicesGrid from '@/components/sections/ServicesGrid'
+import ProcessSteps from '@/components/sections/ProcessSteps'
+import SectionHeader from '@/components/ui/SectionHeader'
+import CTABanner from '@/components/sections/CTABanner'
 
 export default function Services() {
   return (
     <>
       <Helmet>
-        <title>Services — Residential wiring, rewiring &amp; consumer units | PremierPower</title>
+        <title>Services — Residential wiring, rewiring &amp; consumer units | Premier Power</title>
         <meta name="description" content="Full rewiring, new installations, consumer unit upgrades, fault finding, and inspection with certification for homes across Nairobi. EPRA licensed." />
         <link rel="canonical" href="https://premierpower.co.ke/services" />
       </Helmet>
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-24">
-        <SectionHeader
-          title="Residential wiring, and nothing we would be mediocre at."
-          lede="Five service lines, all of them domestic. If you need a commercial fit-out or solar tie-in we will tell you plainly and point you to someone who does it properly."
-        />
-        <ServicesList />
-      </div>
+
+      <PageHero
+        crumb="Services" eyebrow="Residential only"
+        title="Wiring, rewiring, and the boards that protect them."
+        lede="Five service lines, all of them domestic. If you need a commercial fit-out or a solar tie-in we will tell you plainly and point you to someone who does it properly."
+      />
+
+      <section className="section">
+        <div className="container-x">
+          <ServicesGrid />
+        </div>
+      </section>
+
+      <section className="section bg-neutral-50">
+        <div className="container-x">
+          <SectionHeader
+            align="center" eyebrow="How it works"
+            title="Four stages, and you sign off before each one closes."
+            lede="Nothing gets covered until you have seen it."
+          />
+          <ProcessSteps />
+        </div>
+      </section>
+
       <CTABanner />
     </>
   )

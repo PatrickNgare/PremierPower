@@ -1,4 +1,4 @@
-import { DEMO, demoTestimonials } from '../config/demo'
+import { DEMO, demoTestimonials } from '@/config/demo'
 
 /**
  * Real reviews only. Ships empty until the client supplies them — the

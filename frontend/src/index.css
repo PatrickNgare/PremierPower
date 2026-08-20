@@ -1,47 +1,118 @@
 @import "tailwindcss";
 
-@import "@fontsource-variable/archivo";
 @import "@fontsource-variable/inter";
-@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
 
+/* ─────────────────────────────────────────
+   THEME — PremierPower brand on SpaceInfra's system
+   Palette sampled from the supplied logo: red #FF0000, green #00FF00,
+   blacks #000000 / #231F20.
+───────────────────────────────────────── */
 @theme {
-  /* Ground — paper. The logo is presented on white; the site follows it. */
-  --color-paper-50:  #FFFFFF;
-  --color-paper-100: #F8F7F7;
-  --color-paper-200: #EFEDED;
-  --color-paper-300: #DEDBDB;
+  /* Structural dark. SpaceInfra used navy here; PremierPower's is the
+     logo's black. */
+  --color-primary-50:    #F4F4F4;
+  --color-primary:       #231F20;
+  --color-primary-light: #3A3436;
+  --color-primary-dark:  #000000;
 
-  /* Ink — the logo's blacks. #231F20 is the rich black of "POWER LIMITED". */
-  --color-ink-900: #000000;
-  --color-ink-800: #231F20;
-  --color-ink-700: #3A3436;
-  --color-ink-500: #6E6769;
-  --color-ink-400: #918A8C;
+  /* Brand red, split by contrast duty — the same discipline SpaceInfra
+     applies to its orange.
+       DEFAULT #FF0000 → 5.25:1 on primary-dark; fails as white-on-red
+       dark    #E60000 → 4.81:1 with white  (button fills)
+       deep    #C20000 → 6.37:1 with white  (button hover/active)
+       ink     #C20000 → 6.37:1 on white    (text and icons on light grounds)
+       accent           → ground-aware, see --accent-rgb below */
+  --color-secondary:       #FF0000;
+  --color-secondary-light: #FF4D4D;
+  --color-secondary-dark:  #E60000;
+  --color-secondary-deep:  #C20000;
+  --color-secondary-ink:   #C20000;
+  --color-secondary-accent: rgb(var(--accent-rgb));
 
-  /* Brand red, exactly as supplied. Used for the mark and hairline accents. */
-  --color-brand-red: #FF0000;
+  /* Earth green, from the logo. A mark colour — far too light for text. */
+  --color-earth:     #00FF00;
+  --color-earth-ink: #0A8F3C;
 
-  /* Action red. #FF0000 carries white text at only 4.0:1, under the 4.5:1
-     floor, so filled controls sit one step deeper and clear it at 4.8:1.
-     The brand red is unchanged wherever it is not carrying text. */
-  --color-red-600: #E60000;
-  --color-red-700: #C20000;
+  --color-neutral-50:  #F9F9F9;
+  --color-neutral-100: #F0F0F0;
+  --color-neutral-200: #E5E5E5;
+  --color-neutral-300: #D4D4D4;
+  --color-neutral-400: #A3A3A3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
 
-  /* Brand green, exactly as supplied. A mark colour only — #00FF00 is far too
-     light to carry text on white. */
-  --color-brand-green: #00FF00;
-  /* Green that can hold text: verified and certified states. */
-  --color-green-600: #0A8F3C;
+  --font-sans: "Inter Variable", Arial, sans-serif;
+  --font-heading: "Poppins", "Inter Variable", sans-serif;
 
-  --font-display: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --animate-fade-up: fadeUp 0.6s ease forwards;
+  --animate-fade-in: fadeIn 0.4s ease forwards;
+  --animate-marquee: marquee 50s linear infinite;
+  --animate-marquee2: marquee2 50s linear infinite;
+  --animate-ken-burns: kenBurns 8s ease-in-out infinite alternate;
 }
 
+@keyframes fadeUp   { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn   { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes marquee  { 0% { transform: translateX(0%); }   100% { transform: translateX(-50%); } }
+@keyframes marquee2 { 0% { transform: translateX(50%); }  100% { transform: translateX(0%); } }
+@keyframes kenBurns { 0% { transform: scale(1) translate(0,0); } 100% { transform: scale(1.08) translate(-1%,-1%); } }
+@keyframes btnShimmer { to { transform: translateX(320%) skewX(-18deg); } }
+
+/* ─────────────────────────────────────────
+   BASE
+───────────────────────────────────────── */
 @layer base {
-  html {
-    scroll-behavior: smooth;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-neutral-900);
+    background-color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
+
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p { text-wrap: pretty; }
+
+  /* Ground-aware accent. The brand red is 4.0:1 on white — below AA — but
+     5.25:1 on primary-dark. Rather than hand-picking a colour at every call
+     site, `text-secondary-accent` reads this variable: light surfaces get the
+     darker ink value, and any ancestor marked `.on-dark` restores the brand
+     red. Adding `.on-dark` to a dark section fixes every accent inside it. */
+  :root    { --accent-rgb: 194 0 0; }   /* #C20000 — 6.37:1 on white */
+  .on-dark { --accent-rgb: 255 0 0; }   /* #FF0000 — 5.25:1 on primary-dark */
+
+  ::selection { background-color: #FF0000; color: #fff; }
+
+  ::-webkit-scrollbar       { width: 5px; }
+  ::-webkit-scrollbar-track { background: #F5F5F5; }
+  ::-webkit-scrollbar-thumb { background: var(--color-primary); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #FF0000; }
+
+  :focus-visible {
+    outline: 2px solid #E60000;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  img { display: block; max-width: 100%; }
+
+  :root { caret-color: #E60000; accent-color: #E60000; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -51,97 +122,65 @@
       transition-duration: 0.01ms !important;
     }
   }
-
-  body {
-    background-color: var(--color-paper-100);
-    color: var(--color-ink-800);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-
-  h1, h2, h3, h4 {
-    font-family: var(--font-display);
-    letter-spacing: -0.025em;
-    text-wrap: balance;
-  }
-
-  p { text-wrap: pretty; }
-
-  /* Browser surfaces themed from the palette — selection, caret, focus,
-     scrollbar, underline offset, tabular figures. */
-  ::selection {
-    background-color: var(--color-brand-red);
-    color: var(--color-paper-50);
-  }
-
-  :root {
-    caret-color: var(--color-red-600);
-    accent-color: var(--color-red-600);
-    scrollbar-color: var(--color-ink-400) var(--color-paper-200);
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--color-red-600);
-    outline-offset: 3px;
-    border-radius: 2px;
-  }
-
-  a { text-underline-offset: 0.2em; }
-
-  /* Measurement figures line up in columns. */
-  .tabular { font-variant-numeric: tabular-nums; }
 }
 
-@layer utilities {
-  /* Contrast handling for light text over buried/photographic surfaces stays
-     centralized here rather than ad hoc per component. */
-  .on-dark { color: var(--color-paper-100); }
-  .on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: var(--color-paper-50); }
-  .on-dark .secondary { color: var(--color-paper-300); }
-
-  /* The paper surface. Flat: the drawn line and the photography carry the
-     world, so the ground stays quiet. */
-  .paper {
-    background-color: var(--color-paper-100);
-  }
-}
-
+/* ─────────────────────────────────────────
+   COMPONENTS
+───────────────────────────────────────── */
 @layer components {
-  /* The reveal control, themed off the palette rather than the browser's. */
-  .ba-range {
-    -webkit-appearance: none;
-    appearance: none;
-    background: transparent;
-    cursor: ew-resize;
+  /* Tailwind v4 cannot @apply a custom class, so the shared button base is a
+     grouped selector rather than a `@apply btn` in each variant. */
+  .btn, .btn-primary, .btn-primary-lg, .btn-outline, .btn-ghost-dark {
+    @apply inline-flex items-center justify-center gap-2.5 font-semibold tracking-wide
+           transition-all duration-200 select-none cursor-pointer;
   }
-  .ba-range::-webkit-slider-runnable-track {
-    height: 2px;
-    border-radius: 2px;
-    background: var(--color-ink-900);
-    opacity: 0.2;
+
+  .btn, .btn-primary, .btn-outline, .btn-ghost-dark { @apply text-sm; }
+
+  .btn-primary, .btn-primary-lg {
+    @apply relative overflow-hidden bg-secondary-dark text-white
+           hover:bg-secondary-deep hover:-translate-y-px hover:shadow-lg
+           active:translate-y-0 active:shadow-none;
   }
-  .ba-range::-moz-range-track {
-    height: 2px;
-    border-radius: 2px;
-    background: rgba(35, 31, 32, 0.2);
+  .btn-primary   { @apply px-8 py-3.5 rounded-lg; }
+  .btn-primary-lg { @apply px-10 py-4 text-base rounded-xl; }
+
+  .btn-primary::after, .btn-primary-lg::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 55%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: translateX(-200%) skewX(-18deg);
+    will-change: transform;
   }
-  .ba-range::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    margin-top: -7px;
-    height: 16px;
-    width: 16px;
-    border-radius: 9999px;
-    background: var(--color-brand-red);
-    box-shadow: 0 2px 6px -2px rgba(35, 31, 32, 0.5);
+  .btn-primary:hover::after, .btn-primary-lg:hover::after {
+    animation: btnShimmer 0.55s ease forwards;
   }
-  .ba-range::-moz-range-thumb {
-    height: 16px;
-    width: 16px;
-    border: 0;
-    border-radius: 9999px;
-    background: var(--color-brand-red);
-    box-shadow: 0 2px 6px -2px rgba(35, 31, 32, 0.5);
+
+  .btn-outline {
+    @apply border-2 border-neutral-300 text-neutral-800 px-8 py-3.5 rounded-lg
+           hover:border-secondary-deep hover:text-secondary-deep;
+  }
+
+  .btn-ghost-dark {
+    @apply border-2 border-white/35 text-white px-8 py-3.5 rounded-lg
+           hover:border-white hover:bg-white/10;
+  }
+
+  .card {
+    @apply bg-white rounded-xl border border-neutral-200 transition-all duration-300
+           hover:-translate-y-1 hover:shadow-xl hover:border-neutral-300;
+  }
+
+  .section     { @apply py-16 md:py-24; }
+  .container-x { @apply mx-auto w-full max-w-7xl px-5 sm:px-8; }
+
+  .eyebrow {
+    @apply inline-block text-xs font-bold uppercase tracking-[0.18em] text-secondary-accent;
+  }
+
+  .link-arrow {
+    @apply inline-flex items-center gap-2 text-sm font-semibold text-secondary-accent
+           hover:gap-3 transition-all duration-200;
   }
 }

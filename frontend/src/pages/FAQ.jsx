@@ -1,15 +1,43 @@
+import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import SectionHeader from '../components/SectionHeader'
-import CTABanner from '../components/CTABanner'
-import { faqs } from '../data/faqs'
+import { AnimatePresence, motion } from 'framer-motion'
+import { FiPlus, FiMinus } from 'react-icons/fi'
+import PageHero from '@/components/ui/PageHero'
+import CTABanner from '@/components/sections/CTABanner'
+import { faqs } from '@/data/faqs'
+
+function Item({ q, a, open, onToggle, id }) {
+  return (
+    <div className="border-b border-neutral-200">
+      <h3>
+        <button type="button" onClick={onToggle} aria-expanded={open} aria-controls={`faq-${id}`}
+          className="flex w-full items-center justify-between gap-6 py-5 text-left">
+          <span className="font-heading text-base font-semibold text-primary sm:text-lg">{q}</span>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-secondary-accent">
+            {open ? <FiMinus size={15} aria-hidden="true" /> : <FiPlus size={15} aria-hidden="true" />}
+          </span>
+        </button>
+      </h3>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div id={`faq-${id}`} initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden">
+            <p className="pb-5 pr-14 text-sm leading-relaxed text-neutral-600">{a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
 
 export default function FAQ() {
+  const [open, setOpen] = useState(0)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: faqs.map((f) => ({
-      '@type': 'Question',
-      name: f.q,
+      '@type': 'Question', name: f.q,
       acceptedAnswer: { '@type': 'Answer', text: f.a },
     })),
   }
@@ -17,26 +45,26 @@ export default function FAQ() {
   return (
     <>
       <Helmet>
-        <title>Questions — Licensing, cost, and what a rewire involves | PremierPower</title>
+        <title>Questions — Licensing, cost, and what a rewire involves | Premier Power</title>
         <meta name="description" content="Are you licensed? What does an assessment cost? Do we move out during a rewire? Straight answers about residential rewiring in Nairobi." />
         <link rel="canonical" href="https://premierpower.co.ke/faq" />
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-24">
-        <SectionHeader
-          title="The questions people actually ask."
-          lede="Mostly about licensing. Almost never about price first — which is the right instinct."
-        />
-        <dl className="mt-14 max-w-3xl border-t border-ink-900/12">
-          {faqs.map((f) => (
-            <div key={f.q} className="grid gap-x-10 gap-y-2 border-b border-ink-900/12 py-7 md:grid-cols-[minmax(0,18rem)_1fr]">
-              <dt className="text-xl leading-snug text-ink-900">{f.q}</dt>
-              <dd className="max-w-[64ch] leading-relaxed text-ink-500">{f.a}</dd>
-            </div>
+      <PageHero
+        crumb="FAQ" eyebrow="Straight answers"
+        title="The questions people actually ask."
+        lede="Mostly about licensing. Almost never about price first — which is the right instinct."
+      />
+
+      <section className="section">
+        <div className="container-x max-w-3xl">
+          {faqs.map((f, i) => (
+            <Item key={f.q} id={i} q={f.q} a={f.a} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />
           ))}
-        </dl>
-      </div>
+        </div>
+      </section>
+
       <CTABanner />
     </>
   )

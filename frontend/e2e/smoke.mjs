@@ -8,7 +8,7 @@
  */
 import { chromium } from 'playwright'
 
-const SITE = process.env.SITE_URL ?? 'http://127.0.0.1:4173'
+const SITE = process.env.SITE_URL ?? 'http://127.0.0.1:4178'
 const failures = []
 const check = (ok, label) => {
   console.log(`${ok ? '  ok  ' : ' FAIL '} ${label}`)
@@ -22,13 +22,15 @@ for (const [device, viewport] of [
   ['mobile', { width: 390, height: 844 }],
 ]) {
   const ctx = await browser.newContext({ viewport })
+  await ctx.addInitScript(() => localStorage.setItem('pp-exit-dismissed', String(Date.now() + 864e5)))
   const page = await ctx.newPage()
   const errors = []
   page.on('pageerror', (e) => errors.push(e.message))
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()) })
 
-  for (const path of ['/', '/services', '/work', '/safety', '/about', '/faq', '/contact']) {
+  for (const path of ['/', '/services', '/portfolio', '/safety', '/about', '/testimonials', '/faq', '/contact']) {
     await page.goto(SITE + path, { waitUntil: 'networkidle' })
+    await page.waitForSelector('h1', { timeout: 15000 })
     const overflows = await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth + 1,
     )
@@ -47,6 +49,7 @@ for (const [device, viewport] of [
 
 // Lead submission, all the way to the API.
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } })
+await ctx.addInitScript(() => localStorage.setItem('pp-exit-dismissed', String(Date.now() + 864e5)))
 const page = await ctx.newPage()
 await page.goto(SITE + '/contact', { waitUntil: 'networkidle' })
 await page.fill('input[name="name"]', 'Test Submission')
@@ -74,14 +77,23 @@ try {
 }
 check(confirmed, 'success state rendered after submission')
 
-// The reveal must be operable without a pointer.
+// The hero carousel must be operable without a pointer.
 await page.goto(SITE + '/', { waitUntil: 'networkidle' })
-const range = page.locator('.ba-range').first()
-await range.focus()
-const before = await range.inputValue()
-await page.keyboard.press('ArrowRight')
-const after = await range.inputValue()
-check(before !== after, 'before/after reveal is keyboard-operable')
+await page.waitForSelector('h1', { timeout: 15000 })
+const firstHeadline = await page.locator('h1').first().innerText()
+const next = page.getByRole('button', { name: /next slide/i })
+await next.focus()
+await page.keyboard.press('Enter')
+await page.waitForTimeout(700)
+const secondHeadline = await page.locator('h1').first().innerText()
+check(firstHeadline !== secondHeadline, 'hero carousel advances from the keyboard')
+
+// Licence trust signal must sit beside the primary action, on every page.
+for (const path of ['/', '/services', '/safety', '/contact']) {
+  await page.goto(SITE + path, { waitUntil: 'networkidle' })
+  const badges = await page.getByText(/licensed\s*&\s*insured/i).count()
+  check(badges > 0, `${path} — licence badge present`)
+}
 
 await browser.close()
 

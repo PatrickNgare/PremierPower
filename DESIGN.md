@@ -1,111 +1,91 @@
-# PremierPower — Design Direction
+# Premier Power — Design Direction
 
-## The world: The Chase Plan
+## The world: SpaceInfra's system, Premier Power's brand
 
-Before a single cable is pulled, the electrician marks the customer's bare wall —
-socket heights, switch drops, the routes to be chased into the plaster. Then it is
-cut, filled, skimmed, and gone forever. The site adopts that surface as its visual
-world and that ritual as its argument:
+The design language is ported directly from SpaceInfra (`~/Desktop/SpaceInfra`),
+the client's proven construction site — its component set, section rhythm,
+typography, motion and layout conventions — carrying Premier Power's own brand
+colours rather than SpaceInfra's navy and orange.
 
-> Everything hidden is drawn before it is buried, and the drawing is the promise.
-
-This is the product mechanism, not a metaphor. The customer can never inspect the
-wiring again once the plaster goes on, so the site's whole job is to make the
-buried system legible while it is still visible.
-
-### The rut (excluded, permanently)
-
-- The category page: blue gradient, stock photo of a smiling man with a multimeter,
-  three icon cards, lightning-bolt accents.
-- Its predictable opposite: dark "premium tech," neon electric-blue glow, animated
-  circuit traces, hero video.
-- The literal reading of the name: PremierPower as bolts, sparks, energy imagery.
+The earlier "Chase Plan" direction is retired. This document replaces it.
 
 ## Tokens
 
-Taken from the supplied logo (`frontend/public/brand/logo.svg`), which overrides
-any palette chosen before it existed. Exact values sampled from the artwork:
+Palette sampled from the supplied logo (`frontend/public/brand/logo.svg`):
 red `#FF0000`, green `#00FF00`, blacks `#000000` and `#231F20`.
 
-- **Ground:** white / near-white. The lockup is presented on white; the site follows.
-- **Line:** ink — `#231F20` for body, `#000000` for the darkest surfaces. The drawn
-  chase route, rules, annotation ticks.
-- **Buried:** black for "behind the wall" surfaces — footer, proof sections.
-- **Action:** red. **Reserved by law** for the chased channel and primary actions.
-  Never a background field, never a decorative accent. If red were deleted
-  entirely, no hierarchy would change.
-  - The brand red `#FF0000` carries white text at only 4.0:1, under the 4.5:1
-    floor. Filled controls therefore sit one step deeper at `#E60000` (4.8:1);
-    the brand red is unchanged everywhere it is not carrying text.
-- **Earth:** brand green `#00FF00`. Used exactly once, as the earth mark on the
-  licence badge — too light to carry text, so it stays a mark. `#0A8F3C` is
-  available where a green must hold text.
+Mapped onto SpaceInfra's token structure, so every class name transfers:
 
-## Logo
+- `primary` — the structural dark. SpaceInfra's navy slot, filled with the
+  logo's black: `#231F20`, dark `#000000`, light `#3A3436`.
+- `secondary` — the accent, split by contrast duty exactly as SpaceInfra splits
+  its orange:
+  - `DEFAULT #FF0000` — the brand red. 5.25:1 on primary-dark; **fails** as
+    white-on-red, so it is never a button fill.
+  - `dark #E60000` — 4.81:1 with white. Button fills.
+  - `deep #C20000` — 6.37:1 with white. Hover and active.
+  - `ink #C20000` — 6.37:1 on white. Text and icons on light grounds.
+  - `accent` — ground-aware, see below.
+- `earth` `#00FF00` — the logo's green, used once, as the earth mark on the
+  licence badge. `earth-ink #0A8F3C` where a green must carry text.
+- `neutral` — SpaceInfra's greyscale, unchanged.
 
-Two files, both derived from the supplied artwork. `logo.svg` is used as-is;
-`logo-on-dark.svg` recolours only the black elements to white so the wordmark
-survives on the black footer. Red and green are untouched in both.
+### The ground-aware accent
+
+Ported from SpaceInfra verbatim. `--accent-rgb` resolves to `#C20000` on light
+grounds and to the brand `#FF0000` inside any `.on-dark` container, so
+`text-secondary-accent` stays legible on both without hand-picking a colour per
+call site. Marking a dark section `.on-dark` fixes every accent inside it.
 
 ## Type
 
-- Display: Archivo Variable (self-hosted). Grotesk with a technical cast.
-- Body: Inter Variable. Measure 65–75ch.
-- Measurement only: JetBrains Mono Variable — dimension figures and circuit
-  references, because they are measurements. Never as a "technical" costume.
+- Headings: **Poppins** 500/600/700 — SpaceInfra's heading face.
+- Body: **Inter Variable** — SpaceInfra's body face.
+- Both self-hosted via fontsource.
 
-## Composition
+## Structure
 
-- The page is a wall elevation. A graphite chase route enters at the hero, drops
-  down the page, and terminates at the distribution board, which is the contact
-  block. Each section is an outlet on the run.
-- Nav items are points on the route.
+Home follows SpaceInfra's section order:
 
-## Signature interaction
+Hero → StatsBar → installations preview → SafetyBar → services → why-us (dark)
+→ process → testimonials → CTABanner.
 
-The **before/after wall reveal**: a drag-wipe between "chase open, wiring exposed"
-and "plastered and finished." The mechanism as an interaction, driven entirely by
-the client's real photographs.
+`SafetyBar` replaces SpaceInfra's `AwardsBar`: what earns trust for an
+electrician is licensing and testing, not awards.
+
+Interior pages all open with `PageHero` — dark banner, breadcrumb, eyebrow,
+title, lede — so every route shares one rhythm.
 
 ## Motion
 
-One authored moment: the chase line drawing itself in, once, on entry.
-Everything else is micro — hover, focus, entrance fades. No scroll-jacking, no
-pinned sections, no parallax. Under `prefers-reduced-motion` the line is already
-drawn.
+SpaceInfra's vocabulary: `fade-up`, `fade-in`, `marquee` (testimonials),
+`ken-burns` (photography), and the shimmer sweep across `.btn-primary`.
+Sections animate once on entry via `whileInView`.
 
-## Disciplines carried in from the weighed challengers
+`MotionConfig reducedMotion="user"` covers Framer Motion's JS-driven
+animations; the CSS media query covers transitions; the hero carousel stops
+auto-advancing under the same preference and leaves the arrows as the way
+through.
 
-- **Registered views:** plan → wall detail → finished room shown in registration,
-  so the proof reads as one continuous claim rather than a gallery.
-- **Ordered stages:** the process runs as numbered stages carrying real state —
-  survey, rough-in, test, certify. The sequence carries information, which is what
-  earns the numbering.
-- **Emphasis without colour:** every hierarchy level stays legible in greyscale.
-- **Announced transitions:** each major section opens with an unmistakable marker.
-- **Colour by law:** amber means action. No exceptions, no drift.
-- **State as a mark:** progress and status are drawn marks, never hue alone.
+## Rules that survive from the brief
 
-## Rules
-
-- Hero carries a **visible CTA button** above the fold: "Book a Free Site Assessment".
-- "Licensed & Insured" badge with the EPRA number sits near *every* CTA.
-- Mobile is the primary device. Sticky bottom bar: Call · WhatsApp · Assessment.
-- Browser surfaces are themed from the palette: selection, caret, scrollbars,
-  focus rings, underline offset, tabular numerals.
+- Hero carries a visible CTA above the fold: "Book a free site assessment".
+- The licence badge sits near every primary action, not just on About.
+- Licence number in the footer of every page.
+- Mobile is the primary device: sticky bottom bar — Call · WhatsApp · Free visit.
+- Client-supplied facts render as visibly unconfirmed gaps until supplied.
+  Nothing invents a licence number, a phone line, or a review.
 
 ## Accessibility & performance floor
 
-- Descriptive alt text on every installation photo; `alt=""` + `aria-hidden` on
-  decorative imagery.
-- `loading="lazy"` + `srcset`/`sizes` on all non-hero images; `fetchpriority="high"`
-  on the hero image only.
+- Descriptive alt text on installation photos; `alt=""` + `aria-hidden` on
+  decorative marks.
+- `loading="lazy"` on all non-hero images; `fetchpriority="high"` on the hero.
 - Route-based code splitting via `lazy()` per page.
-- aria-labels on all icon-only controls.
-- Body text ≥4.5:1, large text ≥3:1.
+- aria-labels on every icon-only control.
+- Body text >=4.5:1; the accent split above is what keeps red legible on both grounds.
 
 ## Known risk
 
-The chase-line device depends on real photography of open walls and distribution
-boards. With weak or absent photos it degrades into a decorative squiggle. The
-photo brief in PRODUCT.md is therefore a launch blocker, not a nice-to-have.
+Photography is still the dependency. Every image slot renders an honest,
+labelled gap that doubles as the shot list until the client supplies real work.

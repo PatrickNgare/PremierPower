@@ -1,9 +1,12 @@
 import { Helmet } from 'react-helmet-async'
-import SectionHeader from '../components/SectionHeader'
-import Schedule from '../components/Schedule'
-import LicenseBadge from '../components/LicenseBadge'
-import CTABanner from '../components/CTABanner'
-import { site, isPending, value } from '../config/site'
+import { motion } from 'framer-motion'
+import { FiCheck } from 'react-icons/fi'
+import PageHero from '@/components/ui/PageHero'
+import SectionHeader from '@/components/ui/SectionHeader'
+import LicenseBadge from '@/components/ui/LicenseBadge'
+import CTABanner from '@/components/sections/CTABanner'
+import { fadeUp, stagger, inView } from '@/utils/motion'
+import { site, isPending, value } from '@/config/site'
 
 const tests = [
   ['Continuity of protective conductors', 'Confirms every earth path is unbroken from the board to the furthest accessory.'],
@@ -17,56 +20,69 @@ export default function Safety() {
   return (
     <>
       <Helmet>
-        <title>Safety &amp; compliance — EPRA licensed, tested and certified | PremierPower</title>
+        <title>Safety &amp; compliance — EPRA licensed, tested and certified | Premier Power</title>
         <meta name="description" content="Our EPRA licence, the five tests every installation receives before certification, and our workmanship warranty terms — stated plainly." />
         <link rel="canonical" href="https://premierpower.co.ke/safety" />
       </Helmet>
 
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-24">
-        <SectionHeader
-          title="Verify us before you call us."
-          lede="Our licence number is below and on every page of this site. You can check it against the Energy and Petroleum Regulatory Authority's register without speaking to us first — and you should do the same with anyone else you are considering."
-        />
-        <LicenseBadge className="mt-8" />
+      <PageHero
+        crumb="Safety" eyebrow="Verify before you call"
+        title="Our licence number is public. Check it before you call us."
+        lede="You can check it against the Energy and Petroleum Regulatory Authority's register without speaking to us first — and you should do the same with anyone else you are considering."
+      />
 
-        <div className="mt-16 grid gap-14 lg:grid-cols-[1.25fr_1fr] lg:gap-20">
+      <section className="section">
+        <div className="container-x grid gap-14 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
           <div>
-            <h2 className="text-2xl text-ink-900">What we test before certifying</h2>
-            <p className="mt-3 max-w-[62ch] leading-relaxed text-ink-500">
-              Every installation gets the full sequence, once before the plaster closes and
-              again at handover. The recorded results go to you with the certificate.
-            </p>
-            <dl className="mt-10 border-t border-ink-900/12">
+            <SectionHeader eyebrow="Before certifying" title="What we test, every time." lede="Every installation gets the full sequence, once before the plaster closes and again at handover. The recorded results go to you with the certificate." />
+            <motion.dl variants={stagger(0.06)} {...inView} className="mt-10 space-y-4">
               {tests.map(([name, why]) => (
-                <div key={name} className="border-b border-ink-900/12 py-5">
-                  <dt className="text-lg text-ink-900">{name}</dt>
-                  <dd className="mt-1.5 max-w-[64ch] leading-relaxed text-ink-500">{why}</dd>
-                </div>
+                <motion.div key={name} variants={fadeUp} className="flex gap-4 rounded-xl border border-neutral-200 bg-white p-5">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-earth-ink/10">
+                    <FiCheck size={15} className="text-earth-ink" aria-hidden="true" />
+                  </span>
+                  <div>
+                    <dt className="font-heading font-semibold text-primary">{name}</dt>
+                    <dd className="mt-1 text-sm leading-relaxed text-neutral-600">{why}</dd>
+                  </div>
+                </motion.div>
               ))}
-            </dl>
-
-            <h2 className="mt-16 text-2xl text-ink-900">Our warranty, in plain terms</h2>
-            <p className="mt-4 max-w-[64ch] text-lg leading-relaxed text-ink-700">
-              {isPending(site.warranty) ? (
-                <span className="text-ink-400">
-                  [Warranty term pending — the client must supply this. It belongs here, stated
-                  plainly, not buried in a contract.]
-                </span>
-              ) : (
-                <>
-                  Workmanship is warranted for {value(site.warranty)} from handover. If a fault
-                  traces back to our installation within that period, we return and correct it at
-                  our cost — labour included, not just parts.
-                </>
-              )}
-            </p>
+            </motion.dl>
           </div>
 
-          <div className="lg:pt-4">
-            <Schedule />
-          </div>
+          <aside className="lg:pt-4">
+            <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-7">
+              <h2 className="font-heading text-lg font-semibold text-primary">Our licence</h2>
+              <LicenseBadge className="mt-4 w-full" />
+              <dl className="mt-6 space-y-3 text-sm">
+                {[['EPRA number', site.epraNumber], ['Class', site.epraClass], ['Insured by', site.insured]].map(([l, v]) => (
+                  <div key={l} className="flex justify-between gap-4 border-b border-neutral-200 pb-3">
+                    <dt className="text-neutral-500">{l}</dt>
+                    <dd className={isPending(v) ? 'text-neutral-400' : 'font-semibold text-primary'}>
+                      {isPending(v) ? '—' : value(v)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+
+              <h2 className="mt-8 font-heading text-lg font-semibold text-primary">Warranty, plainly</h2>
+              <p className="mt-3 text-sm leading-relaxed text-neutral-600">
+                {isPending(site.warranty) ? (
+                  <span className="text-neutral-400">
+                    [Warranty term pending — the client must supply this. It belongs here, stated
+                    plainly, not buried in a contract.]
+                  </span>
+                ) : (
+                  <>Workmanship is warranted for {value(site.warranty)} from handover. If a fault traces
+                  back to our installation within that period, we return and correct it at our cost —
+                  labour included, not just parts.</>
+                )}
+              </p>
+            </div>
+          </aside>
         </div>
-      </div>
+      </section>
+
       <CTABanner />
     </>
   )

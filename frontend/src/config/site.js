@@ -16,7 +16,7 @@ export const isPending = (v) => Boolean(v && typeof v === 'object' && v[PENDING]
 /** Renders a value, or its hint when the client has not supplied it. */
 export const value = (v, fallback = '') => (isPending(v) ? fallback || `[${v.hint}]` : v)
 
-import { DEMO, demoOverrides } from './demo'
+import { DEMO, demoOverrides } from '@/config/demo'
 
 const real = {
   name: 'PremierPower',

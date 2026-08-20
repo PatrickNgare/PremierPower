@@ -1,7 +1,7 @@
 /**
- * The supplied lockup, used as-is. Two files: the standard mark, and a variant
- * whose black elements are white so the wordmark survives on dark surfaces.
- * Red and green are untouched in both.
+ * The supplied lockup, used as-is. The on-dark variant recolours only the
+ * black elements to white so the wordmark survives dark surfaces; red and
+ * green are untouched in both.
  */
 export default function Logo({ tone = 'light', className = 'h-9' }) {
   return (
@@ -9,8 +9,7 @@ export default function Logo({ tone = 'light', className = 'h-9' }) {
       src={tone === 'dark' ? '/brand/logo-on-dark.svg' : '/brand/logo.svg'}
       alt="Premier Power Limited"
       className={`w-auto ${className}`}
-      width="1701"
-      height="704"
+      width="1701" height="704"
     />
   )
 }

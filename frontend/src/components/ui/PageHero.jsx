@@ -1,0 +1,37 @@
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import { FiChevronRight } from 'react-icons/fi'
+import { fadeUp, stagger } from '@/utils/motion'
+
+/** The banner every interior page opens with, matching one rhythm. */
+export default function PageHero({ eyebrow, title, lede, crumb }) {
+  return (
+    <section className="on-dark relative overflow-hidden bg-primary-dark">
+      <div
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 w-1.5 bg-secondary"
+      />
+      <motion.div
+        variants={stagger()} initial="hidden" animate="show"
+        className="container-x py-16 md:py-24"
+      >
+        {crumb && (
+          <motion.nav variants={fadeUp} aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-white/55">
+            <Link to="/" className="hover:text-white">Home</Link>
+            <FiChevronRight size={12} aria-hidden="true" />
+            <span className="text-white/80">{crumb}</span>
+          </motion.nav>
+        )}
+        {eyebrow && <motion.span variants={fadeUp} className="eyebrow">{eyebrow}</motion.span>}
+        <motion.h1 variants={fadeUp} className="mt-3 max-w-3xl text-4xl font-bold leading-[1.08] text-white sm:text-5xl">
+          {title}
+        </motion.h1>
+        {lede && (
+          <motion.p variants={fadeUp} className="mt-5 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
+            {lede}
+          </motion.p>
+        )}
+      </motion.div>
+    </section>
+  )
+}

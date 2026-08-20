@@ -1,4 +1,4 @@
-import { DEMO } from '../config/demo'
+import { DEMO } from '@/config/demo'
 
 /**
  * Present on every page of a demo build. A demo that cannot be distinguished
@@ -7,8 +7,8 @@ import { DEMO } from '../config/demo'
 export default function DemoRibbon() {
   if (!DEMO) return null
   return (
-    <div className="sticky top-0 z-50 bg-ink-900 px-4 py-1.5 text-center">
-      <p className="font-mono text-[0.7rem] uppercase tracking-wider text-paper-100">
+    <div className="bg-primary-dark px-4 py-1.5 text-center">
+      <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white">
         Demo build · sample data · licence number and reviews are not real
       </p>
     </div>

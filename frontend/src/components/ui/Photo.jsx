@@ -1,18 +1,14 @@
 import { useState } from 'react'
-import { DEMO } from '../config/demo'
+import { DEMO } from '@/config/demo'
 
 /**
  * Real installation photography is the hero asset. Until the client supplies
  * it, this renders an honest, labelled gap that doubles as the shot list —
- * never stock imagery, never a decorative placeholder pretending to be work.
- *
- * In demo mode the gap is filled so layout reads at full density, but it still
- * says "sample" on it. Drop files into public/demo/ (see config/demo.js) and
- * they are used instead; a missing or broken file falls back to the block
- * rather than showing a broken image.
+ * never stock imagery. In demo mode the gap is filled but still says "sample".
  */
 export default function Photo({
-  src, demoSrc, alt, brief, ratio = '4 / 3', priority = false, className = '', sizes,
+  src, demoSrc, alt, brief, ratio = '4 / 3', priority = false,
+  className = '', sizes, kenBurns = false,
 }) {
   const [failed, setFailed] = useState(false)
   const resolved = failed ? null : src || (DEMO ? demoSrc : null)
@@ -20,16 +16,16 @@ export default function Photo({
   if (!resolved) {
     return (
       <figure
-        className={`relative overflow-hidden rounded-xl border border-ink-900/20 ${
-          DEMO ? 'border-solid bg-paper-300' : 'border-dashed bg-paper-200'
+        className={`relative overflow-hidden rounded-xl border ${
+          DEMO ? 'border-neutral-300 bg-neutral-200' : 'border-dashed border-neutral-300 bg-neutral-100'
         } ${className}`}
         style={{ aspectRatio: ratio }}
       >
         <figcaption className="absolute inset-0 flex flex-col justify-end gap-1 p-5">
-          <span className="font-mono text-[0.7rem] uppercase tracking-wider text-ink-500">
+          <span className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-neutral-500">
             {DEMO ? 'Sample image' : 'Photograph required'}
           </span>
-          <span className="max-w-sm text-sm leading-snug text-ink-700">{brief}</span>
+          <span className="max-w-sm text-sm leading-snug text-neutral-600">{brief}</span>
         </figcaption>
       </figure>
     )
@@ -44,7 +40,7 @@ export default function Photo({
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : undefined}
       decoding={priority ? 'sync' : 'async'}
-      className={`rounded-xl object-cover ${className}`}
+      className={`rounded-xl object-cover ${kenBurns ? 'animate-ken-burns' : ''} ${className}`}
       style={{ aspectRatio: ratio }}
     />
   )

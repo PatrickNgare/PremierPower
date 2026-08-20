@@ -45,10 +45,12 @@ services:
     # first requests come back 502.
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3).status==200 else 1)\""]
-      interval: 5s
-      timeout: 5s
-      retries: 12
-      start_period: 10s
+      # Generous: the probe starts a Python interpreter, which can exceed a
+      # tight budget while other images are building on the same machine.
+      interval: 15s
+      timeout: 10s
+      retries: 6
+      start_period: 20s
 
   web:
     build:

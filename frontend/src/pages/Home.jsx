@@ -1,24 +1,27 @@
 import { Helmet } from 'react-helmet-async'
-import Hero from '../components/Hero'
-import StatsBar from '../components/StatsBar'
-import SectionHeader from '../components/SectionHeader'
-import BeforeAfter from '../components/BeforeAfter'
-import ServicesList from '../components/ServicesList'
-import ProcessStages from '../components/ProcessStages'
-import Schedule from '../components/Schedule'
-import TestimonialsStrip from '../components/TestimonialsStrip'
-import CTABanner from '../components/CTABanner'
-import Button from '../components/Button'
-import { demoPhotos } from '../config/demo'
+import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { FiArrowRight } from 'react-icons/fi'
+import Hero from '@/components/sections/Hero'
+import StatsBar from '@/components/sections/StatsBar'
+import SafetyBar from '@/components/sections/SafetyBar'
+import ServicesGrid from '@/components/sections/ServicesGrid'
+import ProjectsGrid from '@/components/sections/ProjectsGrid'
+import ProcessSteps from '@/components/sections/ProcessSteps'
+import TestimonialsStrip from '@/components/sections/TestimonialsStrip'
+import CTABanner from '@/components/sections/CTABanner'
+import SectionHeader from '@/components/ui/SectionHeader'
+import Button from '@/components/ui/Button'
+import { inView } from '@/utils/motion'
 
 export default function Home() {
   return (
     <>
       <Helmet>
-        <title>PremierPower — Licensed residential wiring &amp; rewiring in Nairobi</title>
+        <title>Premier Power Limited — Licensed residential wiring &amp; rewiring in Nairobi</title>
         <meta name="description" content="EPRA-licensed residential wiring and rewiring in Nairobi. Every chase marked out before cutting, every circuit photographed before plaster, test certificate at handover. Free site assessment." />
         <link rel="canonical" href="https://premierpower.co.ke/" />
-        <meta property="og:title" content="PremierPower — Licensed residential wiring in Nairobi" />
+        <meta property="og:title" content="Premier Power Limited — Licensed residential wiring in Nairobi" />
         <meta property="og:description" content="We mark out every chase, photograph every circuit before the plaster closes, and hand you the test certificate. Free site assessment." />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
@@ -27,104 +30,89 @@ export default function Home() {
       <Hero />
       <StatsBar />
 
-      {/* The differentiator, stated as the problem it solves. */}
-      <section className="border-y border-ink-900/10 bg-paper-50">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[1fr_1fr] lg:gap-16">
-          <SectionHeader
-            title="Most of the dangerous work we find was done by someone who was cheaper."
-            lede="Junction boxes buried in plaster with no access. Undersized conductors feeding a whole floor. Earth conductors connected to nothing at all. None of it is visible once the wall is closed, and none of it announces itself until something burns."
-          />
-          <div className="max-w-[60ch] space-y-5 text-lg leading-relaxed text-ink-700 lg:pt-16">
-            <p>
-              An unlicensed electrician can produce a wall that looks identical to ours on
-              handover day. The difference is entirely in what you cannot see — and in
-              whether anyone tested it before covering it up.
-            </p>
-            <p>
-              So we work the other way round. Every chase is drawn on the bare wall before
-              it is cut and walked with you. Every circuit is photographed while it is
-              still open. Every installation is tested, recorded, and certified, and you
-              keep the paperwork.
-            </p>
-            <p className="text-ink-900">
-              If you already suspect the work in your home was done badly, that is the
-              assessment we do most often.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Signature interaction — registered views of one wall. */}
-      <section className="paper">
-        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-28">
-          <SectionHeader
-            title="This is the part you will never see again."
-            lede="Drag to take the plaster off. What is underneath is the only thing that determines whether an installation is safe, and it is the one thing a homeowner can never check."
-          />
-          <div className="mt-12">
-            <BeforeAfter
-              ratio="16 / 10"
-              beforeDemoSrc={demoPhotos.chaseOpen}
-              afterDemoSrc={demoPhotos.chaseFinished}
-              beforeBrief="The same wall with chases open and conductors run — conduit, cable, back boxes visible. Shoot from a fixed position on a tripod."
-              afterBrief="The identical framing after plastering and second fix, accessories on. Same tripod position, same lens, so the two register exactly."
-              beforeAlt="A wall with chases cut open and conductors run through conduit before plastering"
-              afterAlt="The same wall after plastering, with sockets and switches fitted"
+      <section className="section">
+        <div className="container-x">
+          <motion.div {...inView} className="flex flex-wrap items-end justify-between gap-6">
+            <SectionHeader
+              eyebrow="Recent installations"
+              title="Shown at the stage that actually proves the work."
+              lede="Finished rooms prove nothing — anyone can plaster over bad wiring. Every job here is photographed while the board and the chase are still open."
             />
-          </div>
+            <Link to="/portfolio" className="link-arrow">
+              View all installations <FiArrowRight size={13} aria-hidden="true" />
+            </Link>
+          </motion.div>
+          <ProjectsGrid limit={3} />
         </div>
       </section>
 
-      <section className="border-t border-ink-900/10">
-        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-24">
-          <SectionHeader
-            title="What we do"
-            lede="Residential only. We wire and rewire homes, and we do not spread ourselves across trades we would be mediocre at."
-          />
-          <ServicesList limit={3} />
+      <SafetyBar />
+
+      <section className="section">
+        <div className="container-x">
+          <motion.div {...inView} className="flex flex-wrap items-end justify-between gap-6">
+            <SectionHeader
+              eyebrow="What we do"
+              title="Residential wiring, and nothing we would be mediocre at."
+              lede="We wire and rewire homes. We do not take on commercial fit-outs, solar tie-ins, or appliance repair — and we will say so rather than take the work."
+            />
+            <Link to="/services" className="link-arrow">
+              All services <FiArrowRight size={13} aria-hidden="true" />
+            </Link>
+          </motion.div>
+          <ServicesGrid limit={3} />
         </div>
       </section>
 
-      <section className="bg-ink-900 on-dark">
-        <div className="mx-auto grid max-w-6xl gap-14 px-5 py-20 sm:px-8 lg:grid-cols-[1.3fr_1fr] lg:gap-20 lg:py-28">
-          <div>
+      {/* The differentiator, stated as the problem it solves. */}
+      <section className="on-dark bg-primary">
+        <div className="container-x section">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             <SectionHeader
               tone="dark"
-              title="Four stages, and you sign off before each one closes."
-              lede="Nothing gets covered until you have seen it. The order matters — each stage is a gate on the one before it."
+              eyebrow="Why people call us"
+              title="Most of the dangerous work we find was done by someone who was cheaper."
+              lede="Junction boxes buried in plaster with no access. Undersized conductors feeding a whole floor. Earth conductors connected to nothing at all. None of it is visible once the wall is closed, and none of it announces itself until something burns."
             />
-            <div className="[&_h3]:text-paper-50 [&_li]:text-paper-100">
-              <ol className="relative mt-12 border-l border-paper-100/20">
-                {[
-                  ['01', 'Survey', 'Free, about an hour', 'We walk the property, open the board, test what is there, and photograph it. You get the findings in writing whether or not you hire us.'],
-                  ['02', 'Marking out', 'Before any cutting', 'Socket heights, switch drops, and every chase route go onto the bare wall in pencil. Nothing is cut until you have walked the marked wall and agreed it.'],
-                  ['03', 'Rough-in', 'Walls open', 'Chases cut, conduit and conductors run, board positioned. This is the stage nobody photographs and everybody should — so we do, every circuit, and the set is yours.'],
-                  ['04', 'Test and certify', 'Before plaster, and again at handover', 'Continuity, insulation resistance, polarity, and earth loop impedance, recorded. You receive the circuit schedule, the test results, and the certificate.'],
-                ].map(([n, title, when, body]) => (
-                  <li key={n} className="relative grid gap-x-8 gap-y-2 pb-11 pl-8 last:pb-0 sm:grid-cols-[auto_1fr]">
-                    <span aria-hidden="true" className="absolute -left-[5px] top-2 h-2.5 w-2.5 rounded-full border border-paper-100/60 bg-ink-900" />
-                    <span className="font-mono tabular text-sm text-paper-300 sm:pt-1">{n}</span>
-                    <div>
-                      <h3 className="text-xl">{title}</h3>
-                      <p className="mt-1 font-mono text-xs uppercase tracking-wider text-paper-300/80">{when}</p>
-                      <p className="secondary mt-3 max-w-[58ch] leading-relaxed">{body}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
-            <Button to="/safety" variant="onDark" className="mt-10">How we test and certify</Button>
-          </div>
-
-          <div className="lg:pt-24">
-            <Schedule tone="dark" />
+            <motion.div {...inView} className="space-y-5 text-base leading-relaxed text-white/70 lg:pt-16">
+              <p>
+                An unlicensed electrician can produce a wall that looks identical to ours on
+                handover day. The difference is entirely in what you cannot see — and in
+                whether anyone tested it before covering it up.
+              </p>
+              <p>
+                So we work the other way round. Every chase is drawn on the bare wall before it
+                is cut and walked with you. Every circuit is photographed while it is still
+                open. Every installation is tested, recorded, and certified, and you keep the
+                paperwork.
+              </p>
+              <p className="font-semibold text-white">
+                If you already suspect the work in your home was done badly, that is the
+                assessment we do most often.
+              </p>
+              <Button to="/safety" variant="ghostDark" className="mt-2">How we test and certify</Button>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      <section className="paper">
-        <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8">
+      <section className="section bg-neutral-50">
+        <div className="container-x">
           <SectionHeader
+            align="center"
+            eyebrow="How it works"
+            title="Four stages, and you sign off before each one closes."
+            lede="Nothing gets covered until you have seen it. The order matters — each stage is a gate on the one before it."
+          />
+          <ProcessSteps />
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container-x">
+          <SectionHeader
+            align="center"
+            eyebrow="Reviews"
             title="What customers say"
             lede="Weighted toward the ones who mention safety and reliability, because that is what you are actually buying."
           />
