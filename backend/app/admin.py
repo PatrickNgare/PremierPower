@@ -9,20 +9,31 @@ from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 from starlette.responses import RedirectResponse
 
-from .models import Lead, Project, Service, SiteSetting, Testimonial
+from sqlalchemy import select
+
+from .core.security import verify_password
+from .db import SessionLocal
+# Aliased: sqladmin exports its own `Admin` application class.
+from .models import Admin as AdminUser
+from .models import (
+    AuditLog, Banner, BlogPost, FAQ, Lead, MediaAsset,
+    NewsletterSubscriber, Project, Service, SiteSetting, TeamMember, Testimonial,
+)
 from .settings import settings
 
 
 class AdminAuth(AuthenticationBackend):
     async def login(self, request: Request) -> bool:
         form = await request.form()
-        if (
-            form.get("username") == settings.admin_username
-            and form.get("password") == settings.admin_password
-        ):
-            request.session.update({"authenticated": True})
-            return True
-        return False
+        db = SessionLocal()
+        try:
+            admin = db.scalar(select(AdminUser).where(AdminUser.email == form.get("username")))
+            if admin and admin.is_active and verify_password(str(form.get("password")), admin.password_hash):
+                request.session.update({"authenticated": True, "email": admin.email})
+                return True
+            return False
+        finally:
+            db.close()
 
     async def logout(self, request: Request) -> bool:
         request.session.clear()
@@ -96,6 +107,81 @@ class LeadAdmin(ModelView, model=Lead):
     can_create = False
 
 
+class FAQAdmin(ModelView, model=FAQ):
+    name_plural = "FAQs"
+    icon = "fa-solid fa-circle-question"
+    column_list = [FAQ.position, FAQ.question, FAQ.category, FAQ.published]
+    form_columns = [FAQ.position, FAQ.question, FAQ.answer, FAQ.category, FAQ.published]
+
+
+class BlogPostAdmin(ModelView, model=BlogPost):
+    name_plural = "Blog"
+    icon = "fa-solid fa-newspaper"
+    column_list = [BlogPost.title, BlogPost.slug, BlogPost.published, BlogPost.created_at]
+    form_columns = [
+        BlogPost.title, BlogPost.slug, BlogPost.excerpt, BlogPost.body,
+        BlogPost.cover_url, BlogPost.cover_alt, BlogPost.author,
+        BlogPost.read_minutes, BlogPost.published, BlogPost.published_at,
+    ]
+
+
+class TeamMemberAdmin(ModelView, model=TeamMember):
+    name_plural = "Team"
+    icon = "fa-solid fa-users"
+    column_list = [TeamMember.position, TeamMember.name, TeamMember.role, TeamMember.published]
+    form_columns = [
+        TeamMember.position, TeamMember.name, TeamMember.role, TeamMember.bio,
+        TeamMember.photo_url, TeamMember.licence_number, TeamMember.published,
+    ]
+    column_labels = {"licence_number": "Their own EPRA licence number"}
+
+
+class BannerAdmin(ModelView, model=Banner):
+    name_plural = "Hero slides"
+    icon = "fa-solid fa-image"
+    column_list = [Banner.position, Banner.headline, Banner.published]
+    form_columns = [
+        Banner.position, Banner.eyebrow, Banner.headline, Banner.body,
+        Banner.image_url, Banner.image_alt, Banner.cta_label, Banner.cta_href, Banner.published,
+    ]
+
+
+class MediaAdmin(ModelView, model=MediaAsset):
+    name_plural = "Media library"
+    icon = "fa-solid fa-photo-film"
+    column_list = [MediaAsset.created_at, MediaAsset.filename, MediaAsset.storage, MediaAsset.url]
+    can_create = False
+    can_edit = True
+    form_columns = [MediaAsset.alt]
+
+
+class AdminUserAdmin(ModelView, model=AdminUser):
+    name_plural = "Admin users"
+    icon = "fa-solid fa-user-shield"
+    column_list = [AdminUser.email, AdminUser.name, AdminUser.is_superuser, AdminUser.is_active]
+    # Passwords are set through the API, never typed into a list view.
+    form_columns = [AdminUser.email, AdminUser.name, AdminUser.is_superuser, AdminUser.is_active]
+    can_create = False
+
+
+class SubscriberAdmin(ModelView, model=NewsletterSubscriber):
+    name_plural = "Subscribers"
+    icon = "fa-solid fa-envelope"
+    column_list = [NewsletterSubscriber.created_at, NewsletterSubscriber.email, NewsletterSubscriber.active]
+    can_create = False
+    form_columns = [NewsletterSubscriber.active]
+
+
+class AuditAdmin(ModelView, model=AuditLog):
+    name_plural = "Audit log"
+    icon = "fa-solid fa-clock-rotate-left"
+    column_list = [AuditLog.created_at, AuditLog.actor, AuditLog.action, AuditLog.entity, AuditLog.detail]
+    column_default_sort = [(AuditLog.created_at, True)]
+    can_create = False
+    can_edit = False
+    can_delete = False
+
+
 def mount_admin(app, engine) -> None:
     admin = Admin(
         app,
@@ -103,5 +189,9 @@ def mount_admin(app, engine) -> None:
         title="PremierPower",
         authentication_backend=AdminAuth(secret_key=settings.secret_key),
     )
-    for view in (ServiceAdmin, ProjectAdmin, TestimonialAdmin, SiteSettingAdmin, LeadAdmin):
+    for view in (
+        LeadAdmin, ServiceAdmin, ProjectAdmin, TestimonialAdmin, FAQAdmin,
+        BlogPostAdmin, TeamMemberAdmin, BannerAdmin, MediaAdmin,
+        SiteSettingAdmin, SubscriberAdmin, AdminUserAdmin, AuditAdmin,
+    ):
         admin.add_view(view)

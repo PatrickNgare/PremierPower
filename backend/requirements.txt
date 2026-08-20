@@ -7,4 +7,8 @@ pydantic-settings==2.7.0
 python-dotenv==1.0.1
 sqladmin==0.20.1
 itsdangerous==2.2.0
-passlib[bcrypt]==1.7.4
+bcrypt==5.0.0
+PyJWT==2.10.1
+python-multipart==0.0.20
+email-validator==2.2.0
+cloudinary==1.41.0

@@ -4,7 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { FiPlus, FiMinus } from 'react-icons/fi'
 import PageHero from '@/components/ui/PageHero'
 import CTABanner from '@/components/sections/CTABanner'
-import { faqs } from '@/data/faqs'
+import { useApi } from '@/hooks/useApi'
+import { faqs as fallbackFaqs } from '@/data/faqs'
 
 function Item({ q, a, open, onToggle, id }) {
   return (
@@ -33,6 +34,9 @@ function Item({ q, a, open, onToggle, id }) {
 
 export default function FAQ() {
   const [open, setOpen] = useState(0)
+  const { data } = useApi('/faqs', fallbackFaqs)
+  // The API returns question/answer; the bundled fallback uses q/a.
+  const faqs = data.map((f) => ({ q: f.q ?? f.question, a: f.a ?? f.answer }))
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',

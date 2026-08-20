@@ -150,6 +150,48 @@ Automation does not cover these:
 - Submit the form on the deployed backend and confirm the client receives it.
 - Check the EPRA number on the live site against the Authority's register.
 
+## API
+
+`GET /api/docs` for the interactive reference. Public reads need no auth;
+every write needs an admin bearer token.
+
+```bash
+# Log in (form-encoded, OAuth2 password flow)
+curl -X POST http://localhost:8010/api/admin/login \
+  -d "username=$ADMIN_EMAIL&password=$ADMIN_PASSWORD"
+
+# Then pass the token
+curl http://localhost:8010/api/stats -H "Authorization: Bearer $TOKEN"
+```
+
+| Resource | Public | Admin |
+|---|---|---|
+| `/api/services` | `GET`, `GET /{slug}` | `GET /all`, `POST`, `PUT /{id}`, `DELETE /{id}` |
+| `/api/projects` | `GET`, `GET /{slug}` | same |
+| `/api/blog` | `GET`, `GET /{slug}` | same |
+| `/api/testimonials` | `GET` | `GET /all`, `POST`, `PUT`, `DELETE` |
+| `/api/faqs` | `GET` | same |
+| `/api/team` | `GET` | same |
+| `/api/banners` | `GET` | same |
+| `/api/settings` | `GET` (non-empty only) | `GET /all`, `PUT /{key}` |
+| `/api/leads` | `POST` (throttled) | `GET`, `PATCH /{id}/handled`, `DELETE /{id}` |
+| `/api/newsletter` | `POST /subscribe`, `POST /unsubscribe` | `GET /subscribers`, `DELETE /subscribers/{id}` |
+| `/api/media` | — | `POST /image`, `GET /library`, `DELETE /library/{id}` |
+| `/api/admin` | `POST /login` | `GET /me`, `POST /change-password`, `POST /logout-everywhere`, `GET/POST /users`\*, `DELETE /users/{id}`\* |
+| `/api/audit` | — | `GET` |
+| `/api/stats` | — | `GET` |
+
+\* superuser only.
+
+Notes:
+
+- Unpublished rows are invisible to public reads and visible on `/all`.
+- Every write is recorded in the audit log with actor, entity, and IP.
+- Uploads go to Cloudinary when configured, otherwise to the `uploads` volume
+  and are served from `/uploads`. Images only, 10MB cap.
+- Changing a password or calling `logout-everywhere` invalidates all existing
+  tokens for that admin.
+
 ## What the client edits
 
 Everything content-shaped lives in the admin CMS, no redeploy needed:
