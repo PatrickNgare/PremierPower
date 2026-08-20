@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import Hero from '../components/Hero'
+import StatsBar from '../components/StatsBar'
 import SectionHeader from '../components/SectionHeader'
 import BeforeAfter from '../components/BeforeAfter'
 import ServicesList from '../components/ServicesList'
@@ -24,6 +25,7 @@ export default function Home() {
       </Helmet>
 
       <Hero />
+      <StatsBar />
 
       {/* The differentiator, stated as the problem it solves. */}
       <section className="border-y border-ink-900/10 bg-paper-50">
