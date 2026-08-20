@@ -68,6 +68,53 @@ and a broken file falls back the same way rather than showing a broken image.
 Demo mode is off unless `VITE_DEMO=1` is explicitly set, so a normal production
 build can never pick it up.
 
+## Testing
+
+### Backend
+
+```bash
+cd backend
+.venv/bin/pytest          # 7 tests, throwaway SQLite — no Postgres needed
+```
+
+Covers the lead round trip, validation rejection, the admin auth gate, and the
+rule that unpublished content and unset settings are never served.
+
+### End to end
+
+Needs both servers up. In three terminals:
+
+```bash
+# 1. backend
+cd backend && .venv/bin/uvicorn app.main:app --port 8000
+
+# 2. frontend, built against that backend
+cd frontend
+VITE_DEMO=1 VITE_API_URL=http://127.0.0.1:8000/api npm run build
+npx vite preview --port 4173 --host 127.0.0.1
+
+# 3. the tests
+cd frontend && npm run test:e2e
+```
+
+21 checks across desktop and mobile: every route free of horizontal overflow,
+no console errors, the hero CTA visible above the fold, a lead submitted
+through the real form reaching the API, and the before/after reveal operable
+from the keyboard.
+
+Run `.venv/bin/uvicorn` with a `DATABASE_URL` pointing at SQLite
+(`sqlite:///./local.db`) for a quick local run; use Postgres for anything you
+intend to deploy.
+
+### Manual pass before launch
+
+Automation does not cover these:
+
+- Tap the sticky bottom bar on a real handset, not a devtools viewport.
+- Follow the WhatsApp link on a phone and confirm it opens the right number.
+- Submit the form on the deployed backend and confirm the client receives it.
+- Check the EPRA number on the live site against the Authority's register.
+
 ## What the client edits
 
 Everything content-shaped lives in the admin CMS, no redeploy needed:

@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,7 +11,19 @@ from .settings import settings
 
 logging.basicConfig(level=logging.INFO)
 
-app = FastAPI(title="PremierPower API", version="1.0.0", docs_url="/api/docs")
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    Base.metadata.create_all(engine)
+    _seed_settings()
+    yield
+
+
+app = FastAPI(
+    title="PremierPower API",
+    version="1.0.0",
+    docs_url="/api/docs",
+    lifespan=lifespan,
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,12 +40,6 @@ app.include_router(leads.router, prefix="/api")
 @app.get("/api/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
-
-
-@app.on_event("startup")
-def on_startup() -> None:
-    Base.metadata.create_all(engine)
-    _seed_settings()
 
 
 def _seed_settings() -> None:
