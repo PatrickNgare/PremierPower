@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+@import "@fontsource-variable/archivo";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+@theme {
+  /* Ground — plaster */
+  --color-plaster-50:  #FBF9F5;
+  --color-plaster-100: #F5F1EA;
+  --color-plaster-200: #EDE7DC;
+  --color-plaster-300: #E0D8C9;
+
+  /* Line — graphite */
+  --color-graphite-900: #241F1A;
+  --color-graphite-800: #322C26;
+  --color-graphite-700: #3F3830;
+  --color-graphite-500: #6B645C;
+  --color-graphite-400: #8B837A;
+
+  /* Buried — navy. Behind-the-wall surfaces. */
+  --color-buried-900: #0C1725;
+  --color-buried-800: #101F33;
+  --color-buried-700: #172C46;
+  --color-buried-300: #A9BBD0;
+
+  /* Action — amber. Reserved by law: chased channel + primary actions only. */
+  --color-amber-500: #F2A900;
+  --color-amber-600: #D89600;
+
+  /* Earth — used exactly once, on the licence badge. */
+  --color-earth-500: #B4C400;
+
+  --font-display: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-plaster-100);
+    color: var(--color-graphite-800);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  p { text-wrap: pretty; }
+
+  /* Browser surfaces themed from the palette — selection, caret, focus,
+     scrollbar, underline offset, tabular figures. */
+  ::selection {
+    background-color: var(--color-amber-500);
+    color: var(--color-graphite-900);
+  }
+
+  :root {
+    caret-color: var(--color-amber-600);
+    accent-color: var(--color-amber-600);
+    scrollbar-color: var(--color-graphite-400) var(--color-plaster-200);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-amber-600);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  a { text-underline-offset: 0.2em; }
+
+  /* Measurement figures line up in columns. */
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@layer utilities {
+  /* Contrast handling for light text over buried/photographic surfaces stays
+     centralized here rather than ad hoc per component. */
+  .on-dark { color: var(--color-plaster-100); }
+  .on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: var(--color-plaster-50); }
+  .on-dark .secondary { color: var(--color-buried-300); }
+
+  /* The plaster surface. Flat: the drawn line and the photography carry the
+     world, so the ground stays quiet. */
+  .plaster {
+    background-color: var(--color-plaster-100);
+  }
+}
+
+@layer components {
+  /* The reveal control, themed off the palette rather than the browser's. */
+  .ba-range {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: ew-resize;
+  }
+  .ba-range::-webkit-slider-runnable-track {
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-graphite-900);
+    opacity: 0.2;
+  }
+  .ba-range::-moz-range-track {
+    height: 2px;
+    border-radius: 2px;
+    background: rgba(36, 31, 26, 0.2);
+  }
+  .ba-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -7px;
+    height: 16px;
+    width: 16px;
+    border-radius: 9999px;
+    background: var(--color-amber-500);
+    box-shadow: 0 2px 6px -2px rgba(36, 31, 26, 0.5);
+  }
+  .ba-range::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--color-amber-500);
+    box-shadow: 0 2px 6px -2px rgba(36, 31, 26, 0.5);
+  }
+}
