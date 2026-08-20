@@ -28,11 +28,11 @@ export default function FAQ() {
           title="The questions people actually ask."
           lede="Mostly about licensing. Almost never about price first — which is the right instinct."
         />
-        <dl className="mt-14 max-w-3xl border-t border-graphite-900/12">
+        <dl className="mt-14 max-w-3xl border-t border-ink-900/12">
           {faqs.map((f) => (
-            <div key={f.q} className="grid gap-x-10 gap-y-2 border-b border-graphite-900/12 py-7 md:grid-cols-[minmax(0,18rem)_1fr]">
-              <dt className="text-xl leading-snug text-graphite-900">{f.q}</dt>
-              <dd className="max-w-[64ch] leading-relaxed text-graphite-500">{f.a}</dd>
+            <div key={f.q} className="grid gap-x-10 gap-y-2 border-b border-ink-900/12 py-7 md:grid-cols-[minmax(0,18rem)_1fr]">
+              <dt className="text-xl leading-snug text-ink-900">{f.q}</dt>
+              <dd className="max-w-[64ch] leading-relaxed text-ink-500">{f.a}</dd>
             </div>
           ))}
         </dl>

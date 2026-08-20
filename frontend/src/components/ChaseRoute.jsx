@@ -39,10 +39,10 @@ export default function ChaseRoute({
       preserveAspectRatio="none"
       aria-hidden="true"
     >
-      {/* The chase itself — amber, because the channel is the action. */}
+      {/* The chase itself — brand red, because the channel is the action. */}
       <path
         d={d}
-        stroke="var(--color-amber-500)"
+        stroke="var(--color-brand-red)"
         strokeWidth="2"
         strokeLinecap="square"
         vectorEffect="non-scaling-stroke"
@@ -53,14 +53,16 @@ export default function ChaseRoute({
           transition: `stroke-dashoffset ${duration}ms cubic-bezier(0.16, 1, 0.3, 1)`,
         }}
       />
+      {/* Outlets are ticks, not dots: the viewBox is stretched to the section
+          height, which would squash a circle into an ellipse. */}
       {outlets.map((o, i) => (
-        <circle
+        <line
           key={i}
-          cx={o.x}
-          cy={o.y}
-          r="3.5"
-          fill="var(--color-plaster-100)"
-          stroke="var(--color-graphite-700)"
+          x1={o.x - 6}
+          x2={o.x + 6}
+          y1={o.y}
+          y2={o.y}
+          stroke="var(--color-ink-700)"
           strokeWidth="1.5"
           vectorEffect="non-scaling-stroke"
           style={{

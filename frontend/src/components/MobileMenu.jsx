@@ -31,14 +31,14 @@ export default function MobileMenu({ open, onClose }) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <div className="absolute inset-0 bg-graphite-900/45" onClick={onClose} />
+          <div className="absolute inset-0 bg-ink-900/45" onClick={onClose} />
           <motion.div
             ref={panelRef}
             tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="plaster absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col p-6 outline-none"
+            className="paper absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col p-6 outline-none"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
@@ -48,18 +48,18 @@ export default function MobileMenu({ open, onClose }) {
               type="button"
               onClick={onClose}
               aria-label="Close menu"
-              className="self-end rounded-lg p-2 text-graphite-800 transition-colors hover:bg-graphite-900/[0.06]"
+              className="self-end rounded-lg p-2 text-ink-800 transition-colors hover:bg-ink-900/[0.06]"
             >
               <CloseIcon />
             </button>
 
             <ul className="mt-4 flex flex-col">
               {navLinks.map((l) => (
-                <li key={l.to} className="border-b border-graphite-900/10">
+                <li key={l.to} className="border-b border-ink-900/10">
                   <Link
                     to={l.to}
                     onClick={onClose}
-                    className="block py-4 font-display text-xl text-graphite-900"
+                    className="block py-4 font-display text-xl text-ink-900"
                   >
                     {l.label}
                   </Link>

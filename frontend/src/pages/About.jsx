@@ -25,7 +25,7 @@ export default function About() {
             />
             <LicenseBadge className="mt-8" />
 
-            <dl className="mt-10 max-w-md border-t border-graphite-900/12 text-sm">
+            <dl className="mt-10 max-w-md border-t border-ink-900/12 text-sm">
               {[
                 ['Registered name', site.legalName],
                 ['EPRA licence', site.epraNumber],
@@ -33,16 +33,16 @@ export default function About() {
                 ['Insured by', site.insured],
                 ['Service area', site.serviceArea],
               ].map(([label, v]) => (
-                <div key={label} className="flex justify-between gap-6 border-b border-graphite-900/12 py-3">
-                  <dt className="text-graphite-500">{label}</dt>
-                  <dd className={isPending(v) ? 'text-graphite-400' : 'font-mono tabular text-graphite-900'}>
+                <div key={label} className="flex justify-between gap-6 border-b border-ink-900/12 py-3">
+                  <dt className="text-ink-500">{label}</dt>
+                  <dd className={isPending(v) ? 'text-ink-400' : 'font-mono tabular text-ink-900'}>
                     {isPending(v) ? '—' : value(v)}
                   </dd>
                 </div>
               ))}
             </dl>
 
-            <div className="mt-14 max-w-[64ch] space-y-5 text-lg leading-relaxed text-graphite-700">
+            <div className="mt-14 max-w-[64ch] space-y-5 text-lg leading-relaxed text-ink-700">
               <p>
                 We wire and rewire homes in Nairobi. That is the whole business. We are not
                 a general contractor with an electrician on staff, and we do not take on
@@ -54,7 +54,7 @@ export default function About() {
                 only honest response to that is to document it while it can still be seen.
                 The set of photographs is yours whether or not you ever need it.
               </p>
-              <p className="text-graphite-900">
+              <p className="text-ink-900">
                 If we think a job is outside what we do well, we will say so and lose the work.
               </p>
             </div>

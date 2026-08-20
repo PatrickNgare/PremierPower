@@ -7,18 +7,20 @@ const sizes = {
 }
 
 /**
- * `primary` is the only amber surface on the site. Amber means action; if it
- * were deleted the hierarchy would not change, which is the test.
+ * `primary` is the only filled red surface on the site. Red means action; if
+ * it were deleted the hierarchy would not change, which is the test.
+ *
+ * The fill is one step deeper than the brand red so white text clears 4.5:1.
  */
 const variants = {
   primary:
-    'bg-amber-500 text-graphite-900 font-semibold shadow-[0_2px_8px_-2px_rgba(36,31,26,0.28)] hover:bg-amber-600 hover:shadow-[0_4px_14px_-3px_rgba(36,31,26,0.34)] active:translate-y-px',
+    'bg-red-600 text-paper-50 font-semibold shadow-[0_2px_8px_-2px_rgba(35,31,32,0.28)] hover:bg-red-700 hover:shadow-[0_4px_14px_-3px_rgba(35,31,32,0.34)] active:translate-y-px',
   outline:
-    'border border-graphite-900/25 text-graphite-800 font-medium hover:border-graphite-900/50 hover:bg-graphite-900/[0.04]',
+    'border border-ink-900/25 text-ink-800 font-medium hover:border-ink-900/50 hover:bg-ink-900/[0.04]',
   onDark:
-    'border border-plaster-100/30 text-plaster-100 font-medium hover:border-plaster-100/60 hover:bg-plaster-100/[0.08]',
+    'border border-paper-100/30 text-paper-100 font-medium hover:border-paper-100/60 hover:bg-paper-100/[0.08]',
   quiet:
-    'text-graphite-700 font-medium underline decoration-graphite-400 hover:decoration-graphite-800',
+    'text-ink-700 font-medium underline decoration-ink-400 hover:decoration-ink-800',
 }
 
 export default function Button({

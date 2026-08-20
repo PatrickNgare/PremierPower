@@ -6,9 +6,9 @@ export default function NotFound() {
     <>
       <Helmet><title>Page not found | PremierPower</title><meta name="robots" content="noindex" /></Helmet>
       <div className="mx-auto flex min-h-[55vh] max-w-2xl flex-col justify-center px-5 py-20 sm:px-8">
-        <p className="font-mono text-xs uppercase tracking-wider text-graphite-400">404</p>
-        <h1 className="mt-3 text-4xl text-graphite-900">This circuit is dead.</h1>
-        <p className="mt-4 max-w-[52ch] text-lg leading-relaxed text-graphite-500">
+        <p className="font-mono text-xs uppercase tracking-wider text-ink-400">404</p>
+        <h1 className="mt-3 text-4xl text-ink-900">This circuit is dead.</h1>
+        <p className="mt-4 max-w-[52ch] text-lg leading-relaxed text-ink-500">
           The page you asked for is not here. The work, the licence details, and the
           assessment booking all still are.
         </p>

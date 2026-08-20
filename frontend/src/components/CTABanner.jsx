@@ -11,7 +11,7 @@ export default function CTABanner() {
   const wa = whatsappLink()
   const tel = telLink()
   return (
-    <section className="bg-buried-900 on-dark">
+    <section className="bg-ink-900 on-dark">
       <div className="mx-auto max-w-6xl px-5 py-20 sm:px-8 lg:py-24">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-end">
           <div>
@@ -39,7 +39,7 @@ export default function CTABanner() {
                 </Button>
               )}
               {isPending(site.phone) && (
-                <p className="flex-1 rounded-xl border border-dashed border-plaster-100/30 px-4 py-3 text-sm text-buried-300">
+                <p className="flex-1 rounded-xl border border-dashed border-paper-100/30 px-4 py-3 text-sm text-paper-300">
                   Phone number pending
                 </p>
               )}

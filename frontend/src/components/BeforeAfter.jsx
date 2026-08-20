@@ -55,19 +55,19 @@ export default function BeforeAfter({
         {/* The wipe reads as a chase edge, not a UI divider. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-y-0 w-0.5 bg-amber-500"
+          className="pointer-events-none absolute inset-y-0 w-0.5 bg-brand-red"
           style={{ left: `${pos}%` }}
         >
-          <span className="absolute top-1/2 left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-amber-500 shadow-[0_2px_10px_-2px_rgba(36,31,26,0.45)]">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-graphite-900)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <span className="absolute top-1/2 left-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-brand-red shadow-[0_2px_10px_-2px_rgba(0,0,0,0.45)]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-paper-50)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m10 7-5 5 5 5M14 7l5 5-5 5" />
             </svg>
           </span>
         </div>
 
         <div className="pointer-events-none absolute inset-x-0 top-0 flex justify-between p-4 font-mono text-[0.7rem] uppercase tracking-wider">
-          <span className="rounded bg-graphite-900/75 px-2 py-1 text-plaster-100">Chase open</span>
-          <span className="rounded bg-graphite-900/75 px-2 py-1 text-plaster-100">Finished</span>
+          <span className="rounded bg-ink-900/75 px-2 py-1 text-paper-100">Chase open</span>
+          <span className="rounded bg-ink-900/75 px-2 py-1 text-paper-100">Finished</span>
         </div>
       </div>
 

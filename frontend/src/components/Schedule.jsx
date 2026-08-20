@@ -16,7 +16,7 @@ export default function Schedule({ tone = 'light' }) {
   const dark = tone === 'dark'
   return (
     <table className={`w-full border-collapse text-left ${dark ? 'on-dark' : ''}`}>
-      <caption className={`pb-4 text-left font-mono text-xs uppercase tracking-wider ${dark ? 'text-buried-300' : 'text-graphite-400'}`}>
+      <caption className={`pb-4 text-left font-mono text-xs uppercase tracking-wider ${dark ? 'text-paper-300' : 'text-ink-400'}`}>
         Schedule
       </caption>
       <tbody>
@@ -24,17 +24,17 @@ export default function Schedule({ tone = 'light' }) {
           const v = site[r.field]
           const unconfirmed = isPending(v)
           return (
-            <tr key={r.way} className={`border-t ${dark ? 'border-plaster-100/15' : 'border-graphite-900/12'}`}>
+            <tr key={r.way} className={`border-t ${dark ? 'border-paper-100/15' : 'border-ink-900/12'}`}>
               <th scope="row" className="py-4 pr-4 align-baseline font-normal">
-                <span className={`font-mono tabular text-xs ${dark ? 'text-buried-300' : 'text-graphite-400'}`}>
+                <span className={`font-mono tabular text-xs ${dark ? 'text-paper-300' : 'text-ink-400'}`}>
                   {r.way}
                 </span>
-                <span className={`ml-4 ${dark ? 'text-plaster-100' : 'text-graphite-800'}`}>{r.label}</span>
+                <span className={`ml-4 ${dark ? 'text-paper-100' : 'text-ink-800'}`}>{r.label}</span>
               </th>
               <td className={`py-4 text-right align-baseline font-mono tabular text-lg ${
                 unconfirmed
-                  ? (dark ? 'text-buried-300/60' : 'text-graphite-400')
-                  : (dark ? 'text-plaster-50' : 'text-graphite-900')
+                  ? (dark ? 'text-paper-300/60' : 'text-ink-400')
+                  : (dark ? 'text-paper-50' : 'text-ink-900')
               }`}>
                 {unconfirmed ? '—' : value(v)}
               </td>

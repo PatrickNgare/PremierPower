@@ -10,22 +10,22 @@ import { ArrowIcon } from './Icons'
 export default function ServicesList({ limit }) {
   const shown = limit ? services.slice(0, limit) : services
   return (
-    <div className="mt-12 border-t border-graphite-900/12">
+    <div className="mt-12 border-t border-ink-900/12">
       {shown.map((s) => (
-        <article key={s.slug} className="grid gap-x-10 gap-y-3 border-b border-graphite-900/12 py-9 md:grid-cols-[minmax(0,20rem)_1fr]">
-          <h3 className="text-2xl leading-tight text-graphite-900">{s.title}</h3>
+        <article key={s.slug} className="grid gap-x-10 gap-y-3 border-b border-ink-900/12 py-9 md:grid-cols-[minmax(0,20rem)_1fr]">
+          <h3 className="text-2xl leading-tight text-ink-900">{s.title}</h3>
           <div>
-            <p className="max-w-[62ch] text-lg leading-relaxed text-graphite-700">{s.lede}</p>
-            <p className="mt-3 max-w-[68ch] leading-relaxed text-graphite-500">{s.body}</p>
+            <p className="max-w-[62ch] text-lg leading-relaxed text-ink-700">{s.lede}</p>
+            <p className="mt-3 max-w-[68ch] leading-relaxed text-ink-500">{s.body}</p>
             {s.signs.length > 0 && (
               <>
-                <p className="mt-6 font-mono text-xs uppercase tracking-wider text-graphite-400">
+                <p className="mt-6 font-mono text-xs uppercase tracking-wider text-ink-400">
                   Signs you need this
                 </p>
                 <ul className="mt-3 space-y-1.5">
                   {s.signs.map((sign) => (
-                    <li key={sign} className="flex gap-3 text-graphite-700">
-                      <span aria-hidden="true" className="mt-2.5 h-px w-4 shrink-0 bg-graphite-400" />
+                    <li key={sign} className="flex gap-3 text-ink-700">
+                      <span aria-hidden="true" className="mt-2.5 h-px w-4 shrink-0 bg-ink-400" />
                       <span>{sign}</span>
                     </li>
                   ))}
@@ -36,7 +36,7 @@ export default function ServicesList({ limit }) {
         </article>
       ))}
       {limit && services.length > limit && (
-        <Link to="/services" className="mt-8 inline-flex items-center gap-2 font-medium text-graphite-800 underline decoration-graphite-400 underline-offset-4 hover:decoration-graphite-800">
+        <Link to="/services" className="mt-8 inline-flex items-center gap-2 font-medium text-ink-800 underline decoration-ink-400 underline-offset-4 hover:decoration-ink-800">
           All services <ArrowIcon width="18" height="18" />
         </Link>
       )}

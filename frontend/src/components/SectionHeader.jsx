@@ -9,14 +9,14 @@ export default function SectionHeader({ title, lede, tone = 'light', align = 'le
       <span
         aria-hidden="true"
         className={`mb-6 block h-px w-full max-w-[7rem] ${align === 'center' ? 'mx-auto' : ''} ${
-          dark ? 'bg-plaster-100/35' : 'bg-graphite-900/25'
+          dark ? 'bg-paper-100/35' : 'bg-ink-900/25'
         }`}
       />
-      <h2 className={`text-3xl leading-[1.1] sm:text-4xl ${dark ? 'text-plaster-50' : 'text-graphite-900'}`}>
+      <h2 className={`text-3xl leading-[1.1] sm:text-4xl ${dark ? 'text-paper-50' : 'text-ink-900'}`}>
         {title}
       </h2>
       {lede && (
-        <p className={`mt-4 text-lg leading-relaxed ${dark ? 'text-buried-300' : 'text-graphite-500'}`}>
+        <p className={`mt-4 text-lg leading-relaxed ${dark ? 'text-paper-300' : 'text-ink-500'}`}>
           {lede}
         </p>
       )}

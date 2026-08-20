@@ -23,14 +23,29 @@ buried system legible while it is still visible.
 
 ## Tokens
 
-- **Ground:** warm plaster off-white. Faint tooth only — texture comes from the
-  subject's world (plaster, chalk) and never from generic noise filters.
-- **Line:** graphite. The drawn chase route, rules, annotation ticks.
-- **Buried:** deep navy for "behind the wall" surfaces — footer, proof sections.
-- **Action:** amber. **Reserved by law** for the chased channel and primary actions.
-  Never a background field, never a decorative accent. If amber were deleted
+Taken from the supplied logo (`frontend/public/brand/logo.svg`), which overrides
+any palette chosen before it existed. Exact values sampled from the artwork:
+red `#FF0000`, green `#00FF00`, blacks `#000000` and `#231F20`.
+
+- **Ground:** white / near-white. The lockup is presented on white; the site follows.
+- **Line:** ink — `#231F20` for body, `#000000` for the darkest surfaces. The drawn
+  chase route, rules, annotation ticks.
+- **Buried:** black for "behind the wall" surfaces — footer, proof sections.
+- **Action:** red. **Reserved by law** for the chased channel and primary actions.
+  Never a background field, never a decorative accent. If red were deleted
   entirely, no hierarchy would change.
-- **Earth:** green-yellow. Used exactly once, as the earth mark on the licence badge.
+  - The brand red `#FF0000` carries white text at only 4.0:1, under the 4.5:1
+    floor. Filled controls therefore sit one step deeper at `#E60000` (4.8:1);
+    the brand red is unchanged everywhere it is not carrying text.
+- **Earth:** brand green `#00FF00`. Used exactly once, as the earth mark on the
+  licence badge — too light to carry text, so it stays a mark. `#0A8F3C` is
+  available where a green must hold text.
+
+## Logo
+
+Two files, both derived from the supplied artwork. `logo.svg` is used as-is;
+`logo-on-dark.svg` recolours only the black elements to white so the wordmark
+survives on the black footer. Red and green are untouched in both.
 
 ## Type
 

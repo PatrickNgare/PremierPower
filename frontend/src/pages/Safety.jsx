@@ -31,24 +31,24 @@ export default function Safety() {
 
         <div className="mt-16 grid gap-14 lg:grid-cols-[1.25fr_1fr] lg:gap-20">
           <div>
-            <h2 className="text-2xl text-graphite-900">What we test before certifying</h2>
-            <p className="mt-3 max-w-[62ch] leading-relaxed text-graphite-500">
+            <h2 className="text-2xl text-ink-900">What we test before certifying</h2>
+            <p className="mt-3 max-w-[62ch] leading-relaxed text-ink-500">
               Every installation gets the full sequence, once before the plaster closes and
               again at handover. The recorded results go to you with the certificate.
             </p>
-            <dl className="mt-10 border-t border-graphite-900/12">
+            <dl className="mt-10 border-t border-ink-900/12">
               {tests.map(([name, why]) => (
-                <div key={name} className="border-b border-graphite-900/12 py-5">
-                  <dt className="text-lg text-graphite-900">{name}</dt>
-                  <dd className="mt-1.5 max-w-[64ch] leading-relaxed text-graphite-500">{why}</dd>
+                <div key={name} className="border-b border-ink-900/12 py-5">
+                  <dt className="text-lg text-ink-900">{name}</dt>
+                  <dd className="mt-1.5 max-w-[64ch] leading-relaxed text-ink-500">{why}</dd>
                 </div>
               ))}
             </dl>
 
-            <h2 className="mt-16 text-2xl text-graphite-900">Our warranty, in plain terms</h2>
-            <p className="mt-4 max-w-[64ch] text-lg leading-relaxed text-graphite-700">
+            <h2 className="mt-16 text-2xl text-ink-900">Our warranty, in plain terms</h2>
+            <p className="mt-4 max-w-[64ch] text-lg leading-relaxed text-ink-700">
               {isPending(site.warranty) ? (
-                <span className="text-graphite-400">
+                <span className="text-ink-400">
                   [Warranty term pending — the client must supply this. It belongs here, stated
                   plainly, not buried in a contract.]
                 </span>

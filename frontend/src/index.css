@@ -5,31 +5,33 @@
 @import "@fontsource-variable/jetbrains-mono";
 
 @theme {
-  /* Ground — plaster */
-  --color-plaster-50:  #FBF9F5;
-  --color-plaster-100: #F5F1EA;
-  --color-plaster-200: #EDE7DC;
-  --color-plaster-300: #E0D8C9;
+  /* Ground — paper. The logo is presented on white; the site follows it. */
+  --color-paper-50:  #FFFFFF;
+  --color-paper-100: #F8F7F7;
+  --color-paper-200: #EFEDED;
+  --color-paper-300: #DEDBDB;
 
-  /* Line — graphite */
-  --color-graphite-900: #241F1A;
-  --color-graphite-800: #322C26;
-  --color-graphite-700: #3F3830;
-  --color-graphite-500: #6B645C;
-  --color-graphite-400: #8B837A;
+  /* Ink — the logo's blacks. #231F20 is the rich black of "POWER LIMITED". */
+  --color-ink-900: #000000;
+  --color-ink-800: #231F20;
+  --color-ink-700: #3A3436;
+  --color-ink-500: #6E6769;
+  --color-ink-400: #918A8C;
 
-  /* Buried — navy. Behind-the-wall surfaces. */
-  --color-buried-900: #0C1725;
-  --color-buried-800: #101F33;
-  --color-buried-700: #172C46;
-  --color-buried-300: #A9BBD0;
+  /* Brand red, exactly as supplied. Used for the mark and hairline accents. */
+  --color-brand-red: #FF0000;
 
-  /* Action — amber. Reserved by law: chased channel + primary actions only. */
-  --color-amber-500: #F2A900;
-  --color-amber-600: #D89600;
+  /* Action red. #FF0000 carries white text at only 4.0:1, under the 4.5:1
+     floor, so filled controls sit one step deeper and clear it at 4.8:1.
+     The brand red is unchanged wherever it is not carrying text. */
+  --color-red-600: #E60000;
+  --color-red-700: #C20000;
 
-  /* Earth — used exactly once, on the licence badge. */
-  --color-earth-500: #B4C400;
+  /* Brand green, exactly as supplied. A mark colour only — #00FF00 is far too
+     light to carry text on white. */
+  --color-brand-green: #00FF00;
+  /* Green that can hold text: verified and certified states. */
+  --color-green-600: #0A8F3C;
 
   --font-display: "Archivo Variable", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
@@ -51,8 +53,8 @@
   }
 
   body {
-    background-color: var(--color-plaster-100);
-    color: var(--color-graphite-800);
+    background-color: var(--color-paper-100);
+    color: var(--color-ink-800);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -69,18 +71,18 @@
   /* Browser surfaces themed from the palette — selection, caret, focus,
      scrollbar, underline offset, tabular figures. */
   ::selection {
-    background-color: var(--color-amber-500);
-    color: var(--color-graphite-900);
+    background-color: var(--color-brand-red);
+    color: var(--color-paper-50);
   }
 
   :root {
-    caret-color: var(--color-amber-600);
-    accent-color: var(--color-amber-600);
-    scrollbar-color: var(--color-graphite-400) var(--color-plaster-200);
+    caret-color: var(--color-red-600);
+    accent-color: var(--color-red-600);
+    scrollbar-color: var(--color-ink-400) var(--color-paper-200);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-amber-600);
+    outline: 2px solid var(--color-red-600);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -94,14 +96,14 @@
 @layer utilities {
   /* Contrast handling for light text over buried/photographic surfaces stays
      centralized here rather than ad hoc per component. */
-  .on-dark { color: var(--color-plaster-100); }
-  .on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: var(--color-plaster-50); }
-  .on-dark .secondary { color: var(--color-buried-300); }
+  .on-dark { color: var(--color-paper-100); }
+  .on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: var(--color-paper-50); }
+  .on-dark .secondary { color: var(--color-paper-300); }
 
-  /* The plaster surface. Flat: the drawn line and the photography carry the
+  /* The paper surface. Flat: the drawn line and the photography carry the
      world, so the ground stays quiet. */
-  .plaster {
-    background-color: var(--color-plaster-100);
+  .paper {
+    background-color: var(--color-paper-100);
   }
 }
 
@@ -116,13 +118,13 @@
   .ba-range::-webkit-slider-runnable-track {
     height: 2px;
     border-radius: 2px;
-    background: var(--color-graphite-900);
+    background: var(--color-ink-900);
     opacity: 0.2;
   }
   .ba-range::-moz-range-track {
     height: 2px;
     border-radius: 2px;
-    background: rgba(36, 31, 26, 0.2);
+    background: rgba(35, 31, 32, 0.2);
   }
   .ba-range::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -131,15 +133,15 @@
     height: 16px;
     width: 16px;
     border-radius: 9999px;
-    background: var(--color-amber-500);
-    box-shadow: 0 2px 6px -2px rgba(36, 31, 26, 0.5);
+    background: var(--color-brand-red);
+    box-shadow: 0 2px 6px -2px rgba(35, 31, 32, 0.5);
   }
   .ba-range::-moz-range-thumb {
     height: 16px;
     width: 16px;
     border: 0;
     border-radius: 9999px;
-    background: var(--color-amber-500);
-    box-shadow: 0 2px 6px -2px rgba(36, 31, 26, 0.5);
+    background: var(--color-brand-red);
+    box-shadow: 0 2px 6px -2px rgba(35, 31, 32, 0.5);
   }
 }

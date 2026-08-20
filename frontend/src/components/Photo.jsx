@@ -20,16 +20,16 @@ export default function Photo({
   if (!resolved) {
     return (
       <figure
-        className={`relative overflow-hidden rounded-xl border border-graphite-900/20 ${
-          DEMO ? 'border-solid bg-plaster-300' : 'border-dashed bg-plaster-200'
+        className={`relative overflow-hidden rounded-xl border border-ink-900/20 ${
+          DEMO ? 'border-solid bg-paper-300' : 'border-dashed bg-paper-200'
         } ${className}`}
         style={{ aspectRatio: ratio }}
       >
         <figcaption className="absolute inset-0 flex flex-col justify-end gap-1 p-5">
-          <span className="font-mono text-[0.7rem] uppercase tracking-wider text-graphite-500">
+          <span className="font-mono text-[0.7rem] uppercase tracking-wider text-ink-500">
             {DEMO ? 'Sample image' : 'Photograph required'}
           </span>
-          <span className="max-w-sm text-sm leading-snug text-graphite-700">{brief}</span>
+          <span className="max-w-sm text-sm leading-snug text-ink-700">{brief}</span>
         </figcaption>
       </figure>
     )

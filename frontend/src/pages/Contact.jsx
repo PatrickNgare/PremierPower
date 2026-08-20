@@ -9,7 +9,7 @@ import { PhoneIcon, WhatsAppIcon, CheckIcon } from './../components/Icons'
 const API = import.meta.env.VITE_API_URL ?? '/api'
 
 const field =
-  'mt-1.5 w-full rounded-xl border border-graphite-900/20 bg-plaster-50 px-4 py-3 text-graphite-900 placeholder:text-graphite-400 transition-colors duration-200 hover:border-graphite-900/35 focus:border-amber-600 focus:outline-none focus-visible:outline-none'
+  'mt-1.5 w-full rounded-xl border border-ink-900/20 bg-paper-50 px-4 py-3 text-ink-900 placeholder:text-ink-400 transition-colors duration-200 hover:border-ink-900/35 focus:border-red-700 focus:outline-none focus-visible:outline-none'
 
 export default function Contact() {
   const [status, setStatus] = useState('idle') // idle | sending | sent | error
@@ -70,7 +70,7 @@ export default function Contact() {
             </div>
 
             {(isPending(site.phone) || isPending(site.whatsapp)) && (
-              <p className="mt-4 rounded-xl border border-dashed border-graphite-900/25 px-4 py-3 text-sm text-graphite-500">
+              <p className="mt-4 rounded-xl border border-dashed border-ink-900/25 px-4 py-3 text-sm text-ink-500">
                 Phone and WhatsApp numbers are pending. Both must be confirmed live before launch.
               </p>
             )}
@@ -80,32 +80,32 @@ export default function Contact() {
 
           <div>
             {status === 'sent' ? (
-              <div className="rounded-xl border border-graphite-900/15 bg-plaster-50 p-8">
-                <p className="flex items-center gap-3 text-xl text-graphite-900">
+              <div className="rounded-xl border border-ink-900/15 bg-paper-50 p-8">
+                <p className="flex items-center gap-3 text-xl text-ink-900">
                   <CheckIcon width="22" height="22" /> That reached us.
                 </p>
-                <p className="mt-3 max-w-[52ch] leading-relaxed text-graphite-500">
+                <p className="mt-3 max-w-[52ch] leading-relaxed text-ink-500">
                   We will call to agree a time for the assessment. If it is urgent — burning
                   smell, scorch marks, repeated tripping — call rather than wait for us.
                 </p>
               </div>
             ) : (
-              <form onSubmit={onSubmit} noValidate className="rounded-xl border border-graphite-900/15 bg-plaster-50 p-6 sm:p-8">
+              <form onSubmit={onSubmit} noValidate className="rounded-xl border border-ink-900/15 bg-paper-50 p-6 sm:p-8">
                 <div className="grid gap-5 sm:grid-cols-2">
                   <label className="block sm:col-span-1">
-                    <span className="text-sm text-graphite-700">Your name</span>
+                    <span className="text-sm text-ink-700">Your name</span>
                     <input name="name" required autoComplete="name" className={field} placeholder="Jane Wanjiru" />
                   </label>
                   <label className="block sm:col-span-1">
-                    <span className="text-sm text-graphite-700">Phone</span>
+                    <span className="text-sm text-ink-700">Phone</span>
                     <input name="phone" required type="tel" inputMode="tel" autoComplete="tel" className={field} placeholder="07xx xxx xxx" />
                   </label>
                   <label className="block sm:col-span-1">
-                    <span className="text-sm text-graphite-700">Area</span>
+                    <span className="text-sm text-ink-700">Area</span>
                     <input name="area" className={field} placeholder="Kilimani, Nairobi" />
                   </label>
                   <label className="block sm:col-span-1">
-                    <span className="text-sm text-graphite-700">Property</span>
+                    <span className="text-sm text-ink-700">Property</span>
                     <select name="property" defaultValue="apartment" className={field}>
                       <option value="apartment">Apartment</option>
                       <option value="house">House</option>
@@ -113,7 +113,7 @@ export default function Contact() {
                     </select>
                   </label>
                   <label className="block sm:col-span-2">
-                    <span className="text-sm text-graphite-700">What is happening?</span>
+                    <span className="text-sm text-ink-700">What is happening?</span>
                     <textarea
                       name="message" rows="4" className={field}
                       placeholder="Breakers tripping in the kitchen, and one socket is warm to the touch."
@@ -122,7 +122,7 @@ export default function Contact() {
                 </div>
 
                 {status === 'error' && (
-                  <p role="alert" className="mt-5 border-l border-amber-600 pl-4 text-sm leading-relaxed text-graphite-800">
+                  <p role="alert" className="mt-5 border-l border-red-700 pl-4 text-sm leading-relaxed text-ink-800">
                     {error}{' '}
                     {wa && (
                       <a href={wa} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
@@ -140,7 +140,7 @@ export default function Contact() {
                   {status === 'sending' ? 'Sending…' : 'Request my free assessment'}
                 </Button>
 
-                <p className="mt-4 text-center text-sm text-graphite-500">
+                <p className="mt-4 text-center text-sm text-ink-500">
                   We reply to every request, usually the same day.
                 </p>
               </form>

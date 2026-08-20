@@ -17,7 +17,7 @@ const rise = {
 export default function Hero() {
   const wa = whatsappLink()
   return (
-    <section className="plaster relative overflow-hidden">
+    <section className="paper relative overflow-hidden">
       {/* The chase enters here and drops toward the page. */}
       <ChaseRoute
         className="pointer-events-none absolute left-4 top-0 hidden h-full w-36 xl:block"
@@ -30,14 +30,14 @@ export default function Hero() {
         <div>
           <motion.h1
             variants={rise} initial="hidden" animate="show" custom={0}
-            className="max-w-[15ch] text-[clamp(2.5rem,6.2vw,4.25rem)] font-semibold leading-[0.98] text-graphite-900"
+            className="max-w-[15ch] text-[clamp(2.5rem,6.2vw,4.25rem)] font-semibold leading-[0.98] text-ink-900"
           >
             Everything we hide in your walls, you see first.
           </motion.h1>
 
           <motion.p
             variants={rise} initial="hidden" animate="show" custom={1}
-            className="mt-6 max-w-[52ch] text-lg leading-relaxed text-graphite-500"
+            className="mt-6 max-w-[52ch] text-lg leading-relaxed text-ink-500"
           >
             Licensed residential wiring and rewiring across Nairobi. We mark out every
             chase on the bare wall, photograph every circuit before the plaster closes,

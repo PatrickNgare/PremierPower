@@ -49,9 +49,9 @@ export default function Work() {
         </div>
 
         {installations.map((job) => (
-          <article key={job.title} className="mt-16 border-t border-graphite-900/12 pt-10">
-            <h2 className="text-2xl text-graphite-900">{job.title}</h2>
-            <p className="mt-1 font-mono text-xs uppercase tracking-wider text-graphite-400">{job.meta}</p>
+          <article key={job.title} className="mt-16 border-t border-ink-900/12 pt-10">
+            <h2 className="text-2xl text-ink-900">{job.title}</h2>
+            <p className="mt-1 font-mono text-xs uppercase tracking-wider text-ink-400">{job.meta}</p>
             <div className="mt-8 grid gap-6 sm:grid-cols-3">
               {job.views.map((brief, i) => (
                 <Photo key={i} brief={brief} ratio="4 / 3" alt="" sizes="(max-width: 640px) 90vw, 30vw" />
