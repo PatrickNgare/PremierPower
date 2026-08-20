@@ -15,6 +15,13 @@ COPY alembic.ini .
 
 # Runs unprivileged.
 RUN useradd --create-home --uid 10001 appuser
+
+# The upload directory must exist and be owned by appuser *in the image*:
+# Docker seeds a fresh named volume from the image directory, ownership
+# included. Created by root at mount time, the unprivileged process cannot
+# write to it and every upload fails with a 500.
+RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
+
 USER appuser
 
 EXPOSE 8000
