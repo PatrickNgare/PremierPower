@@ -34,6 +34,10 @@ export const ArrowIcon = (p) => (
   <svg {...base} {...p} aria-hidden="true"><path d="M4 12h15m-5.5-6 6 6-6 6" /></svg>
 )
 
+export const ChevronIcon = (p) => (
+  <svg {...base} {...p} aria-hidden="true"><path d="m14 5-7 7 7 7" /></svg>
+)
+
 /* A consumer unit: enclosure, bus rail, ways. */
 export const BoardIcon = (p) => (
   <svg {...base} {...p} aria-hidden="true">
