@@ -4,6 +4,7 @@ import LicenseBadge from './LicenseBadge'
 import Photo from './Photo'
 import ChaseRoute from './ChaseRoute'
 import { whatsappLink } from '../config/site'
+import { demoPhotos } from '../config/demo'
 
 const rise = {
   hidden: { opacity: 0, y: 14 },
@@ -63,6 +64,7 @@ export default function Hero() {
         <motion.div variants={rise} initial="hidden" animate="show" custom={2}>
           <Photo
             priority
+            demoSrc={demoPhotos.heroWall}
             ratio="4 / 5"
             className="w-full"
             sizes="(max-width: 1024px) 92vw, 44vw"

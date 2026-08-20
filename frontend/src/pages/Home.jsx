@@ -8,6 +8,7 @@ import Schedule from '../components/Schedule'
 import TestimonialsStrip from '../components/TestimonialsStrip'
 import CTABanner from '../components/CTABanner'
 import Button from '../components/Button'
+import { demoPhotos } from '../config/demo'
 
 export default function Home() {
   return (
@@ -61,6 +62,8 @@ export default function Home() {
           <div className="mt-12">
             <BeforeAfter
               ratio="16 / 10"
+              beforeDemoSrc={demoPhotos.chaseOpen}
+              afterDemoSrc={demoPhotos.chaseFinished}
               beforeBrief="The same wall with chases open and conductors run — conduit, cable, back boxes visible. Shoot from a fixed position on a tripod."
               afterBrief="The identical framing after plastering and second fix, accessories on. Same tripod position, same lens, so the two register exactly."
               beforeAlt="A wall with chases cut open and conductors run through conduit before plastering"

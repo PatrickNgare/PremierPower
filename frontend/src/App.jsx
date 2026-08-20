@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import FloatingActions from './components/FloatingActions'
+import DemoRibbon from './components/DemoRibbon'
 
 const Home = lazy(() => import('./pages/Home'))
 const Services = lazy(() => import('./pages/Services'))
@@ -29,6 +30,7 @@ export default function App() {
         Skip to content
       </a>
       <ScrollToTop />
+      <DemoRibbon />
       <Navbar />
       <main id="main">
         <Suspense fallback={<div className="min-h-[60vh]" aria-busy="true" />}>

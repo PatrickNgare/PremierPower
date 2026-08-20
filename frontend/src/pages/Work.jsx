@@ -3,6 +3,7 @@ import SectionHeader from '../components/SectionHeader'
 import BeforeAfter from '../components/BeforeAfter'
 import Photo from '../components/Photo'
 import CTABanner from '../components/CTABanner'
+import { demoPhotos } from '../config/demo'
 
 /**
  * Framed as installations, in registered views: the marked wall, the open
@@ -38,6 +39,8 @@ export default function Work() {
         <div className="mt-14">
           <BeforeAfter
             ratio="16 / 9"
+            beforeDemoSrc={demoPhotos.boardBefore}
+            afterDemoSrc={demoPhotos.boardAfter}
             beforeBrief="Consumer unit with the cover off — existing ways, conductors, and any previous electrician's work visible."
             afterBrief="The replacement board, cover off, every way labelled, conductors dressed."
             beforeAlt="An old consumer unit with the cover removed showing existing wiring"

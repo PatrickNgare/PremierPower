@@ -9,7 +9,8 @@ import Photo from './Photo'
  * Keyboard-operable via a real range input; the visual handle is presentational.
  */
 export default function BeforeAfter({
-  beforeSrc, afterSrc, beforeAlt, afterAlt, beforeBrief, afterBrief, ratio = '3 / 2',
+  beforeSrc, afterSrc, beforeDemoSrc, afterDemoSrc,
+  beforeAlt, afterAlt, beforeBrief, afterBrief, ratio = '3 / 2',
 }) {
   const [pos, setPos] = useState(50)
   const frameRef = useRef(null)
@@ -41,14 +42,14 @@ export default function BeforeAfter({
         style={{ aspectRatio: ratio }}
       >
         <div className="absolute inset-0">
-          <Photo src={afterSrc} alt={afterAlt} brief={afterBrief} ratio={ratio} className="h-full w-full" />
+          <Photo src={afterSrc} demoSrc={afterDemoSrc} alt={afterAlt} brief={afterBrief} ratio={ratio} className="h-full w-full" />
         </div>
 
         <div
           className="absolute inset-0"
           style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }}
         >
-          <Photo src={beforeSrc} alt={beforeAlt} brief={beforeBrief} ratio={ratio} className="h-full w-full" />
+          <Photo src={beforeSrc} demoSrc={beforeDemoSrc} alt={beforeAlt} brief={beforeBrief} ratio={ratio} className="h-full w-full" />
         </div>
 
         {/* The wipe reads as a chase edge, not a UI divider. */}

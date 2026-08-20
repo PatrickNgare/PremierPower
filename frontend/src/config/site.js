@@ -16,7 +16,9 @@ export const isPending = (v) => Boolean(v && typeof v === 'object' && v[PENDING]
 /** Renders a value, or its hint when the client has not supplied it. */
 export const value = (v, fallback = '') => (isPending(v) ? fallback || `[${v.hint}]` : v)
 
-export const site = {
+import { DEMO, demoOverrides } from './demo'
+
+const real = {
   name: 'PremierPower',
   tagline: 'Residential wiring and rewiring, drawn before it is buried.',
 
@@ -42,6 +44,9 @@ export const site = {
   installsCompleted: pending('installations completed'),
   responseTime: pending('typical response time, e.g. "same day"'),
 }
+
+/** Demo values fill the gaps only when VITE_DEMO=1. */
+export const site = DEMO ? { ...real, ...demoOverrides } : real
 
 /** WhatsApp deep link with a prefilled message. */
 export function whatsappLink(message = "Hi PremierPower, I'd like to book a free site assessment.") {

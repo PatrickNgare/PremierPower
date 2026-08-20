@@ -37,6 +37,37 @@ first startup.
 Deploys to Render as a web service with a managed Postgres instance; Render
 supplies `DATABASE_URL` automatically.
 
+## Demo mode
+
+To see the site full — for review or a client presentation — build or run it
+with sample data:
+
+```bash
+cd frontend
+VITE_DEMO=1 npm run dev
+VITE_DEMO=1 npm run build
+```
+
+Demo mode fills the phone, WhatsApp, address, warranty and stat figures, adds
+three sample testimonials, and puts a permanent black ribbon across every page
+saying the data is not real.
+
+Two fields stay deliberately unrealistic even in demo mode:
+
+- **The EPRA licence number** renders as `SAMPLE — not a licence`. A
+  plausible-looking licence number on an electrician's site is a false
+  credential claim in a regulated trade, and a demo that carries one can be
+  screenshotted, shared, or promoted to production by accident.
+- **Testimonials** are labelled "Sample review" with placeholder text rather
+  than invented praise attributed to invented customers.
+
+For images, drop real files into `frontend/public/demo/` using the filenames in
+that folder's README. Anything missing falls back to a labelled sample block,
+and a broken file falls back the same way rather than showing a broken image.
+
+Demo mode is off unless `VITE_DEMO=1` is explicitly set, so a normal production
+build can never pick it up.
+
 ## What the client edits
 
 Everything content-shaped lives in the admin CMS, no redeploy needed:

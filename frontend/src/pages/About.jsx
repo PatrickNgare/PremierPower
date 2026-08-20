@@ -4,6 +4,7 @@ import LicenseBadge from '../components/LicenseBadge'
 import Photo from '../components/Photo'
 import CTABanner from '../components/CTABanner'
 import { site, isPending, value } from '../config/site'
+import { demoPhotos } from '../config/demo'
 
 export default function About() {
   return (
@@ -62,6 +63,7 @@ export default function About() {
           <div className="lg:pt-10">
             <Photo
               ratio="4 / 5"
+              demoSrc={demoPhotos.team}
               sizes="(max-width: 1024px) 90vw, 40vw"
               brief="The team on site, in work clothes, mid-job — not posed against a van. One clear face-on shot the customer will recognise at the door."
               alt="The PremierPower team on site during an installation"
