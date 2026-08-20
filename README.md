@@ -4,7 +4,35 @@ Marketing and lead-generation site for a licensed residential electrical
 contractor in Nairobi. See [PRODUCT.md](PRODUCT.md) for the brief and
 [DESIGN.md](DESIGN.md) for the committed visual direction ("The Chase Plan").
 
-## Running it
+## Running it with Docker
+
+```bash
+cp .env.example .env       # then set ADMIN_PASSWORD and SECRET_KEY
+docker compose up --build
+```
+
+| Service | URL | Container port |
+|---|---|---|
+| Site | <http://localhost:8090> | 80 |
+| Admin CMS | <http://localhost:8090/admin> | proxied to api |
+| API docs | <http://localhost:8010/api/docs> | 8000 |
+| Postgres | `localhost:5440` | 5432 |
+
+**Host ports are deliberately non-default.** This machine already runs Postgres
+on 5432 and 5438, Airflow on 8080, and Superset on 8088, so nothing here binds
+a port another app is using. All three are overridable via `WEB_PORT`,
+`API_PORT`, and `DB_PORT` in `.env`; the container-side ports never change, so
+services still find each other on the compose network regardless.
+
+nginx serves the built SPA and proxies `/api` and `/admin` through to the
+backend, so the browser talks to one origin, no CORS is involved, and no host
+URL is compiled into the bundle. Set `VITE_DEMO=1` in `.env` to build the image
+with sample data.
+
+`ADMIN_PASSWORD` and `SECRET_KEY` have no defaults — compose refuses to start
+without them rather than booting with a guessable admin login.
+
+## Running it without Docker
 
 ### Frontend
 
@@ -82,7 +110,14 @@ rule that unpublished content and unset settings are never served.
 
 ### End to end
 
-Needs both servers up. In three terminals:
+Against the Docker stack — one command, nothing else to start:
+
+```bash
+docker compose up -d
+cd frontend && SITE_URL=http://localhost:8090 npm run test:e2e
+```
+
+Or against local dev servers, in three terminals:
 
 ```bash
 # 1. backend
