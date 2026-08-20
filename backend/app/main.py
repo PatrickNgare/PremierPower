@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .admin import mount_admin
 from .core.security import hash_password
-from .db import Base, SessionLocal, engine
+from .db import SessionLocal, engine
 from .models import (
     Admin, Banner, BlogPost, FAQ, Project, Service, SiteSetting, TeamMember, Testimonial,
 )
@@ -25,9 +25,25 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("premierpower")
 
 
+def _migrate() -> None:
+    """Bring the database to head.
+
+    create_all() only ever creates missing tables — it cannot add a column to
+    a table that already exists, which is how the schema silently drifted from
+    the models once fields were added. Alembic owns the schema from here.
+    """
+    from alembic import command
+    from alembic.config import Config
+
+    cfg = Config(str(Path(__file__).resolve().parent.parent / "alembic.ini"))
+    cfg.set_main_option("script_location", str(Path(__file__).resolve().parent.parent / "alembic"))
+    cfg.set_main_option("sqlalchemy.url", settings.database_url)
+    command.upgrade(cfg, "head")
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    Base.metadata.create_all(engine)
+    _migrate()
     _seed_settings()
     _seed_superuser()
     yield
