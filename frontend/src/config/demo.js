@@ -58,15 +58,23 @@ export const demoTestimonials = [
 ]
 
 /**
- * Drop real images into frontend/public/demo/ using these filenames and demo
- * mode will pick them up automatically — useful when showing the client a
- * version that looks finished.
+ * Demo imagery.
+ *
+ * These are decorative lighting product shots, not Premier Power's own
+ * installation work, and they do not match the captions they sit under — the
+ * hero claims circuits photographed before plastering and shows a finished
+ * fitting. They exist so the layout and motion can be judged with real images
+ * in place, behind the demo ribbon. They cannot ship.
+ *
+ * The launch set is still: a marked-out wall, a chase-open/finished pair shot
+ * from one fixed tripod position, a consumer unit before and after, and a team
+ * photo. See PRODUCT.md.
  */
 export const demoPhotos = {
-  heroWall: '/demo/marked-wall.jpg',
-  chaseOpen: '/demo/chase-open.jpg',
-  chaseFinished: '/demo/chase-finished.jpg',
-  boardBefore: '/demo/board-before.jpg',
-  boardAfter: '/demo/board-after.jpg',
-  team: '/demo/team.jpg',
+  heroWall: '/demo/Retro_Monique_01.jpeg',
+  chaseOpen: '/demo/Retro_Monique_00.jpeg',
+  chaseFinished: '/demo/Retro_Monique_02.jpeg',
+  boardBefore: '/demo/Golden_02.jpeg',
+  boardAfter: '/demo/Retro_Monique_01.jpeg',
+  team: '/demo/Retro_Monique_02.jpeg',
 }

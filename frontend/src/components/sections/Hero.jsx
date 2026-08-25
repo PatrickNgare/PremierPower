@@ -99,7 +99,11 @@ export default function Hero() {
       aria-roledescription="carousel"
       aria-label="Our work"
     >
-      <AnimatePresence mode="sync" custom={direction}>
+      {/* initial={false}: the first slide mounts already open. Animating
+          clip-path on mount leaves the layer partially composited under
+          software rendering, which paints the hero black. Wipes still run on
+          every subsequent slide change. */}
+      <AnimatePresence mode="sync" custom={direction} initial={false}>
         <motion.div
           key={current}
           custom={direction}
@@ -108,6 +112,7 @@ export default function Hero() {
           animate="center"
           exit="exit"
           className="absolute inset-0"
+          style={{ transform: 'translateZ(0)' }}
         >
           <Photo
             priority
