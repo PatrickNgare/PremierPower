@@ -5,6 +5,7 @@ import { FiArrowRight } from 'react-icons/fi'
 import Hero from '@/components/sections/Hero'
 import StatsBar from '@/components/sections/StatsBar'
 import SafetyBar from '@/components/sections/SafetyBar'
+import SectorsGrid from '@/components/sections/SectorsGrid'
 import ServicesGrid from '@/components/sections/ServicesGrid'
 import ProjectsGrid from '@/components/sections/ProjectsGrid'
 import ProcessSteps from '@/components/sections/ProcessSteps'
@@ -43,6 +44,18 @@ export default function Home() {
             </Link>
           </motion.div>
           <ProjectsGrid limit={3} />
+        </div>
+      </section>
+
+      <section className="section bg-neutral-50">
+        <div className="container-x">
+          <SectionHeader
+            align="center"
+            eyebrow="Sectors"
+            title="Where our installations go in."
+            lede="Works undertaken by Premier Power Limited span the corporate, commercial and residential markets — with leading contractors in both the private and public sectors."
+          />
+          <SectorsGrid />
         </div>
       </section>
 

@@ -20,6 +20,7 @@ export default function About() {
       </Helmet>
 
       <PageHero
+        image={'/projects/villa-modern.jpg'} imageAlt="Completed residential development"
         crumb="About" eyebrow="About us"
         title="A leading electrical engineering company in the corporate market."
         lede="Premier Power Limited works on electrical installation projects all over the country, and is expanding — diversifying geographical risk, with further offices planned in Kenya and across the border."

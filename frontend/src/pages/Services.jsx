@@ -15,6 +15,7 @@ export default function Services() {
       </Helmet>
 
       <PageHero
+        image={'/projects/stairwell.jpg'} imageAlt="Feature lighting installation in a completed stairwell"
         crumb="Services" eyebrow="What we do"
         title="Eight service lines, one registered contractor."
         lede="Our NCA registration covers electrical installation and the specialist systems that sit alongside it — security, solar, power continuity, vertical transport, transmission and gas. One contractor, coordinated on one programme."

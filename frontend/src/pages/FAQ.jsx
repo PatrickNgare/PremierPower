@@ -56,6 +56,7 @@ export default function FAQ() {
       </Helmet>
 
       <PageHero
+        image={'/projects/lodge-dusk.jpg'} imageAlt="Completed development at dusk"
         crumb="FAQ" eyebrow="Straight answers"
         title="The questions people actually ask."
         lede="Mostly about licensing. Almost never about price first — which is the right instinct."

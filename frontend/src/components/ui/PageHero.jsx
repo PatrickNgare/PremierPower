@@ -4,16 +4,29 @@ import { FiChevronRight } from 'react-icons/fi'
 import { fadeUp, stagger } from '@/utils/motion'
 
 /** The banner every interior page opens with, matching one rhythm. */
-export default function PageHero({ eyebrow, title, lede, crumb }) {
+export default function PageHero({ eyebrow, title, lede, crumb, image, imageAlt = '' }) {
   return (
     <section className="on-dark relative overflow-hidden bg-primary-dark">
+      {image && (
+        <>
+          <img
+            src={image} alt={imageAlt} aria-hidden={imageAlt ? undefined : 'true'}
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="eager" fetchPriority="high" decoding="async"
+          />
+          {/* Same scrim discipline as the main hero: the text column has to
+              stay legible whatever the photograph underneath is doing. */}
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-black/88 via-black/70 to-black/40" />
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        </>
+      )}
       <div
         aria-hidden="true"
-        className="absolute inset-y-0 left-0 w-1.5 bg-secondary"
+        className="absolute inset-y-0 left-0 z-[2] w-1.5 bg-secondary"
       />
       <motion.div
         variants={stagger()} initial="hidden" animate="show"
-        className="container-x py-16 md:py-24"
+        className="container-x relative z-[2] py-16 md:py-24"
       >
         {crumb && (
           <motion.nav variants={fadeUp} aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-white/55">

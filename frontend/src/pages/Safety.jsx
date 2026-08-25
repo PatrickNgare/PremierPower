@@ -26,6 +26,7 @@ export default function Safety() {
       </Helmet>
 
       <PageHero
+        image={'/projects/technical.jpg'} imageAlt="Terminating conductors during installation"
         crumb="Safety" eyebrow="Compliance"
         title="Registered, tested, and documented on every project."
         lede="Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. Every installation is tested and certified before handover, whatever its size."

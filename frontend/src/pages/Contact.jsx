@@ -49,6 +49,7 @@ export default function Contact() {
       </Helmet>
 
       <PageHero
+        image={'/projects/resort-pool.jpg'} imageAlt="Completed resort development"
         crumb="Contact" eyebrow="Free, about an hour"
         title="Book a free site assessment."
         lede="We open the board, test what is there, photograph it, and give you the findings in writing — including the parts that are fine. No obligation, and we do not send a salesperson."
