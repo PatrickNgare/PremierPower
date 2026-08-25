@@ -6,6 +6,7 @@ import Hero from '@/components/sections/Hero'
 import Stats from '@/components/sections/Stats'
 import SafetyBar from '@/components/sections/SafetyBar'
 import Solutions from '@/components/sections/Solutions'
+import AboutBento from '@/components/sections/AboutBento'
 import LightingShowcase from '@/components/sections/LightingShowcase'
 import Services from '@/components/sections/Services'
 import ProjectsShowcase from '@/components/sections/ProjectsShowcase'
@@ -32,7 +33,18 @@ export default function Home() {
       <Hero />
       <Stats />
 
-      <section className="section">
+      <section className="section-tight">
+        <div className="container-x">
+          <SectionHeader
+            eyebrow="Who we are"
+            title="A leading electrical engineering company in the corporate market."
+            lede="Premier Power Limited works on installation projects all over the country, expanding across Kenya and beyond the border."
+          />
+          <AboutBento />
+        </div>
+      </section>
+
+      <section className="section-loose">
         <div className="container-x">
           <motion.div {...inView} className="flex flex-wrap items-end justify-between gap-6">
             <SectionHeader
@@ -48,7 +60,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section bg-neutral-50">
+      <section className="section bg-paper-warm">
         <div className="container-x">
           <SectionHeader
             align="center"
@@ -110,7 +122,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section bg-neutral-50">
+      <section className="section-tight bg-paper-warm">
         <div className="container-x">
           <SectionHeader
             align="center"
@@ -122,7 +134,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section-tight">
         <div className="container-x">
           <SectionHeader
             align="center"
