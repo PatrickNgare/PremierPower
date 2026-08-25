@@ -1,92 +1,139 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { FiMenu, FiPhone } from 'react-icons/fi'
+import { Link, NavLink, useLocation } from 'react-router-dom'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
+import { Menu, Phone, ArrowRight } from 'lucide-react'
 import { navLinks } from './navLinks'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
-import Button from '@/components/ui/Button'
+import Magnetic from '@/components/ui/Magnetic'
 import { site, isPending, telLink } from '@/config/site'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
-  const [solid, setSolid] = useState(false)
+  const [condensed, setCondensed] = useState(false)
+  const { scrollY } = useScroll()
+  const { pathname } = useLocation()
   const tel = telLink()
 
-  useEffect(() => {
-    const onScroll = () => setSolid(window.scrollY > 12)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+  // Condense past the fold rather than on the first pixel, so the bar does not
+  // flicker when a trackpad nudges the page.
+  useMotionValueEvent(scrollY, 'change', (y) => {
+    setCondensed((prev) => (prev ? y > 40 : y > 110))
+  })
 
   return (
     <>
-      {/* Utility bar — licence and phone above the fold on every page. */}
-      <div className="on-dark hidden bg-primary-dark lg:block">
-        <div className="container-x flex h-9 items-center justify-between text-xs text-white/70">
+      {/* Utility strip — collapses away once the user starts reading. */}
+      <motion.div
+        aria-hidden={condensed}
+        initial={false}
+        animate={{ height: condensed ? 0 : 38, opacity: condensed ? 0 : 1 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        className="on-dark hidden overflow-hidden bg-ink-950 lg:block"
+      >
+        <div className="container-x flex h-[38px] items-center justify-between text-xs text-ink-300">
           <p className="flex items-center gap-2">
-            <span aria-hidden="true" className="h-2.5 w-1 rounded-full bg-earth" />
+            <span aria-hidden="true" className="inline-block h-2.5 w-1 rounded-full bg-earth" />
             NCA-registered electrical engineering contractor · Nationwide
           </p>
           {tel ? (
-            <a href={tel} className="flex items-center gap-2 font-semibold text-white hover:text-secondary-accent">
-              <FiPhone size={13} aria-hidden="true" /> {String(site.phone)}
+            <a href={tel} className="flex items-center gap-2 font-semibold text-white transition-colors hover:text-lumen-500">
+              <Phone size={13} aria-hidden="true" /> {String(site.phone)}
             </a>
           ) : (
-            <span className="text-white/40">Phone number pending</span>
+            <span className="text-white/35">Phone number pending</span>
           )}
         </div>
-      </div>
+      </motion.div>
 
-      <header className={`sticky top-0 z-40 transition-shadow duration-300 ${
-        solid ? 'bg-white shadow-md' : 'bg-white/95 backdrop-blur-sm'
-      }`}>
-        <nav className="container-x flex h-18 items-center gap-6 py-3" aria-label="Main">
-          <Link to="/" aria-label="Premier Power Limited — home" className="shrink-0">
-            <Logo className="h-9 sm:h-11" />
-          </Link>
-
-          <ul className="ml-auto hidden items-center gap-6 xl:flex">
-            {navLinks.map((l) => (
-              <li key={l.to}>
-                <NavLink
-                  to={l.to}
-                  className={({ isActive }) =>
-                    `relative py-2 text-sm font-medium transition-colors duration-200 hover:text-secondary-accent ${
-                      isActive ? 'text-secondary-accent' : 'text-neutral-700'
-                    }`
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      {l.label}
-                      <span aria-hidden="true" className={`absolute -bottom-0.5 left-0 h-0.5 w-full rounded bg-secondary transition-transform duration-200 ${
-                        isActive ? 'scale-x-100' : 'scale-x-0'
-                      }`} />
-                    </>
-                  )}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-
-          <div className="ml-auto hidden xl:ml-0 xl:block">
-            <Button to="/contact" className="px-6 py-3">Free site assessment</Button>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-            aria-expanded={open}
-            className="ml-auto rounded-lg p-2 text-primary transition-colors hover:bg-neutral-100 xl:hidden"
+      <motion.header
+        initial={false}
+        animate={{
+          backgroundColor: condensed ? 'rgba(252,252,251,0.86)' : 'rgba(252,252,251,1)',
+          boxShadow: condensed ? '0 1px 0 rgba(8,8,10,0.07), 0 10px 30px -18px rgba(8,8,10,0.4)' : '0 0 0 rgba(0,0,0,0)',
+        }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="sticky top-0 z-40 backdrop-blur-md"
+      >
+        <nav className="container-x flex items-center gap-6" aria-label="Main">
+          <motion.div
+            initial={false}
+            animate={{ height: condensed ? 62 : 84 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-1 items-center gap-6"
           >
-            <FiMenu size={24} aria-hidden="true" />
-          </button>
-        </nav>
-      </header>
+            <Link to="/" aria-label="Premier Power Limited — home" className="shrink-0">
+              <motion.div initial={false} animate={{ scale: condensed ? 0.86 : 1 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="origin-left">
+                <Logo className="h-9 sm:h-11" />
+              </motion.div>
+            </Link>
 
-      <MobileMenu open={open} onClose={() => setOpen(false)} />
+            <ul className="ml-auto hidden items-center gap-1 xl:flex">
+              {navLinks.map((l) => (
+                <li key={l.to}>
+                  <NavLink
+                    to={l.to}
+                    className={({ isActive }) =>
+                      `relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-300 ${
+                        isActive ? 'text-ink-900' : 'text-ink-600 hover:text-ink-900'
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        {isActive && (
+                          <motion.span
+                            layoutId="nav-active"
+                            transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                            className="absolute inset-0 -z-10 rounded-full bg-ink-900/[0.06]"
+                            aria-hidden="true"
+                          />
+                        )}
+                        {l.label}
+                      </>
+                    )}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+
+            <div className="ml-auto hidden xl:ml-0 xl:block">
+              <Magnetic strength={0.2}>
+                <Link to="/contact" className="btn-primary group px-6 py-3 text-sm">
+                  Request a quote
+                  <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                </Link>
+              </Magnetic>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              aria-expanded={open}
+              className="ml-auto rounded-full p-2.5 text-ink-900 transition-colors hover:bg-ink-900/[0.06] xl:hidden"
+            >
+              <Menu size={22} aria-hidden="true" />
+            </button>
+          </motion.div>
+        </nav>
+
+        {/* Scroll progress — a thin filament of light across the bar. */}
+        <ScrollFilament />
+      </motion.header>
+
+      <MobileMenu open={open} onClose={() => setOpen(false)} key={pathname} />
     </>
+  )
+}
+
+function ScrollFilament() {
+  const { scrollYProgress } = useScroll()
+  return (
+    <motion.span
+      aria-hidden="true"
+      style={{ scaleX: scrollYProgress }}
+      className="absolute inset-x-0 bottom-0 h-px origin-left bg-gradient-to-r from-brand via-lumen-500 to-brand"
+    />
   )
 }

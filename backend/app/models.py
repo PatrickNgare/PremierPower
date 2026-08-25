@@ -185,12 +185,18 @@ class SiteSetting(Base):
 
 
 class Lead(Base):
+    """A project enquiry. Company and project type matter here because the
+    work is mostly won through contractors and architects, not homeowners."""
+
     __tablename__ = "leads"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(120))
+    company: Mapped[str] = mapped_column(String(160), default="")
+    email: Mapped[str] = mapped_column(String(200), default="")
     phone: Mapped[str] = mapped_column(String(60))
     area: Mapped[str] = mapped_column(String(120), default="")
+    project_type: Mapped[str] = mapped_column(String(80), default="")
     property: Mapped[str] = mapped_column(String(60), default="")
     message: Mapped[str] = mapped_column(Text, default="")
     handled: Mapped[bool] = mapped_column(Boolean, default=False)

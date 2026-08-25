@@ -47,7 +47,7 @@ export default function FloatingActions() {
                 </span>
               )}
               <a href="/contact" className="flex flex-col items-center gap-1 bg-secondary-dark py-2.5 text-[0.7rem] font-bold text-white">
-                <FiCalendar size={19} aria-hidden="true" /> Free visit
+                <FiCalendar size={19} aria-hidden="true" /> Get a quote
               </a>
             </div>
           </div>

@@ -179,12 +179,15 @@ class SettingOut(SettingIn):
 # ── leads & newsletter ──────────────────────────────────────────────────
 class LeadIn(BaseModel):
     name: str = Field(min_length=1, max_length=120)
+    company: str = Field(default="", max_length=160)
+    email: str = Field(default="", max_length=200)
     phone: str = Field(min_length=6, max_length=60)
     area: str = Field(default="", max_length=120)
+    project_type: str = Field(default="", max_length=80)
     property: str = Field(default="", max_length=60)
     message: str = Field(default="", max_length=4000)
 
-    @field_validator("name", "phone", "area", "property", "message")
+    @field_validator("name", "company", "email", "phone", "area", "project_type", "property", "message")
     @classmethod
     def strip(cls, v: str) -> str:
         return v.strip()
@@ -194,8 +197,11 @@ class LeadOut(BaseModel):
     model_config = ORM
     id: int
     name: str
+    company: str
+    email: str
     phone: str
     area: str
+    project_type: str
     property: str
     message: str
     handled: bool

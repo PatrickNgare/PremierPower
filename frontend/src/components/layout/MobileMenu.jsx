@@ -61,7 +61,7 @@ export default function MobileMenu({ open, onClose }) {
 
             <div className="mt-auto pt-6">
               <Button to="/contact" variant="primaryLg" className="w-full" onClick={onClose}>
-                Book a free site assessment
+                Request a quote
               </Button>
               {wa && (
                 <Button href={wa} variant="outline" className="mt-3 w-full" target="_blank" rel="noopener noreferrer">
