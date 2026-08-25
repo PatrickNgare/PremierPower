@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ShieldCheck, MapPin, Layers, Quote, Expand } from 'lucide-react'
 import Lightbox from '@/components/ui/Lightbox'
+import ImageReveal from '@/components/ui/ImageReveal'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 // The full list from the company profile, not the nine shown on the site.
 import { projects } from '@/data/projects'
@@ -35,10 +36,11 @@ export default function AboutBento() {
         variants={fadeUp}
         className="group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 sm:col-span-2 lg:row-span-2"
       >
-        <img
+        <ImageReveal
           src="/projects/resort-dusk.jpg" alt="Completed resort development at dusk"
-          loading="lazy" decoding="async"
-          className="h-full min-h-[20rem] w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-105"
+          drift={3}
+          className="h-full min-h-[20rem] w-full"
+          imgClassName="transition-transform duration-[1.4s] ease-out group-hover:scale-105"
         />
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/25 to-transparent" />
         <button

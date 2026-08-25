@@ -12,7 +12,10 @@ import Photo from '@/components/ui/Photo'
  * rather than a row of equal cards. Detail animates in on hover; on touch the
  * caption is always visible, since there is no hover state to reveal it.
  */
-const spans = ['lg:row-span-2', '', '', '', 'lg:row-span-2', '', '', '', '']
+// With three columns a single tall lead tile tiles cleanly: it fills column
+// one across both rows while the rest fill the remaining four cells. Spanning
+// a second tile leaves a hole that dense flow cannot backfill.
+const spans = ['lg:row-span-2', '', '', '', '', 'lg:row-span-2', '', '', '']
 
 export default function ProjectsShowcase({ limit }) {
   const shown = limit ? projectShowcase.slice(0, limit) : projectShowcase

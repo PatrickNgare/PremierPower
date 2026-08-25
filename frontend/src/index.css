@@ -178,20 +178,42 @@
 
   .btn-primary, .btn-primary-lg {
     @apply bg-brand-fill text-white px-7 py-3.5 text-[0.95rem]
-           hover:bg-brand-deep hover:-translate-y-0.5;
+           hover:bg-brand-deep hover:-translate-y-0.5
+           active:translate-y-0 active:scale-[0.985];
     box-shadow: 0 8px 28px -10px rgb(230 0 0 / 0.55);
+    transition-duration: 280ms;
+  }
+
+  /* Light sweeps across the control on hover — the lighting language applied
+     to a button rather than a generic shine. */
+  .btn-primary::after, .btn-primary-lg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.22) 50%, transparent 62%);
+    transform: translateX(-120%);
+    transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .btn-primary:hover::after, .btn-primary-lg:hover::after { transform: translateX(120%); }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary::after, .btn-primary-lg::after { display: none; }
   }
   .btn-primary-lg { @apply px-9 py-4 text-base; }
   .btn-primary:hover, .btn-primary-lg:hover { box-shadow: 0 14px 40px -10px rgb(230 0 0 / 0.65); }
 
   .btn-ghost, .btn-ghost-dark {
     @apply border border-white/25 text-white px-7 py-3.5 text-[0.95rem]
-           hover:border-white/60 hover:bg-white/10;
+           hover:border-white/60 hover:bg-white/10
+           hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985];
+    transition-duration: 280ms;
   }
 
   .btn-onlight, .btn-outline {
     @apply border border-ink-900/15 text-ink-900 px-7 py-3.5 text-[0.95rem]
-           hover:border-ink-900/40 hover:bg-ink-900/[0.04];
+           hover:border-ink-900/40 hover:bg-ink-900/[0.04]
+           hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985];
+    transition-duration: 280ms;
   }
 
   /* Eyebrow — small, wide, quiet */

@@ -2,6 +2,7 @@ import { FaQuoteLeft } from 'react-icons/fa'
 import Avatar from '@/components/ui/Avatar'
 import StarRating from '@/components/ui/StarRating'
 import { useApi } from '@/hooks/useApi'
+import { SkeletonCard, LoadingRegion } from '@/components/ui/Skeleton'
 import { testimonials as fallback } from '@/data/testimonials'
 
 function Card({ t }) {
@@ -25,7 +26,17 @@ function Card({ t }) {
 
 /** Marquee-style strip, wired into the homepage from day one. */
 export default function TestimonialsStrip() {
-  const { data } = useApi('/testimonials', fallback)
+  const { data, loading } = useApi('/testimonials', fallback)
+
+  if (loading) {
+    return (
+      <LoadingRegion label="Loading reviews">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2].map((i) => <SkeletonCard key={i} />)}
+        </div>
+      </LoadingRegion>
+    )
+  }
 
   if (!data.length) {
     return (

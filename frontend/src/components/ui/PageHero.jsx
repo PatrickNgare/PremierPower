@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { FiChevronRight } from 'react-icons/fi'
 import { fadeUp, stagger } from '@/utils/motion'
+import TextReveal from './TextReveal'
 
 /** The banner every interior page opens with, matching one rhythm. */
 export default function PageHero({ eyebrow, title, lede, crumb, image, imageAlt = '' }) {
@@ -36,9 +37,10 @@ export default function PageHero({ eyebrow, title, lede, crumb, image, imageAlt 
           </motion.nav>
         )}
         {eyebrow && <motion.span variants={fadeUp} className="eyebrow">{eyebrow}</motion.span>}
-        <motion.h1 variants={fadeUp} className="mt-3 max-w-3xl text-4xl font-bold leading-[1.08] text-white sm:text-5xl">
-          {title}
-        </motion.h1>
+        <TextReveal
+          as="h1" text={title}
+          className="mt-3 block max-w-3xl text-4xl font-bold leading-[1.08] text-white sm:text-5xl"
+        />
         {lede && (
           <motion.p variants={fadeUp} className="mt-5 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
             {lede}

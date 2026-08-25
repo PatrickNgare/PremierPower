@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import FloatingActions from '@/components/layout/FloatingActions'
 import ExitIntentPopup from '@/components/ui/ExitIntentPopup'
-import Spinner from '@/components/ui/Spinner'
+import { Skeleton, SkeletonCard, LoadingRegion } from '@/components/ui/Skeleton'
 import PageTransition from '@/components/layout/PageTransition'
 
 const Home = lazy(() => import('@/pages/Home'))
@@ -31,7 +31,20 @@ export default function App() {
       <ScrollToTop />
       <Navbar />
       <main id="main">
-        <Suspense fallback={<div className="flex min-h-[60vh] items-center justify-center text-neutral-400" aria-busy="true"><Spinner size={26} /></div>}>
+        <Suspense
+          fallback={
+            <LoadingRegion label="Loading page">
+              <div className="container-x py-24">
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="mt-6 h-10 w-2/3 max-w-xl" />
+                <Skeleton className="mt-3 h-10 w-1/2 max-w-md" />
+                <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {[0, 1, 2].map((i) => <SkeletonCard key={i} />)}
+                </div>
+              </div>
+            </LoadingRegion>
+          }
+        >
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
             <Route path="/" element={<PageTransition><Home /></PageTransition>} />
