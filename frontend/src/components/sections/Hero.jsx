@@ -14,11 +14,19 @@ const pulseRing = {
   transition: { duration: 2.8, repeat: Infinity, ease: 'easeOut', repeatDelay: 0.8 },
 }
 
-/* Direction-aware clip-path curtain between slides. */
+/**
+ * Direction-aware slide between hero images.
+ *
+ * SpaceInfra animates clip-path here. That proved unreliable: the compositor
+ * holds a stale clip while computed style reports it open, leaving the
+ * photograph half-painted — a black hero, which is worse than any transition
+ * is good. Transforms composite reliably, so the curtain is a translate
+ * inside the section's overflow-hidden instead. Same directional read.
+ */
 const slideVariants = {
-  enter: (dir) => ({ clipPath: dir >= 0 ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)' }),
-  center: { clipPath: 'inset(0 0% 0 0%)', transition: { duration: 1.05, ease: [0.76, 0, 0.24, 1] } },
-  exit: { opacity: 0, transition: { duration: 0.12 } },
+  enter: (dir) => ({ x: dir >= 0 ? '100%' : '-100%' }),
+  center: { x: '0%', transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } },
+  exit: (dir) => ({ x: dir >= 0 ? '-30%' : '30%', opacity: 0, transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] } }),
 }
 
 /** Per-character spring-up, used on the locality line. */
