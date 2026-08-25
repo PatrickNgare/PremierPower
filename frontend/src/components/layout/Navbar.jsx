@@ -26,7 +26,7 @@ export default function Navbar() {
         <div className="container-x flex h-9 items-center justify-between text-xs text-white/70">
           <p className="flex items-center gap-2">
             <span aria-hidden="true" className="h-2.5 w-1 rounded-full bg-earth" />
-            EPRA-licensed residential wiring · Nairobi
+            NCA-registered electrical engineering contractor · Nationwide
           </p>
           {tel ? (
             <a href={tel} className="flex items-center gap-2 font-semibold text-white hover:text-secondary-accent">

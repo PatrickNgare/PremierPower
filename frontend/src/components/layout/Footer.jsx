@@ -69,8 +69,8 @@ export default function Footer() {
           <div>
             <h2 className="font-heading text-sm font-semibold uppercase tracking-wider text-white">Licensing</h2>
             <ul className="mt-4">
-              <Row label="EPRA licence" v={site.epraNumber} />
-              <Row label="Class" v={site.epraClass} />
+              <Row label="NCA registration" v={site.ncaNumber} />
+              <Row label="Category" v={site.ncaCategory} />
               <Row label="Insured by" v={site.insured} />
               <Row label="Warranty" v={site.warranty} />
             </ul>
@@ -79,7 +79,7 @@ export default function Footer() {
 
         <p className="mt-14 border-t border-white/10 pt-6 text-sm text-white/45">
           © {new Date().getFullYear()} {isPending(site.legalName) ? site.name : value(site.legalName)}.
-          Wiring to KEBS standards, tested and certified.
+          Electrical engineering service contractor, registered with the National Construction Authority.
         </p>
       </div>
     </footer>

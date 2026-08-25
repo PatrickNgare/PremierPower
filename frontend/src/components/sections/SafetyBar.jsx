@@ -7,10 +7,10 @@ import { fadeUp, stagger, inView } from '@/utils/motion'
  * an electrician is licensing and testing, not badges.
  */
 const marks = [
-  { icon: FiShield, title: 'EPRA licensed', body: 'Number published on every page so you can verify it before calling.' },
-  { icon: FiFileText, title: 'Tested & certified', body: 'Full test sequence recorded, certificate handed over at completion.' },
-  { icon: FiSearch, title: 'Photographed open', body: 'Every circuit documented while the wall is still open.' },
-  { icon: FiZap, title: 'KEBS standards', body: 'Materials and workmanship to the current Kenyan standard.' },
+  { icon: FiShield, title: 'NCA registered', body: 'Electrical Engineering Service Contractor, registered with the National Construction Authority.' },
+  { icon: FiFileText, title: 'Tested & certified', body: 'Full test sequence recorded and certified before handover on every project.' },
+  { icon: FiSearch, title: 'Private & public sector', body: 'Delivered with leading contractors and architects across both.' },
+  { icon: FiZap, title: 'Nationwide', body: 'Projects across the country, from Nairobi to Nanyuki, Meru and the Mara.' },
 ]
 
 export default function SafetyBar() {

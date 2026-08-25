@@ -168,11 +168,11 @@ export default function Hero() {
           variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
           className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-white/60 sm:text-sm"
         >
-          Premier Power Limited · EPRA licensed
+          Premier Power Limited · NCA registered
         </motion.p>
 
         <h1 className="font-heading font-bold leading-tight">
-          {['Residential', 'wiring'].map((word, i) => (
+          {['Electrical', 'installation'].map((word, i) => (
             <Fragment key={word}>
               {i > 0 && ' '}
               <motion.span
@@ -192,7 +192,7 @@ export default function Hero() {
               className="inline-block"
             >
               <CharSplit
-                text="in Nairobi, Kenya"
+                text="across Kenya"
                 className="inline font-heading text-2xl font-bold text-secondary-accent sm:text-3xl md:text-4xl lg:text-5xl"
               />
             </motion.span>

@@ -1,30 +1,34 @@
+/**
+ * Answers follow the company profile: a corporate-market electrical
+ * engineering contractor working nationwide across sectors.
+ */
 export const faqs = [
   {
-    q: 'Are you licensed?',
-    a: 'Yes. We hold a current EPRA licence, and the number is printed in the footer of every page on this site so you can verify it with the Authority before you call us. Ask any electrician for theirs; an unwillingness to give it is the answer.',
+    q: 'What kind of projects do you take on?',
+    a: 'Electrical installation across the corporate, commercial and residential markets — banks and commercial interiors, office buildings, institutions, hotels, lodges and resorts, industrial projects, health care facilities, and residential housing from single homes to multi-unit developments.',
+  },
+  {
+    q: 'Are you registered?',
+    a: 'Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. That registration covers electrical installation, electronic security and surveillance, lifts and escalators, solar power generation and photovoltaics, compressed air and gas installation, UPS and surge protection, energy-efficiency retrofitting, and the construction of power transmission lines.',
+  },
+  {
+    q: 'Do you work outside Nairobi?',
+    a: 'Yes. We work on projects all over the country — recent and current work includes Nanyuki and Laikipia, Meru, Mua Hills, Mlolongo and the Maasai Mara, alongside Nairobi. We are expanding our operations regionally.',
+  },
+  {
+    q: 'Do you work with main contractors and architects?',
+    a: 'Almost always. We undertake electrical installation with a number of leading contractors in both the private and public sectors, and coordinate directly with the project architect — Seltar Crafts, Designspec, Construe Consultants and N.A Projects International among them.',
+  },
+  {
+    q: 'Can you handle more than the electrical installation?',
+    a: 'Yes. Security and access control, solar photovoltaics, UPS and voltage regulation, lifts and escalators, and gas installation all sit inside our NCA registration. Putting them with one contractor means one programme and one point of responsibility rather than four subcontractors coordinating between themselves.',
   },
   {
     q: 'What does a site assessment cost?',
-    a: 'Nothing. We come out, test the existing installation, photograph what we find, and give you the findings in writing — including the parts that are fine. There is no obligation and we do not send a salesperson.',
+    a: 'Nothing. We visit, review the drawings or the existing installation, and come back with a written scope. There is no obligation.',
   },
   {
-    q: 'Why will you not quote over the phone?',
-    a: 'Because a rewiring quote given without opening the board is a guess, and a guess that is too low becomes an argument halfway through the job. What is behind your walls determines the price. We look first.',
-  },
-  {
-    q: 'Do we have to move out during a rewire?',
-    a: 'Usually not. We work room by room and restore power each evening in the areas still in use. For a full rewire of an occupied flat, expect dust and disruption in one or two rooms at a time rather than the whole home at once.',
-  },
-  {
-    q: 'How long does a rewire take?',
-    a: 'A two-bedroom apartment is typically four to six working days for first fix and second fix, plus the plasterer\'s time between them. The survey gives you a dated schedule rather than a range.',
-  },
-  {
-    q: 'What happens if something fails later?',
-    a: 'Our workmanship is warranted, and the terms are stated plainly on the Safety page rather than buried in a contract. Faults that trace back to our installation are our cost to correct.',
-  },
-  {
-    q: 'Can you fix work another electrician did?',
-    a: 'Regularly. It is a large share of what we do. We will tell you honestly whether the existing installation can be corrected or whether it needs replacing — the cheaper answer is often the true one.',
+    q: 'What happens if something fails after handover?',
+    a: 'Our workmanship is warranted and the terms are stated plainly rather than buried in a contract. Faults that trace back to our installation are our cost to correct.',
   },
 ]

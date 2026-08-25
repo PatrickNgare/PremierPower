@@ -9,3 +9,8 @@ venv/
 .DS_Store
 
 .env
+
+# Source documents from the client. PREMIER.pdf is 246MB and contains the KRA
+# PIN and tax compliance certificate — it must not enter the repository.
+PREMIER.pdf
+*.pdf

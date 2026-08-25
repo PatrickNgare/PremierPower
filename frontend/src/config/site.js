@@ -19,28 +19,32 @@ export const value = (v, fallback = '') => (isPending(v) ? fallback || `[${v.hin
 import { DEMO, demoOverrides } from '@/config/demo'
 
 const real = {
-  name: 'PremierPower',
-  tagline: 'Residential wiring and rewiring, drawn before it is buried.',
+  name: 'Premier Power Limited',
+  tagline: 'Electrical engineering and installation across Kenya — corporate, commercial and residential.',
 
   // --- Contact -------------------------------------------------------------
-  phone: pending('phone number'),
-  whatsapp: pending('WhatsApp number, digits only, incl. 254 country code'),
-  email: pending('email address'),
+  phone: '+254 719 509 574',
+  whatsapp: '254719509574',
+  email: 'premierpower.ltd@gmail.com',
 
   // --- NAP for LocalBusiness JSON-LD --------------------------------------
-  legalName: pending('registered business name'),
-  street: pending('street address'),
+  legalName: 'Premier Power Limited',
+  street: 'Forest Court, Forest Road',
   locality: 'Nairobi',
   region: 'Nairobi County',
   country: 'KE',
-  serviceArea: pending('service radius, e.g. "Nairobi and within 40km"'),
+  serviceArea: 'Nairobi and nationwide',
 
   // --- Trust ---------------------------------------------------------------
-  epraNumber: pending('EPRA licence number'),
-  epraClass: pending('EPRA licence class'),
+  // Registered with the National Construction Authority as an Electrical
+  // Engineering Service Contractor. The registration number itself is not
+  // legible in the profile PDF and must be confirmed before launch.
+  ncaNumber: pending('NCA registration number — confirm with the client'),
+  ncaCategory: 'Electrical Engineering Service Contractor',
   insured: pending('insurer name, or false if not insured'),
   warranty: pending('workmanship warranty term, e.g. "2 years"'),
-  yearsLicensed: pending('years licensed'),
+  secondPhone: '+254 705 720 502',
+  yearsLicensed: pending('years trading — confirm with the client'),
   installsCompleted: pending('installations completed'),
   responseTime: pending('typical response time, e.g. "same day"'),
 }

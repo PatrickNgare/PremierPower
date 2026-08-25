@@ -9,15 +9,15 @@ export default function Services() {
   return (
     <>
       <Helmet>
-        <title>Services — Residential wiring, rewiring &amp; consumer units | Premier Power</title>
-        <meta name="description" content="Full rewiring, new installations, consumer unit upgrades, fault finding, and inspection with certification for homes across Nairobi. EPRA licensed." />
+        <title>Services — Electrical, security, solar &amp; power systems | Premier Power</title>
+        <meta name="description" content="Electrical installation, CCTV and access control, solar photovoltaics, UPS and surge protection, lifts and escalators, transmission and distribution, energy retrofitting and gas installation. NCA-registered, nationwide." />
         <link rel="canonical" href="https://premierpower.co.ke/services" />
       </Helmet>
 
       <PageHero
-        crumb="Services" eyebrow="Residential only"
-        title="Wiring, rewiring, and the boards that protect them."
-        lede="Five service lines, all of them domestic. If you need a commercial fit-out or a solar tie-in we will tell you plainly and point you to someone who does it properly."
+        crumb="Services" eyebrow="What we do"
+        title="Eight service lines, one registered contractor."
+        lede="Our NCA registration covers electrical installation and the specialist systems that sit alongside it — security, solar, power continuity, vertical transport, transmission and gas. One contractor, coordinated on one programme."
       />
 
       <section className="section">

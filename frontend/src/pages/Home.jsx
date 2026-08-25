@@ -18,11 +18,11 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>Premier Power Limited — Licensed residential wiring &amp; rewiring in Nairobi</title>
-        <meta name="description" content="EPRA-licensed residential wiring and rewiring in Nairobi. Every chase marked out before cutting, every circuit photographed before plaster, test certificate at handover. Free site assessment." />
+        <title>Premier Power Limited — Electrical engineering &amp; installation contractor, Kenya</title>
+        <meta name="description" content="Premier Power Limited is an NCA-registered electrical engineering contractor working across Kenya — banks and commercial interiors, offices, hotels and lodges, institutions, healthcare, industrial and residential developments." />
         <link rel="canonical" href="https://premierpower.co.ke/" />
-        <meta property="og:title" content="Premier Power Limited — Licensed residential wiring in Nairobi" />
-        <meta property="og:description" content="We mark out every chase, photograph every circuit before the plaster closes, and hand you the test certificate. Free site assessment." />
+        <meta property="og:title" content="Premier Power Limited — Electrical engineering contractor, Kenya" />
+        <meta property="og:description" content="Electrical installation for the corporate market across Kenya, with leading contractors in the private and public sectors." />
         <meta property="og:type" content="website" />
         <meta name="twitter:card" content="summary_large_image" />
       </Helmet>
@@ -34,9 +34,9 @@ export default function Home() {
         <div className="container-x">
           <motion.div {...inView} className="flex flex-wrap items-end justify-between gap-6">
             <SectionHeader
-              eyebrow="Recent installations"
-              title="Shown at the stage that actually proves the work."
-              lede="Finished rooms prove nothing — anyone can plaster over bad wiring. Every job here is photographed while the board and the chase are still open."
+              eyebrow="Selected projects"
+              title="Delivered with the contractors and architects who designed them."
+              lede="Hospitality developments, commercial interiors and residential clusters across Kenya — from Nashulai Mara Safari Lodge and Hotel Meru to the Maiyan villas at Nanyuki and town houses in Lavington."
             />
             <Link to="/portfolio" className="link-arrow">
               View all installations <FiArrowRight size={13} aria-hidden="true" />
@@ -53,8 +53,8 @@ export default function Home() {
           <motion.div {...inView} className="flex flex-wrap items-end justify-between gap-6">
             <SectionHeader
               eyebrow="What we do"
-              title="Residential wiring, and nothing we would be mediocre at."
-              lede="We wire and rewire homes. We do not take on commercial fit-outs, solar tie-ins, or appliance repair — and we will say so rather than take the work."
+              title="Electrical installation, and the systems that run alongside it."
+              lede="Our NCA registration covers eight service lines — installation, security and access control, solar photovoltaics, power continuity, vertical transport, transmission and distribution, energy retrofitting and gas."
             />
             <Link to="/services" className="link-arrow">
               All services <FiArrowRight size={13} aria-hidden="true" />
@@ -70,25 +70,23 @@ export default function Home() {
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             <SectionHeader
               tone="dark"
-              eyebrow="Why people call us"
-              title="Most of the dangerous work we find was done by someone who was cheaper."
-              lede="Junction boxes buried in plaster with no access. Undersized conductors feeding a whole floor. Earth conductors connected to nothing at all. None of it is visible once the wall is closed, and none of it announces itself until something burns."
+              eyebrow="Why contractors work with us"
+              title="One registered contractor, coordinated on one programme."
+              lede="Electrical, security, solar, power continuity and vertical transport usually arrive as four or five separate subcontractors, each coordinating with the others through the main contractor. Our NCA registration covers all of them."
             />
             <motion.div {...inView} className="space-y-5 text-base leading-relaxed text-white/70 lg:pt-16">
               <p>
-                An unlicensed electrician can produce a wall that looks identical to ours on
-                handover day. The difference is entirely in what you cannot see — and in
-                whether anyone tested it before covering it up.
+                We undertake electrical installation with a number of leading contractors in
+                both the private and public sectors, working directly with the project
+                architect from drawings through to commissioning.
               </p>
               <p>
-                So we work the other way round. Every chase is drawn on the bare wall before it
-                is cut and walked with you. Every circuit is photographed while it is still
-                open. Every installation is tested, recorded, and certified, and you keep the
-                paperwork.
+                That means one programme, one set of site attendances, and one point of
+                responsibility when the security cabling has to share a route with the power,
+                or the solar has to tie into distribution that is already energised.
               </p>
               <p className="font-semibold text-white">
-                If you already suspect the work in your home was done badly, that is the
-                assessment we do most often.
+                Every installation is tested and certified before handover, whatever its size.
               </p>
               <Button to="/safety" variant="ghostDark" className="mt-2">How we test and certify</Button>
             </motion.div>
@@ -101,8 +99,8 @@ export default function Home() {
           <SectionHeader
             align="center"
             eyebrow="How it works"
-            title="Four stages, and you sign off before each one closes."
-            lede="Nothing gets covered until you have seen it. The order matters — each stage is a gate on the one before it."
+            title="Four stages, documented at each gate."
+            lede="From drawings to commissioning, each stage is signed off before the next begins — and the test results and certification come with the handover."
           />
           <ProcessSteps />
         </div>
@@ -112,9 +110,9 @@ export default function Home() {
         <div className="container-x">
           <SectionHeader
             align="center"
-            eyebrow="Reviews"
-            title="What customers say"
-            lede="Weighted toward the ones who mention safety and reliability, because that is what you are actually buying."
+            eyebrow="References"
+            title="What clients say"
+            lede="Weighted toward the ones that speak to delivery and reliability on programme."
           />
           <TestimonialsStrip />
         </div>

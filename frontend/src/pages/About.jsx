@@ -14,34 +14,36 @@ export default function About() {
   return (
     <>
       <Helmet>
-        <title>About — EPRA-licensed electricians in Nairobi | Premier Power</title>
-        <meta name="description" content="Who we are licensed by, what we will and will not take on, and why we photograph every circuit before the plaster closes." />
+        <title>About — Electrical engineering contractor in Kenya | Premier Power</title>
+        <meta name="description" content="Premier Power Limited is a leading electrical engineering company in the corporate market, working on installation projects across Kenya. Our mission, vision and registration." />
         <link rel="canonical" href="https://premierpower.co.ke/about" />
       </Helmet>
 
       <PageHero
-        crumb="About" eyebrow="Licensed and insured"
-        title="The credential comes first, because it is what separates safe from merely finished."
-        lede="We wire and rewire homes in Nairobi. That is the whole business."
+        crumb="About" eyebrow="About us"
+        title="A leading electrical engineering company in the corporate market."
+        lede="Premier Power Limited works on electrical installation projects all over the country, and is expanding — diversifying geographical risk, with further offices planned in Kenya and across the border."
       />
 
       <section className="section">
         <div className="container-x grid gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
           <div>
-            <SectionHeader eyebrow="Who we are" title="Residential electricians, and nothing else." />
+            <SectionHeader eyebrow="Mission &amp; vision" title="Our mission and values" />
             <motion.div {...inView} className="mt-8 space-y-5 text-base leading-relaxed text-neutral-600">
               <p>
-                We are not a general contractor with an electrician on staff, and we do not take
-                on commercial fit-outs, solar tie-ins, or appliance repair.
+                To provide the best enhanced quality, innovative, safe and flexible electrical
+                services.
               </p>
               <p>
-                The reason we photograph every circuit before plastering is not marketing. It is
-                that a homeowner has no way to audit the work afterwards, and the only honest
-                response to that is to document it while it can still be seen. The set of
-                photographs is yours whether or not you ever need it.
+                We strongly believe in the principles of corporate responsibility, and in
+                attaining our goals in ways that honour ethical values and respect for our
+                clients, our communities and the natural environment — and in the safety of our
+                employees.
               </p>
               <p className="font-semibold text-primary">
-                If we think a job is outside what we do well, we will say so and lose the work.
+                Our vision is to lead our field of specialisation in electrical and ICT
+                installation, through total quality management, skills, and maintenance that
+                keeps customer satisfaction high long after handover.
               </p>
             </motion.div>
 
@@ -50,8 +52,8 @@ export default function About() {
             <dl className="mt-8 max-w-md rounded-xl border border-neutral-200 bg-neutral-50 p-6 text-sm">
               {[
                 ['Registered name', site.legalName],
-                ['EPRA licence', site.epraNumber],
-                ['Licence class', site.epraClass],
+                ['NCA registration', site.ncaNumber],
+                ['Category', site.ncaCategory],
                 ['Insured by', site.insured],
                 ['Service area', site.serviceArea],
               ].map(([label, v]) => (

@@ -4,7 +4,7 @@
  * Turn on with VITE_DEMO=1 so the site renders full for review and client
  * presentation. Everything here is invented and says so on screen.
  *
- * Two fields are deliberately NOT given realistic values: the EPRA licence
+ * Two fields are deliberately NOT given realistic values: the NCA registration
  * number and the testimonials. A plausible-looking licence number on an
  * electrician's site is a false credential claim in a regulated trade, and
  * invented reviews are fabricated social proof. Both render as visibly
@@ -15,22 +15,17 @@
 export const DEMO = import.meta.env.VITE_DEMO === '1'
 
 export const demoOverrides = {
-  phone: '0722 000 000',
-  whatsapp: '254722000000',
-  email: 'hello@premierpower.example',
+  // Contact details, address and the project list are now real, from the
+  // company profile — demo mode must not shadow them with invented values.
+  // Only what the client has still not supplied is filled in here.
+  warranty: '2 years (sample)',
+  yearsLicensed: '10 (sample)',
+  installsCompleted: '40+ (sample)',
+  responseTime: 'Same day (sample)',
 
-  legalName: 'PremierPower Electrical Ltd (sample)',
-  street: '00 Sample Road, Kilimani',
-  serviceArea: 'Nairobi and within 40km',
-
-  // Not a real or realistic licence number — see the note above.
-  epraNumber: 'SAMPLE — not a licence',
-  epraClass: 'Class A (sample)',
-  insured: 'Sample Insurance Ltd',
-  warranty: '2 years',
-  yearsLicensed: '12',
-  installsCompleted: '480',
-  responseTime: 'Same day',
+  // Not a real or realistic registration number. The NCA certificate in the
+  // company profile is a blank template with no number on it.
+  ncaNumber: 'SAMPLE — not a registration',
 }
 
 export const demoTestimonials = [
@@ -58,23 +53,19 @@ export const demoTestimonials = [
 ]
 
 /**
- * Demo imagery.
- *
- * These are decorative lighting product shots, not Premier Power's own
- * installation work, and they do not match the captions they sit under — the
- * hero claims circuits photographed before plastering and shows a finished
- * fitting. They exist so the layout and motion can be judged with real images
- * in place, behind the demo ribbon. They cannot ship.
- *
- * The launch set is still: a marked-out wall, a chase-open/finished pair shot
- * from one fixed tripod position, a consumer unit before and after, and a team
- * photo. See PRODUCT.md.
+ * Project imagery, extracted from the company profile PDF. These are Premier
+ * Power's own projects, so unlike the earlier placeholders they can ship —
+ * subject to the client confirming which images they hold rights to publish.
  */
 export const demoPhotos = {
-  heroWall: '/demo/Retro_Monique_01.jpeg',
-  chaseOpen: '/demo/Retro_Monique_00.jpeg',
-  chaseFinished: '/demo/Retro_Monique_02.jpeg',
-  boardBefore: '/demo/Golden_02.jpeg',
-  boardAfter: '/demo/Retro_Monique_01.jpeg',
-  team: '/demo/Retro_Monique_02.jpeg',
+  hospitality: '/projects/hospitality.jpg',
+  lodge: '/projects/lodge.jpg',
+  technical: '/projects/technical.jpg',
+  residential: '/projects/residential.jpg',
+  villas: '/projects/villas.jpg',
+  apartments: '/projects/apartments.jpg',
+  clubhouse: '/projects/clubhouse.jpg',
+  houseExterior: '/projects/house-exterior.jpg',
+  interior: '/projects/interior.jpg',
+  stairDetail: '/projects/stair-detail.jpg',
 }

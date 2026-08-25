@@ -20,15 +20,15 @@ export default function Safety() {
   return (
     <>
       <Helmet>
-        <title>Safety &amp; compliance — EPRA licensed, tested and certified | Premier Power</title>
-        <meta name="description" content="Our EPRA licence, the five tests every installation receives before certification, and our workmanship warranty terms — stated plainly." />
+        <title>Safety &amp; compliance — NCA registered, tested and certified | Premier Power</title>
+        <meta name="description" content="Our NCA registration, the tests every installation receives before certification, and our workmanship warranty terms — stated plainly." />
         <link rel="canonical" href="https://premierpower.co.ke/safety" />
       </Helmet>
 
       <PageHero
-        crumb="Safety" eyebrow="Verify before you call"
-        title="Our licence number is public. Check it before you call us."
-        lede="You can check it against the Energy and Petroleum Regulatory Authority's register without speaking to us first — and you should do the same with anyone else you are considering."
+        crumb="Safety" eyebrow="Compliance"
+        title="Registered, tested, and documented on every project."
+        lede="Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. Every installation is tested and certified before handover, whatever its size."
       />
 
       <section className="section">
@@ -52,10 +52,10 @@ export default function Safety() {
 
           <aside className="lg:pt-4">
             <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-7">
-              <h2 className="font-heading text-lg font-semibold text-primary">Our licence</h2>
+              <h2 className="font-heading text-lg font-semibold text-primary">Our registration</h2>
               <LicenseBadge className="mt-4 w-full" />
               <dl className="mt-6 space-y-3 text-sm">
-                {[['EPRA number', site.epraNumber], ['Class', site.epraClass], ['Insured by', site.insured]].map(([l, v]) => (
+                {[['NCA registration', site.ncaNumber], ['Category', site.ncaCategory], ['Insured by', site.insured]].map(([l, v]) => (
                   <div key={l} className="flex justify-between gap-4 border-b border-neutral-200 pb-3">
                     <dt className="text-neutral-500">{l}</dt>
                     <dd className={isPending(v) ? 'text-neutral-400' : 'font-semibold text-primary'}>
