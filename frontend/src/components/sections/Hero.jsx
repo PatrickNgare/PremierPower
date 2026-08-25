@@ -24,9 +24,12 @@ const pulseRing = {
  * inside the section's overflow-hidden instead. Same directional read.
  */
 const slideVariants = {
-  enter: (dir) => ({ x: dir >= 0 ? '100%' : '-100%' }),
-  center: { x: '0%', transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } },
-  exit: (dir) => ({ x: dir >= 0 ? '-30%' : '30%', opacity: 0, transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] } }),
+  enter: (dir) => ({ x: dir >= 0 ? '100%' : '-100%', zIndex: 1 }),
+  center: { x: '0%', zIndex: 1, transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] } },
+  // The outgoing slide holds its position and simply waits to be unmounted.
+  // Moving it out leaves a black gap between the two while they cross, which
+  // is exactly the failure the clip-path version did not have.
+  exit: { x: '0%', zIndex: 0, transition: { duration: 0.9 } },
 }
 
 /** Per-character spring-up, used on the locality line. */
@@ -51,6 +54,15 @@ function CharSplit({ text, className, delayOffset = 0 }) {
       ))}
     </span>
   )
+}
+
+/**
+ * Framer Motion's tap gesture swallows Enter on a motion.button — Space
+ * activates, Enter does nothing. Enter is the key most people reach for, so
+ * every animated control here handles it explicitly.
+ */
+const activateOnEnter = (fn) => (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); fn() }
 }
 
 export default function Hero() {
@@ -138,6 +150,10 @@ export default function Hero() {
       {/* Legibility gradients over the photograph. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[42%] bg-gradient-to-b from-black/65 to-transparent" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[52%] bg-gradient-to-t from-black/82 to-transparent" />
+      {/* Left scrim. The top/bottom gradients leave a clear band across the
+          middle, and a light photograph there makes white text vanish. This
+          keeps the headline column legible over any image. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-full bg-gradient-to-r from-black/80 via-black/45 to-transparent md:w-[70%]" />
       <div aria-hidden="true" className="dot-overlay pointer-events-none absolute inset-0 z-[1] opacity-30" />
 
       {/* Headline block — mouse parallax. */}
@@ -249,7 +265,8 @@ export default function Hero() {
       </div>
 
       <motion.button
-        onClick={prev} whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.88 }}
+        onClick={prev} onKeyDown={activateOnEnter(prev)}
+        whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.88 }}
         aria-label="Previous slide"
         className="absolute left-4 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-sm md:flex"
       >
@@ -259,7 +276,8 @@ export default function Hero() {
       </motion.button>
 
       <motion.button
-        onClick={next} whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.88 }}
+        onClick={next} onKeyDown={activateOnEnter(next)}
+        whileHover={{ scale: 1.12 }} whileTap={{ scale: 0.88 }}
         aria-label="Next slide"
         className="absolute right-4 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-white backdrop-blur-sm md:flex"
       >
@@ -269,13 +287,17 @@ export default function Hero() {
       </motion.button>
 
       {/* Dot indicators. */}
-      <div className="absolute bottom-8 right-6 z-20 flex items-center gap-2 md:right-14">
+      <div role="tablist" aria-label="Slides"
+        className="absolute bottom-8 right-6 z-20 flex items-center gap-2 md:right-14">
         {slides.map((s, i) => (
           <motion.button
             key={s.headline}
+            role="tab"
+            aria-selected={i === current}
             onClick={() => { setDirection(i > current ? 1 : -1); setCurrent(i) }}
+            onKeyDown={activateOnEnter(() => { setDirection(i > current ? 1 : -1); setCurrent(i) })}
             whileHover={{ scale: 1.4 }} whileTap={{ scale: 0.9 }}
-            aria-label={`Go to slide ${i + 1}`}
+            aria-label={`Go to slide ${i + 1}: ${s.eyebrow}`}
             animate={i === current ? { width: 32, height: 8 } : { width: 8, height: 8 }}
             transition={{ duration: 0.3 }}
             className={`rounded-full ${i === current ? 'bg-secondary' : 'bg-white/40 hover:bg-white/70'}`}
