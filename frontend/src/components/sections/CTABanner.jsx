@@ -1,98 +1,89 @@
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { FaArrowRight, FaWhatsapp } from 'react-icons/fa'
-import { FiPhone } from 'react-icons/fi'
+import { motion, useReducedMotion } from 'framer-motion'
+import { ArrowRight, PhoneCall, MessageCircle } from 'lucide-react'
+import Magnetic from '@/components/ui/Magnetic'
 import LicenseBadge from '@/components/ui/LicenseBadge'
 import { site, isPending, whatsappLink, telLink } from '@/config/site'
 
+const EASE = [0.22, 1, 0.36, 1]
+
+/**
+ * Closing call to action. Light behaves as the background material: two warm
+ * pools drift slowly behind the type, and a beam crosses the band. All of it
+ * stops under prefers-reduced-motion.
+ */
 export default function CTABanner() {
+  const reduce = useReducedMotion()
   const wa = whatsappLink()
   const tel = telLink()
 
   return (
-    <section className="on-dark noise relative overflow-hidden bg-primary-dark">
-      <div aria-hidden="true" className="grid-overlay pointer-events-none absolute inset-0" />
-      <div aria-hidden="true" className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-secondary/20 blur-[100px]" />
-      <div aria-hidden="true" className="pointer-events-none absolute -bottom-16 right-0 h-96 w-96 rounded-full bg-primary-light/40 blur-[120px]" />
-      {/* Ghost numeral, the way SpaceInfra anchors its closing banner. */}
-      <span aria-hidden="true" className="pointer-events-none absolute bottom-0 right-6 select-none font-heading text-[160px] font-bold leading-none text-white/[0.03]">
-        240V
-      </span>
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-secondary to-transparent" />
+    <section className="on-dark relative isolate overflow-hidden bg-ink-950">
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10"
+        animate={reduce ? {} : { opacity: [0.55, 0.9, 0.55] }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ background: 'radial-gradient(46rem 30rem at 18% 8%, rgb(245 201 123 / 0.24), transparent 62%)' }}
+      />
+      <motion.div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10"
+        animate={reduce ? {} : { opacity: [0.8, 0.4, 0.8] }}
+        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ background: 'radial-gradient(34rem 24rem at 86% 92%, rgb(255 59 47 / 0.18), transparent 64%)' }}
+      />
+      <div aria-hidden="true" className="light-beam animate-beam absolute inset-0 -z-10 motion-reduce:animate-none" />
+      <div aria-hidden="true" className="rule-fade absolute inset-x-0 top-0 h-px text-lumen-500/45" />
 
-      <div className="container-x relative py-20">
-        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-16">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          >
-            <div className="mb-7">
-              <span className="inline-flex items-center gap-2 rounded-full bg-secondary/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-secondary-accent">
-                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-secondary" />
-                No obligation
-              </span>
-            </div>
-            <h2 className="mb-5 font-heading text-2xl font-bold leading-[1.06] tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl">
-              Find out what is behind{' '}
-              <span className="text-gradient-accent">your walls</span>.
-            </h2>
-            <p className="mb-10 max-w-md text-base leading-relaxed text-white/50">
-              We test the existing installation, photograph what we find, and put the findings
-              in writing — including the parts that are fine. No obligation, and no salesperson.
-            </p>
+      <div className="container-x section">
+        <motion.div
+          initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.8, ease: EASE }}
+          className="mx-auto max-w-3xl text-center"
+        >
+          <h2 className="text-[clamp(2.2rem,5vw,3.8rem)] font-extrabold text-white">
+            Let's illuminate
+            <span className="text-glow bg-gradient-to-r from-lumen-300 to-lumen-700 bg-clip-text text-transparent">
+              {' '}your next project.
+            </span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink-300">
+            From electrical infrastructure to architectural lighting — let's build a safer,
+            smarter and better-lit space.
+          </p>
 
-            <div className="flex flex-col gap-4 sm:flex-row">
-              <Link to="/contact" className="btn-primary-lg group active:scale-[0.97]">
-                Book a Free Site Assessment
-                <FaArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            <Magnetic>
+              <Link to="/contact" className="btn-primary group">
+                Request a quote
+                <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
               </Link>
+            </Magnetic>
+            <Magnetic>
               {tel ? (
-                <a href={tel} className="inline-flex items-center justify-center gap-3 rounded-xl border border-white/20 px-8 py-4 text-base font-medium text-white transition-colors hover:border-white/50 hover:bg-white/[0.08]">
-                  <FiPhone size={14} className="text-secondary-accent" aria-hidden="true" />
+                <a href={tel} className="btn-ghost">
+                  <PhoneCall size={16} aria-hidden="true" />
                   {String(site.phone)}
                 </a>
               ) : (
-                <span className="inline-flex items-center justify-center gap-3 rounded-xl border border-dashed border-white/20 px-8 py-4 text-base text-white/40">
-                  Phone number pending
-                </span>
+                <Link to="/contact" className="btn-ghost">Contact our team</Link>
               )}
-            </div>
-          </motion.div>
+            </Magnetic>
+            {wa && (
+              <a href={wa} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                <MessageCircle size={16} aria-hidden="true" />
+                WhatsApp
+              </a>
+            )}
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.6, delay: 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="lg:justify-self-end"
-          >
-            <div className="glass-stat max-w-sm rounded-2xl p-8">
-              <p className="font-heading text-lg font-semibold text-white">What the visit covers</p>
-              <ul className="mt-5 space-y-3">
-                {[
-                  'The consumer unit opened and tested',
-                  'Every finding photographed',
-                  'Written report, including what is fine',
-                  'A dated schedule if work is needed',
-                ].map((line) => (
-                  <li key={line} className="flex gap-3 text-sm text-white/70">
-                    <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
-                    {line}
-                  </li>
-                ))}
-              </ul>
-              {wa && (
-                <a href={wa} target="_blank" rel="noopener noreferrer"
-                  className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-secondary-accent hover:gap-3 transition-all">
-                  <FaWhatsapp size={16} aria-hidden="true" /> Ask on WhatsApp
-                </a>
-              )}
-              <LicenseBadge tone="dark" className="mt-6 w-full" />
-            </div>
-          </motion.div>
-        </div>
+          <div className="mt-10 flex justify-center">
+            <LicenseBadge tone="dark" />
+          </div>
+        </motion.div>
       </div>
     </section>
   )

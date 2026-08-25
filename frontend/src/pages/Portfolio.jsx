@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import PageHero from '@/components/ui/PageHero'
-import ProjectsGrid from '@/components/sections/ProjectsGrid'
+import ProjectsShowcase from '@/components/sections/ProjectsShowcase'
 import CTABanner from '@/components/sections/CTABanner'
 
 export default function Portfolio() {
@@ -21,7 +21,7 @@ export default function Portfolio() {
 
       <section className="section">
         <div className="container-x">
-          <ProjectsGrid />
+          <ProjectsShowcase />
         </div>
       </section>
 

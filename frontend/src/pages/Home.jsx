@@ -8,7 +8,7 @@ import SafetyBar from '@/components/sections/SafetyBar'
 import Solutions from '@/components/sections/Solutions'
 import LightingShowcase from '@/components/sections/LightingShowcase'
 import Services from '@/components/sections/Services'
-import ProjectsGrid from '@/components/sections/ProjectsGrid'
+import ProjectsShowcase from '@/components/sections/ProjectsShowcase'
 import ProcessSteps from '@/components/sections/ProcessSteps'
 import TestimonialsStrip from '@/components/sections/TestimonialsStrip'
 import CTABanner from '@/components/sections/CTABanner'
@@ -44,7 +44,7 @@ export default function Home() {
               View all installations <FiArrowRight size={13} aria-hidden="true" />
             </Link>
           </motion.div>
-          <ProjectsGrid limit={3} />
+          <ProjectsShowcase limit={5} />
         </div>
       </section>
 
