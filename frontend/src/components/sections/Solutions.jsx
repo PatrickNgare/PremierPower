@@ -15,7 +15,7 @@ export default function Solutions() {
     <motion.ul
       variants={stagger(0.07)}
       {...inView}
-      className="mt-14 grid auto-rows-[13.5rem] grid-flow-dense grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      className="mt-10 grid auto-rows-[10.5rem] grid-flow-dense grid-cols-1 gap-3 sm:mt-14 sm:auto-rows-[13.5rem] sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
     >
       {solutions.map((s, i) => {
         // A composed grid rather than a uniform one: the lead spans two
@@ -30,9 +30,11 @@ export default function Solutions() {
           <motion.li
             key={s.slug}
             variants={fadeUp}
+            // Seven stacked cards is a long scroll on a phone for little
+            // gain; the rest appear from sm up.
             className={`group relative overflow-hidden rounded-[var(--radius-card)] ${span} ${
-              s.image ? 'border border-white/10' : 'border border-ink-900/10 bg-white'
-            }`}
+              i > 3 ? 'hidden sm:block' : ''
+            } ${s.image ? 'border border-white/10' : 'border border-ink-900/10 bg-white'}`}
           >
             {s.image ? (
               <>
@@ -67,9 +69,7 @@ export default function Solutions() {
               </p>
               <Link
                 to="/services"
-                className={`mt-5 inline-flex items-center gap-1.5 text-sm font-semibold ${
-                  s.image ? 'text-lumen-500' : 'text-[rgb(var(--accent-rgb))]'
-                }`}
+                className={`link-arrow mt-4 ${s.image ? '!text-lumen-500' : ''}`}
               >
                 Explore solution
                 <ArrowUpRight

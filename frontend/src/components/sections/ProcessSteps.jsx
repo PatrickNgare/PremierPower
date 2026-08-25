@@ -9,7 +9,7 @@ import { stages } from '@/data/process'
 export default function ProcessSteps({ tone = 'light' }) {
   const dark = tone === 'dark'
   return (
-    <motion.ol variants={stagger(0.08)} {...inView} className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+    <motion.ol variants={stagger(0.08)} {...inView} className="mt-10 grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
       {stages.map((s) => (
         <motion.li key={s.n} variants={fadeUp} className="relative">
           <span className={`font-heading text-5xl font-bold ${dark ? 'text-white/15' : 'text-neutral-200'}`}>

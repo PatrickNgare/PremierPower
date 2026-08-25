@@ -33,7 +33,7 @@ export default function Services() {
   const LeadIcon = icons[lead.slug] ?? Zap
 
   return (
-    <div className="mt-14 grid gap-4 lg:grid-cols-3">
+    <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 lg:grid-cols-3">
       {/* Feature — the work everything else attaches to. */}
       <motion.article
         variants={fadeUp} {...inView}
@@ -45,11 +45,11 @@ export default function Services() {
           className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-105"
         />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-tr from-ink-950 via-ink-950/85 to-ink-950/45" />
-        <div className="flex h-full min-h-[22rem] flex-col justify-end p-8 lg:p-10">
+        <div className="flex h-full min-h-[17rem] flex-col justify-end p-7 sm:min-h-[22rem] sm:p-8 lg:p-10">
           <LeadIcon size={24} className="text-lumen-500" aria-hidden="true" />
           <h3 className="mt-5 font-display text-2xl font-bold text-white lg:text-3xl">{lead.title}</h3>
           <p className="mt-3 max-w-lg leading-relaxed text-ink-300">{lead.lede}</p>
-          <Link to="/services" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-lumen-500">
+          <Link to="/services" className="link-arrow mt-5 !text-lumen-500">
             All service lines
             <ArrowUpRight size={15} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
           </Link>
@@ -62,7 +62,7 @@ export default function Services() {
         return (
           <motion.article
             key={s.slug} variants={fadeUp} {...inView}
-            className="group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-7 transition-all duration-500 hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-6 transition-all duration-500 hover:-translate-y-1 sm:p-7"
           >
             <span
               aria-hidden="true"
@@ -85,7 +85,7 @@ export default function Services() {
           const Icon = icons[s.slug] ?? Zap
           return (
             <motion.li key={s.slug} variants={fadeUp}>
-              <div className="group flex flex-wrap items-center gap-x-6 gap-y-2 px-7 py-5 transition-colors duration-300 hover:bg-paper-warm">
+              <div className="group flex flex-wrap items-center gap-x-6 gap-y-1.5 px-6 py-4 transition-colors duration-300 hover:bg-paper-warm sm:px-7 sm:py-5">
                 <Icon size={18} strokeWidth={1.6} className="shrink-0 text-[rgb(var(--accent-rgb))] transition-transform duration-300 group-hover:-translate-y-0.5" aria-hidden="true" />
                 <h3 className="w-full font-display text-base font-bold text-ink-900 sm:w-[15.5rem] sm:shrink-0">{s.title}</h3>
                 <p className="min-w-0 flex-1 text-sm leading-relaxed text-ink-600 sm:border-l sm:border-ink-900/8 sm:pl-6">{s.lede}</p>

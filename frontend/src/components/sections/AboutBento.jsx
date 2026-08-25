@@ -29,7 +29,7 @@ export default function AboutBento() {
     <motion.div
       variants={stagger(0.07)}
       {...inView}
-      className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[13rem_13rem_13rem]"
+      className="mt-10 grid grid-cols-1 gap-3 sm:mt-14 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4 lg:grid-rows-[13rem_13rem_13rem]"
     >
       {/* Tall photograph — anchors the arrangement. */}
       <motion.figure
@@ -39,7 +39,7 @@ export default function AboutBento() {
         <ImageReveal
           src="/projects/resort-dusk.jpg" alt="Completed resort development at dusk"
           drift={3}
-          className="h-full min-h-[20rem] w-full"
+          className="h-full min-h-[15rem] w-full sm:min-h-[20rem]"
           imgClassName="transition-transform duration-[1.4s] ease-out group-hover:scale-105"
         />
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/25 to-transparent" />
@@ -65,7 +65,7 @@ export default function AboutBento() {
       {/* Mission — quiet, typographic, warm ground. */}
       <motion.blockquote
         variants={fadeUp}
-        className="relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-lumen-100 p-7 sm:col-span-2"
+        className="relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-lumen-100 p-6 sm:col-span-2 sm:p-7"
       >
         <Quote size={20} className="text-lumen-700" aria-hidden="true" />
         <p className="mt-4 font-display text-lg font-bold leading-snug text-ink-900">
@@ -122,7 +122,7 @@ export default function AboutBento() {
       {/* Wide data tile — architects worked with. */}
       <motion.div
         variants={fadeUp}
-        className="relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-7 sm:col-span-2"
+        className="relative hidden overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-7 sm:col-span-2 sm:block"
       >
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-ink-400">
           Delivered alongside

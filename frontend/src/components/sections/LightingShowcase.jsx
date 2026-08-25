@@ -80,8 +80,8 @@ export default function LightingShowcase() {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.75, ease: EASE, delay: i * 0.1 }}
                 className={`group relative overflow-hidden rounded-[var(--radius-card)] border border-white/10 ${
-                  i === 0 ? 'sm:row-span-2 h-[26rem] sm:h-auto' : 'h-56'
-                }`}
+                  i === 0 ? 'sm:row-span-2 h-[20rem] sm:h-auto' : 'h-48 sm:h-56'
+                } ${i > 1 ? 'hidden sm:block' : ''}`}
               >
                 <img
                   src={s.src} alt={s.label} loading="lazy" decoding="async"

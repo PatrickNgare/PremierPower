@@ -35,13 +35,15 @@ export default function ProjectsShowcase({ limit }) {
       variants={stagger(0.07)}
       {...inView}
       // grid-flow-dense backfills the holes the row-spans would otherwise leave.
-      className="mt-14 grid auto-rows-[15rem] grid-flow-dense grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      className="mt-10 grid auto-rows-[12rem] grid-flow-dense grid-cols-1 gap-3 sm:mt-14 sm:auto-rows-[15rem] sm:grid-cols-2 sm:gap-4 lg:grid-cols-3"
     >
       {shown.map((p, i) => (
         <motion.li
           key={p.title}
           variants={fadeUp}
-          className={`group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-ink-900 ${spans[i] ?? ''}`}
+          className={`group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-ink-900 ${spans[i] ?? ''} ${
+            i > 2 ? 'hidden sm:block' : ''
+          }`}
         >
           <Photo
             src={p.image_open_url || undefined}
