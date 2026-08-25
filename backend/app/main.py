@@ -125,11 +125,32 @@ def _seed_settings() -> None:
         ("projects_completed", "Projects completed"),
         ("response_time", "Typical response time, e.g. 'same day'"),
     ]
+    # Keys that were renamed. Seeding only ever adds, so without this an
+    # existing database keeps the old rows forever and the client sees
+    # "EPRA licence number" in the CMS long after the site stopped using it.
+    retired = {
+        "epra_number": "nca_number",
+        "epra_class": "nca_category",
+        "years_licensed": "years_trading",
+        "installs_completed": "projects_completed",
+    }
+
     db = SessionLocal()
     try:
-        existing = set(db.scalars(select(SiteSetting.key)).all())
+        rows = {r.key: r for r in db.scalars(select(SiteSetting)).all()}
+        for old, new in retired.items():
+            row = rows.get(old)
+            if row is None:
+                continue
+            # Carry a value across rather than discarding the client's work.
+            target = rows.get(new)
+            if row.value.strip() and target is not None and not target.value.strip():
+                target.value = row.value
+            db.delete(row)
+            rows.pop(old)
+
         for key, note in wanted:
-            if key not in existing:
+            if key not in rows:
                 db.add(SiteSetting(key=key, value="", note=note))
         db.commit()
     finally:
