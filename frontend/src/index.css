@@ -172,7 +172,7 @@
            hover:-translate-y-1 hover:shadow-xl hover:border-neutral-300;
   }
 
-  .section     { @apply py-16 md:py-24; }
+  .section     { @apply py-16 md:py-24 lg:py-28; }
   .container-x { @apply mx-auto w-full max-w-7xl px-5 sm:px-8; }
 
   .eyebrow {
@@ -183,4 +183,64 @@
     @apply inline-flex items-center gap-2 text-sm font-semibold text-secondary-accent
            hover:gap-3 transition-all duration-200;
   }
+
+  /* ── SpaceInfra visual utilities, in Premier Power's palette ── */
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2.5 font-semibold text-sm tracking-wide
+           transition-all duration-200 select-none cursor-pointer
+           border border-white/25 text-white px-8 py-3.5 rounded-lg
+           hover:border-white/50 hover:bg-white/[0.08] hover:-translate-y-px active:translate-y-0;
+  }
+
+  /* Dot field over dark sections. */
+  .dot-overlay {
+    background-image: radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .dot-overlay-dark {
+    background-image: radial-gradient(circle, rgba(35,31,32,0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Ruled field for the closing banner. */
+  .grid-overlay {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  /* Glass stat card. */
+  .glass-stat {
+    @apply backdrop-blur-lg border border-white/[0.12] rounded-xl shadow-md;
+    background: linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.04) 100%);
+  }
+
+  /* Film grain, for premium depth on dark surfaces. */
+  .noise { position: relative; }
+  .noise::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  .text-gradient-accent {
+    background: linear-gradient(90deg, var(--color-secondary) 0%, var(--color-secondary-light) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* The glowing accent rule that punctuates every heading block. */
+  .accent-rule {
+    @apply h-[3px] w-14 rounded-full bg-secondary origin-left;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.7);
+  }
+
+  .section-sm { @apply py-10 md:py-16; }
 }
