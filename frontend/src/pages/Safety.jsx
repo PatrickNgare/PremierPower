@@ -32,7 +32,7 @@ export default function Safety() {
         lede="Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. Every installation is tested and certified before handover, whatever its size."
       />
 
-      <section className="section">
+      <section className="section-tight">
         <div className="container-x grid gap-14 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
           <div>
             <SectionHeader eyebrow="Before certifying" title="What we test, every time." lede="Every installation gets the full sequence, once before the plaster closes and again at handover. The recorded results go to you with the certificate." />

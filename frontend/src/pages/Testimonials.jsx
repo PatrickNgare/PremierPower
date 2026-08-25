@@ -19,7 +19,7 @@ export default function Testimonials() {
         lede="Weighted toward the reviews that mention safety and reliability, because that is what you are actually buying."
       />
 
-      <section className="section">
+      <section className="section-tight">
         <div className="container-x">
           <TestimonialsStrip />
         </div>

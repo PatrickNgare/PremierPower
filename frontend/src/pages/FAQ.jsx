@@ -62,7 +62,7 @@ export default function FAQ() {
         lede="Mostly about licensing. Almost never about price first — which is the right instinct."
       />
 
-      <section className="section">
+      <section className="section-tight">
         <div className="container-x max-w-3xl">
           {faqs.map((f, i) => (
             <Item key={f.q} id={i} q={f.q} a={f.a} open={open === i} onToggle={() => setOpen(open === i ? -1 : i)} />

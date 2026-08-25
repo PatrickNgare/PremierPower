@@ -6,6 +6,7 @@ import LicenseBadge from '@/components/ui/LicenseBadge'
 import Photo from '@/components/ui/Photo'
 import CTABanner from '@/components/sections/CTABanner'
 import SafetyBar from '@/components/sections/SafetyBar'
+import AboutBento from '@/components/sections/AboutBento'
 import { inView } from '@/utils/motion'
 import { demoPhotos } from '@/config/demo'
 import { site, isPending, value } from '@/config/site'
@@ -26,7 +27,7 @@ export default function About() {
         lede="Premier Power Limited works on electrical installation projects all over the country, and is expanding — diversifying geographical risk, with further offices planned in Kenya and across the border."
       />
 
-      <section className="section">
+      <section className="section-tight">
         <div className="container-x grid gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
           <div>
             <SectionHeader eyebrow="Mission &amp; vision" title="Our mission and values" />
@@ -77,6 +78,16 @@ export default function About() {
               className="w-full shadow-xl"
             />
           </div>
+        </div>
+      </section>
+
+      <section className="section-tight bg-paper-warm">
+        <div className="container-x">
+          <SectionHeader
+            eyebrow="At a glance"
+            title="The work, the registration and the reach."
+          />
+          <AboutBento />
         </div>
       </section>
 

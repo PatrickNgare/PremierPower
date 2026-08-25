@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async'
 import PageHero from '@/components/ui/PageHero'
-import ServicesGrid from '@/components/sections/ServicesGrid'
+import ServicesSection from '@/components/sections/Services'
 import ProcessSteps from '@/components/sections/ProcessSteps'
 import SectionHeader from '@/components/ui/SectionHeader'
 import CTABanner from '@/components/sections/CTABanner'
@@ -21,13 +21,13 @@ export default function Services() {
         lede="Our NCA registration covers electrical installation and the specialist systems that sit alongside it — security, solar, power continuity, vertical transport, transmission and gas. One contractor, coordinated on one programme."
       />
 
-      <section className="section">
+      <section className="section-tight">
         <div className="container-x">
-          <ServicesGrid />
+          <ServicesSection />
         </div>
       </section>
 
-      <section className="section bg-neutral-50">
+      <section className="section-tight bg-paper-warm">
         <div className="container-x">
           <SectionHeader
             align="center" eyebrow="How it works"

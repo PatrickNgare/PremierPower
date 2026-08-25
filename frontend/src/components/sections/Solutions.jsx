@@ -15,17 +15,24 @@ export default function Solutions() {
     <motion.ul
       variants={stagger(0.07)}
       {...inView}
-      className="mt-14 grid auto-rows-[16rem] grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      className="mt-14 grid auto-rows-[13.5rem] grid-flow-dense grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       {solutions.map((s, i) => {
+        // A composed grid rather than a uniform one: the lead spans two
+        // columns and two rows, the next two span two columns, the rest sit
+        // compact.
         const wide = i === 0
+        const span =
+          i === 0 ? 'sm:col-span-2 lg:col-span-2 lg:row-span-2'
+          : i <= 2 ? 'lg:col-span-2'
+          : ''
         return (
           <motion.li
             key={s.slug}
             variants={fadeUp}
-            className={`group relative overflow-hidden rounded-[var(--radius-card)] ${
-              wide ? 'sm:col-span-2 sm:row-span-1' : ''
-            } ${s.image ? 'border border-white/10' : 'border border-ink-900/10 bg-white'}`}
+            className={`group relative overflow-hidden rounded-[var(--radius-card)] ${span} ${
+              s.image ? 'border border-white/10' : 'border border-ink-900/10 bg-white'
+            }`}
           >
             {s.image ? (
               <>
@@ -52,10 +59,10 @@ export default function Solutions() {
                 gradient. Text-only cards centre instead, so the copy is not
                 stranded at the foot of an empty box. */}
             <div className={`relative flex h-full flex-col p-7 ${s.image ? 'justify-end' : 'justify-center'}`}>
-              <h3 className={`font-display text-xl font-bold ${s.image ? 'text-white' : 'text-ink-900'} ${wide ? 'sm:text-2xl' : ''}`}>
+              <h3 className={`font-display font-bold ${s.image ? 'text-white' : 'text-ink-900'} ${wide ? 'text-2xl lg:text-3xl' : 'text-lg'}`}>
                 {s.title}
               </h3>
-              <p className={`mt-2 max-w-sm text-sm leading-relaxed ${s.image ? 'text-ink-300' : 'text-ink-600'}`}>
+              <p className={`mt-2 max-w-md text-sm leading-relaxed ${s.image ? 'text-ink-300' : 'text-ink-600'}`}>
                 {s.line}
               </p>
               <Link

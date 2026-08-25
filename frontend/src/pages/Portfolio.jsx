@@ -19,7 +19,7 @@ export default function Portfolio() {
         lede="Finished rooms prove nothing — anyone can plaster over bad work. Every job here is shown open: the board, the chase, the conductors, and only then the finished wall."
       />
 
-      <section className="section">
+      <section className="section-loose">
         <div className="container-x">
           <ProjectsShowcase />
         </div>
