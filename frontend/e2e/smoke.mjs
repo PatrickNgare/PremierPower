@@ -57,7 +57,7 @@ for (const [device, viewport] of [
   await page.goto(SITE + '/', { waitUntil: 'networkidle' })
   await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
   // Entrance animations are delayed; wait for the control itself.
-  const cta = page.getByRole('link', { name: /book a free site assessment/i }).first()
+  const cta = page.getByRole('link', { name: /explore our solutions/i }).first()
   await cta.waitFor({ state: 'visible', timeout: RENDER_TIMEOUT })
   // isVisible() is true at any scroll depth, so measure the box against the
   // viewport: this must fail if the CTA ever drops below the fold.
@@ -76,9 +76,22 @@ const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } })
 await ctx.addInitScript(() => localStorage.setItem('pp-exit-dismissed', String(Date.now() + 864e5)))
 const page = await ctx.newPage()
 await page.goto(SITE + '/contact', { waitUntil: 'networkidle' })
+// Capture what actually goes on the wire. A 201 only proves the request was
+// accepted — unknown fields are dropped silently, so the payload itself has
+// to be asserted.
+let sentPayload = null
+page.on('request', (r) => {
+  if (r.url().includes('/api/leads') && r.method() === 'POST') {
+    try { sentPayload = JSON.parse(r.postData() ?? '{}') } catch { /* ignore */ }
+  }
+})
+
 await page.fill('input[name="name"]', 'Test Submission')
+await page.fill('input[name="company"]', 'Test Contractor Ltd')
+await page.fill('input[name="email"]', 'smoke@example.com')
 await page.fill('input[name="phone"]', '0722000111')
 await page.fill('input[name="area"]', 'Kilimani')
+await page.selectOption('select[name="project_type"]', { index: 1 })
 await page.fill('textarea[name="message"]', 'Automated smoke test.')
 
 let status = 0
@@ -93,6 +106,11 @@ try {
 }
 check(status === 201, `lead POST returned 201 (got ${status || 'no response'})`)
 
+const carried = ['name', 'company', 'email', 'phone', 'project_type', 'message']
+  .filter((k) => sentPayload && String(sentPayload[k] ?? '').trim())
+check(carried.length === 6,
+  `lead payload carries every field (${carried.length}/6)`)
+
 let confirmed = true
 try {
   await page.waitForSelector('text=That reached us.', { timeout: 5000 })
@@ -101,22 +119,27 @@ try {
 }
 check(confirmed, 'success state rendered after submission')
 
-// The hero carousel must be operable without a pointer. The headline is
-// static across slides; the per-slide caption is what changes.
+// The hero is now a single composition rather than a carousel. What must
+// hold is that its imagery paints and both calls to action are reachable.
 await page.goto(SITE + '/', { waitUntil: 'networkidle' })
 await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
-const slideIndex = async () => {
-  const text = await page.locator('section').first().innerText()
-  return text.match(/(\d\d)\s*\/\s*(\d\d)/)?.[1] ?? null
-}
-const next = page.getByRole('button', { name: /next slide/i })
-const startIndex = await slideIndex()
-await next.focus()
-await page.keyboard.press('Enter')
-await page.waitForTimeout(900)
-const afterIndex = await slideIndex()
-check(startIndex !== null && afterIndex !== null && startIndex !== afterIndex,
-  `hero carousel advances from the keyboard (${startIndex} -> ${afterIndex})`)
+const heroImg = await page.locator('section').first().locator('img').first()
+const heroBox = await heroImg.boundingBox()
+check(
+  heroBox !== null && heroBox.width >= 400,
+  `hero imagery paints (${heroBox ? Math.round(heroBox.width) + 'px wide' : 'missing'})`,
+)
+
+const secondary = page.getByRole('link', { name: /talk to an expert/i })
+  .or(page.getByRole('link', { name: /^\+?[\d ]+$/ }))
+check(await page.getByRole('link', { name: /explore our solutions/i }).count() > 0,
+  'hero primary action present')
+
+// The condensing navbar must still expose navigation once scrolled.
+await page.evaluate(() => window.scrollTo(0, 1200))
+await page.waitForTimeout(700)
+const navVisible = await page.locator('header nav').first().isVisible()
+check(navVisible, 'navigation remains available when condensed')
 
 // The hero must stay a legible dark stage even before photography arrives.
 const heroTall = await page.locator('section').first()
