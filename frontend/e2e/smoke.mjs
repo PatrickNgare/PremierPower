@@ -128,8 +128,9 @@ for (const path of ['/', '/services', '/portfolio', '/safety', '/about', '/conta
   await page.goto(SITE + path, { waitUntil: 'networkidle' })
   // Lazy routes: without this the count can measure the Suspense fallback.
   await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
-  const badges = await page.getByText(/licensed\s*&\s*insured/i).count()
-  check(badges > 0, `${path} — licence badge present`)
+  // The credential is NCA registration, not an EPRA licence.
+  const badges = await page.getByText(/nca\s*(contractor|registered)/i).count()
+  check(badges > 0, `${path} — NCA credential present`)
 }
 
 await browser.close()

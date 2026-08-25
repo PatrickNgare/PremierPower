@@ -110,18 +110,19 @@ def _seed_settings() -> None:
     from sqlalchemy import select
 
     wanted = [
-        ("phone", "Phone number, as customers should dial it"),
+        ("phone", "Primary phone number, as clients should dial it"),
+        ("phone_secondary", "Second phone number"),
         ("whatsapp", "WhatsApp number, digits only, including 254"),
         ("email", "Contact email address"),
         ("legal_name", "Registered business name"),
         ("street", "Street address for Google/LocalBusiness listing"),
-        ("service_area", "Service radius, e.g. 'Nairobi and within 40km'"),
-        ("epra_number", "EPRA licence number — LAUNCH BLOCKER"),
-        ("epra_class", "EPRA licence class"),
+        ("service_area", "Area served, e.g. 'Nairobi and nationwide'"),
+        ("nca_number", "NCA registration number — LAUNCH BLOCKER. The certificates in the company profile are blank templates, so this must come from the client."),
+        ("nca_category", "NCA category, e.g. 'Electrical Engineering Service Contractor'"),
         ("insured", "Insurer name"),
         ("warranty", "Workmanship warranty term, e.g. '2 years'"),
-        ("years_licensed", "Years licensed"),
-        ("installs_completed", "Installations completed"),
+        ("years_trading", "Years trading"),
+        ("projects_completed", "Projects completed"),
         ("response_time", "Typical response time, e.g. 'same day'"),
     ]
     db = SessionLocal()

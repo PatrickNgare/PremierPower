@@ -191,9 +191,9 @@ def test_writes_are_audited(client, auth):
 
 def test_stats_report_pending_settings(client, auth):
     body = client.get("/api/stats", headers=auth).json()
-    assert body["settings"]["total"] == 13
+    assert body["settings"]["total"] == 14
     # One was filled above; the rest are still the launch blockers.
-    assert body["settings"]["pending"] == 12
+    assert body["settings"]["pending"] == 13
     assert body["leads"]["total"] >= 1
 
 

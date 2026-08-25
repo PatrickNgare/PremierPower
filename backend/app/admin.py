@@ -54,11 +54,11 @@ class ServiceAdmin(ModelView, model=Service):
         Service.position, Service.title, Service.slug,
         Service.lede, Service.body, Service.signs, Service.published,
     ]
-    column_labels = {"signs": "Warning signs (one per line)", "lede": "Short summary"}
+    column_labels = {"signs": "Bullet points (one per line)", "lede": "Short summary"}
 
 
 class ProjectAdmin(ModelView, model=Project):
-    name_plural = "Installations"
+    name_plural = "Projects"
     icon = "fa-solid fa-camera"
     column_list = [Project.position, Project.title, Project.location, Project.published]
     form_columns = [
@@ -68,10 +68,12 @@ class ProjectAdmin(ModelView, model=Project):
         Project.published,
     ]
     column_labels = {
-        "image_open_url": "Photo — chase/board OPEN (CDN URL)",
-        "image_open_alt": "Alt text for the open photo",
-        "image_finished_url": "Photo — FINISHED, same framing (CDN URL)",
-        "image_finished_alt": "Alt text for the finished photo",
+        "image_open_url": "Primary photo (URL)",
+        "image_open_alt": "Alt text for the primary photo",
+        "image_finished_url": "Secondary photo (URL)",
+        "image_finished_alt": "Alt text for the secondary photo",
+        "location": "Location, e.g. 'Maiyan, Nanyuki, Laikipia'",
+        "year": "Year, or status such as 'Ongoing'",
     }
 
 
@@ -87,7 +89,7 @@ class TestimonialAdmin(ModelView, model=Testimonial):
         Testimonial.job, Testimonial.quote, Testimonial.mentions_safety,
         Testimonial.published,
     ]
-    column_labels = {"mentions_safety": "Mentions safety/reliability (shown first)"}
+    column_labels = {"mentions_safety": "Mentions delivery/reliability (shown first)"}
 
 
 class SiteSettingAdmin(ModelView, model=SiteSetting):
@@ -133,7 +135,7 @@ class TeamMemberAdmin(ModelView, model=TeamMember):
         TeamMember.position, TeamMember.name, TeamMember.role, TeamMember.bio,
         TeamMember.photo_url, TeamMember.licence_number, TeamMember.published,
     ]
-    column_labels = {"licence_number": "Their own EPRA licence number"}
+    column_labels = {"licence_number": "Their own registration or licence number"}
 
 
 class BannerAdmin(ModelView, model=Banner):
