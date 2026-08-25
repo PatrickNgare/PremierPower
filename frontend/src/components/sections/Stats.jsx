@@ -3,6 +3,7 @@ import { CalendarClock, Building2, Layers, HeartHandshake } from 'lucide-react'
 import Counter from '@/components/ui/Counter'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 import { site, isPending, value } from '@/config/site'
+import { DEMO } from '@/config/demo'
 
 /**
  * Figures the client has to supply. Nothing here is invented: an unconfirmed
@@ -37,6 +38,14 @@ export default function Stats() {
               <Icon size={22} className="text-lumen-500 transition-transform duration-500 group-hover:-translate-y-0.5" aria-hidden="true" />
               <p className={`mt-5 font-display text-[2.75rem] font-extrabold leading-none ${v ? 'text-white' : 'text-white/25'}`}>
                 {v ? <Counter value={v} /> : '—'}
+                {v && DEMO && !r.literal && (
+                  <span
+                    className="ml-1 align-super text-base font-bold text-lumen-500"
+                    title="Placeholder figure, awaiting confirmation"
+                  >
+                    *
+                  </span>
+                )}
               </p>
               <p className="mt-3 text-sm text-ink-300">{r.label}</p>
               <span aria-hidden="true" className="mt-5 block h-px w-12 bg-lumen-500/50 transition-all duration-500 group-hover:w-20" />
@@ -45,10 +54,11 @@ export default function Stats() {
         })}
       </motion.div>
 
-      {anyPending && (
+      {(anyPending || DEMO) && (
         <p className="container-x pb-10 text-xs text-white/30">
-          Figures marked — are awaiting confirmation from the client. Values shown as
-          dummy are placeholders, not real figures.
+          {DEMO
+            ? 'Figures marked * are placeholders awaiting confirmation from the client; — means not yet supplied.'
+            : 'Figures shown as — are awaiting confirmation from the client.'}
         </p>
       )}
     </section>

@@ -4,8 +4,10 @@
  * Turn on with VITE_DEMO=1 so the site renders full for review and client
  * presentation. Everything here is invented and says so on screen.
  *
- * Two fields are deliberately NOT given realistic values: the NCA registration
- * number and the testimonials. A plausible-looking licence number on an
+ * Placeholder values are unmarked in the display so the layout reads cleanly.
+ * They are flagged by a marker beside each figure and a footnote under the
+ * band instead, and the NCA registration number is still never given a
+ * realistic value. A plausible-looking licence number on an
  * electrician's site is a false credential claim in a regulated trade, and
  * invented reviews are fabricated social proof. Both render as visibly
  * labelled dummy data instead, so a demo build can never be mistaken for — or
@@ -18,10 +20,10 @@ export const demoOverrides = {
   // Contact details, address and the project list are now real, from the
   // company profile — demo mode must not shadow them with invented values.
   // Only what the client has still not supplied is filled in here.
-  warranty: '2 years (dummy)',
-  yearsLicensed: '10 (dummy)',
-  installsCompleted: '40+ (dummy)',
-  responseTime: 'Same day (dummy)',
+  warranty: '2 years',
+  yearsLicensed: '10',
+  installsCompleted: '40+',
+  responseTime: 'Same day',
 
   // Not a real or realistic registration number. The NCA certificate in the
   // company profile is a blank template with no number on it.
@@ -30,21 +32,21 @@ export const demoOverrides = {
 
 export const demoTestimonials = [
   {
-    name: 'Dummy review',
+    name: 'Client name',
     location: 'Lavington',
     job: 'Full rewire, three-bedroom',
     quote:
       'Dummy text standing in for a real customer review. Replace this before launch — reviews that mention safety and reliability do the most work here.',
   },
   {
-    name: 'Dummy review',
+    name: 'Client name',
     location: 'Westlands',
     job: 'Consumer unit upgrade',
     quote:
       'Dummy text standing in for a real customer review. The admin CMS sorts safety-mentioning reviews to the front automatically.',
   },
   {
-    name: 'Dummy review',
+    name: 'Client name',
     location: 'Kileleshwa',
     job: 'Fault finding',
     quote:
