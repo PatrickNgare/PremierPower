@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FiArrowRight } from 'react-icons/fi'
 import Hero from '@/components/sections/Hero'
-import StatsBar from '@/components/sections/StatsBar'
+import Stats from '@/components/sections/Stats'
 import SafetyBar from '@/components/sections/SafetyBar'
-import SectorsGrid from '@/components/sections/SectorsGrid'
-import ServicesGrid from '@/components/sections/ServicesGrid'
+import Solutions from '@/components/sections/Solutions'
+import LightingShowcase from '@/components/sections/LightingShowcase'
+import Services from '@/components/sections/Services'
 import ProjectsGrid from '@/components/sections/ProjectsGrid'
 import ProcessSteps from '@/components/sections/ProcessSteps'
 import TestimonialsStrip from '@/components/sections/TestimonialsStrip'
@@ -29,7 +30,7 @@ export default function Home() {
       </Helmet>
 
       <Hero />
-      <StatsBar />
+      <Stats />
 
       <section className="section">
         <div className="container-x">
@@ -51,13 +52,15 @@ export default function Home() {
         <div className="container-x">
           <SectionHeader
             align="center"
-            eyebrow="Sectors"
-            title="Where our installations go in."
-            lede="Works undertaken by Premier Power Limited span the corporate, commercial and residential markets — with leading contractors in both the private and public sectors."
+            eyebrow="Solutions"
+            title="Lighting and electrical solutions designed around you."
+            lede="Works undertaken by Premier Power span the corporate, commercial and residential markets — delivered with leading contractors in both the private and public sectors."
           />
-          <SectorsGrid />
+          <Solutions />
         </div>
       </section>
+
+      <LightingShowcase />
 
       <SafetyBar />
 
@@ -73,7 +76,7 @@ export default function Home() {
               All services <FiArrowRight size={13} aria-hidden="true" />
             </Link>
           </motion.div>
-          <ServicesGrid limit={3} />
+          <Services />
         </div>
       </section>
 
