@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ShieldCheck, MapPin, Layers, Quote } from 'lucide-react'
+import { ShieldCheck, MapPin, Layers, Quote, Expand } from 'lucide-react'
+import Lightbox from '@/components/ui/Lightbox'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 // The full list from the company profile, not the nine shown on the site.
 import { projects } from '@/data/projects'
@@ -14,6 +16,14 @@ const ARCHITECTS = ['Seltar Crafts Ltd', 'Designspec Ltd', 'Construe Consultants
  * company profile.
  */
 export default function AboutBento() {
+  const [open, setOpen] = useState(null)
+  const items = [{
+    src: '/projects/resort-dusk.jpg',
+    alt: 'Completed resort development at dusk',
+    title: 'Completed resort development',
+    caption: 'Hospitality · Kenya',
+  }]
+
   return (
     <motion.div
       variants={stagger(0.07)}
@@ -31,7 +41,15 @@ export default function AboutBento() {
           className="h-full min-h-[20rem] w-full object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-105"
         />
         <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/25 to-transparent" />
-        <figcaption className="absolute inset-x-0 bottom-0 p-7">
+        <button
+          type="button" onClick={() => setOpen(0)}
+          className="absolute inset-0 cursor-zoom-in"
+          aria-label="View completed resort development larger"
+        />
+        <span aria-hidden="true" className="pointer-events-none absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white opacity-0 backdrop-blur-sm transition-opacity duration-500 group-hover:opacity-100">
+          <Expand size={15} />
+        </span>
+        <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 p-7">
           <p className="font-display text-2xl font-bold text-white">
             {projects.length} projects across Kenya
           </p>
@@ -116,6 +134,7 @@ export default function AboutBento() {
           ))}
         </ul>
       </motion.div>
+      <Lightbox items={items} index={open} onClose={() => setOpen(null)} onIndex={setOpen} />
     </motion.div>
   )
 }

@@ -1,7 +1,8 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
-import { ArrowRight, Sparkles } from 'lucide-react'
+import { ArrowRight, Sparkles, Expand } from 'lucide-react'
+import Lightbox from '@/components/ui/Lightbox'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -11,6 +12,8 @@ const specimens = [
   { src: '/projects/suite.jpg', label: 'Guest suite', line: 'Bedside, wardrobe and reading circuits switched independently.' },
 ]
 
+const lightboxItems = specimens.map((s) => ({ src: s.src, alt: s.label, title: s.label, caption: s.line }))
+
 /**
  * A showroom rather than a section. Dark ground, warm light, and the imagery
  * appears to illuminate the type beside it. Parallax is scroll-linked and
@@ -18,6 +21,7 @@ const specimens = [
  */
 export default function LightingShowcase() {
   const ref = useRef(null)
+  const [open, setOpen] = useState(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const lift = useTransform(scrollYProgress, [0, 1], reduce ? ['0%', '0%'] : ['6%', '-6%'])
@@ -84,7 +88,19 @@ export default function LightingShowcase() {
                   className="h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
                 />
                 <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/20 to-transparent" />
-                <figcaption className="absolute inset-x-0 bottom-0 p-5">
+                <button
+                  type="button"
+                  onClick={() => setOpen(i)}
+                  className="absolute inset-0 cursor-zoom-in"
+                  aria-label={`View ${s.label} larger`}
+                />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white opacity-0 backdrop-blur-sm transition-opacity duration-500 group-hover:opacity-100"
+                >
+                  <Expand size={14} />
+                </span>
+                <figcaption className="pointer-events-none absolute inset-x-0 bottom-0 p-5">
                   <p className="font-display text-base font-bold text-white">{s.label}</p>
                   <p className="mt-1 text-xs leading-snug text-ink-300 opacity-0 transition-all duration-500 group-hover:opacity-100">
                     {s.line}
@@ -95,6 +111,8 @@ export default function LightingShowcase() {
           </motion.div>
         </div>
       </div>
+
+      <Lightbox items={lightboxItems} index={open} onClose={() => setOpen(null)} onIndex={setOpen} />
     </section>
   )
 }

@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUpRight, MapPin } from 'lucide-react'
+import { Expand, MapPin } from 'lucide-react'
+import Lightbox from '@/components/ui/Lightbox'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 import { projectShowcase } from '@/data/projectShowcase'
 import { demoPhotos } from '@/config/demo'
@@ -15,6 +16,16 @@ const spans = ['lg:row-span-2', '', '', '', 'lg:row-span-2', '', '', '', '']
 
 export default function ProjectsShowcase({ limit }) {
   const shown = limit ? projectShowcase.slice(0, limit) : projectShowcase
+  const [open, setOpen] = useState(null)
+
+  // Only tiles with a real image are viewable; a placeholder has nothing to
+  // enlarge, so it stays a plain tile rather than a dead button.
+  const viewable = shown
+    .map((p, i) => ({ ...p, i, src: p.image_open_url || demoPhotos[p.demoKey] }))
+    .filter((p) => p.src)
+  const items = viewable.map((p) => ({
+    src: p.src, alt: p.image_open_alt, title: p.title, caption: `${p.badge} · ${p.location}`,
+  }))
 
   return (
     <motion.ul
@@ -63,12 +74,23 @@ export default function ProjectsShowcase({ limit }) {
             aria-hidden="true"
             className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-all duration-500 group-hover:border-lumen-500 group-hover:bg-lumen-500 group-hover:text-ink-950"
           >
-            <ArrowUpRight size={16} className="transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <Expand size={15} className="transition-transform duration-500 group-hover:scale-110" />
           </span>
 
-          <Link to="/portfolio" className="absolute inset-0" aria-label={`${p.title}, ${p.location}`} />
+          {(() => {
+            const pos = viewable.findIndex((v) => v.i === i)
+            return pos === -1 ? null : (
+              <button
+                type="button"
+                onClick={() => setOpen(pos)}
+                className="absolute inset-0 cursor-zoom-in"
+                aria-label={`View ${p.title}, ${p.location}, larger`}
+              />
+            )
+          })()}
         </motion.li>
       ))}
+      <Lightbox items={items} index={open} onClose={() => setOpen(null)} onIndex={setOpen} />
     </motion.ul>
   )
 }

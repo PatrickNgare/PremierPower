@@ -119,6 +119,37 @@ try {
 }
 check(confirmed, 'success state rendered after submission')
 
+// Images are interactive: a project tile opens a viewer that traps focus,
+// locks background scroll, navigates by keyboard and closes on Escape.
+await page.goto(SITE + '/', { waitUntil: 'networkidle' })
+await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
+const tile = page.getByRole('button', { name: /view .* larger/i }).first()
+await tile.scrollIntoViewIfNeeded()
+await page.waitForTimeout(1200)
+await tile.click()
+let dialogOpened = true
+try {
+  await page.waitForSelector('[role="dialog"]', { timeout: 15000 })
+} catch { dialogOpened = false }
+check(dialogOpened, 'clicking an image opens the viewer')
+
+if (dialogOpened) {
+  const scrollBefore = await page.evaluate(() => window.scrollY)
+  await page.mouse.wheel(0, 700)
+  await page.waitForTimeout(400)
+  const scrollAfter = await page.evaluate(() => window.scrollY)
+  check(scrollBefore === scrollAfter, 'viewer locks background scroll')
+
+  await page.keyboard.press('Escape')
+  // Exit animation plus a loaded machine; poll rather than assume a duration.
+  let closed = false
+  for (let i = 0; i < 20 && !closed; i++) {
+    await page.waitForTimeout(250)
+    closed = (await page.locator('[role="dialog"]').count()) === 0
+  }
+  check(closed, 'Escape closes the viewer')
+}
+
 // The hero is now a single composition rather than a carousel. What must
 // hold is that its imagery paints and both calls to action are reachable.
 await page.goto(SITE + '/', { waitUntil: 'networkidle' })
