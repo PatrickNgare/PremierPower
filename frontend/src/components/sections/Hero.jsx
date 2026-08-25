@@ -68,7 +68,7 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="on-dark relative isolate flex min-h-[100svh] items-center overflow-hidden bg-ink-950"
+      className="on-dark relative isolate flex min-h-[min(100svh,46rem)] items-center overflow-hidden bg-ink-950"
       aria-label="Premier Power — electrical engineering and lighting"
     >
       {/* ── Layer 1: the room ─────────────────────────────────── */}
@@ -115,7 +115,7 @@ export default function Hero() {
         initial="hidden"
         animate="show"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.09, delayChildren: 0.12 } } }}
-        className="container-x relative grid w-full items-center gap-14 py-28 lg:grid-cols-[1.05fr_0.95fr] lg:py-24"
+        className="container-x relative grid w-full items-center gap-10 py-16 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14 lg:py-20"
       >
         <div className="max-w-2xl">
           <motion.p variants={rise} className="eyebrow">
@@ -125,7 +125,7 @@ export default function Hero() {
 
           <motion.h1
             variants={rise}
-            className="mt-6 text-[clamp(2.6rem,6.4vw,5.25rem)] font-extrabold text-white"
+            className="mt-5 text-[clamp(2.25rem,4.6vw,3.9rem)] font-extrabold text-white"
           >
             Powering spaces.
             <span className="mt-1 block bg-gradient-to-r from-lumen-300 via-lumen-500 to-lumen-700 bg-clip-text text-transparent">
@@ -133,13 +133,13 @@ export default function Hero() {
             </span>
           </motion.h1>
 
-          <motion.p variants={rise} className="mt-7 max-w-xl text-lg leading-relaxed text-ink-300">
+          <motion.p variants={rise} className="mt-5 max-w-xl text-base leading-relaxed text-ink-300 sm:text-lg">
             Electrical engineering and lighting installation across Kenya — for hotels and
             lodges, commercial interiors, institutions, healthcare, industrial sites and
             residential developments.
           </motion.p>
 
-          <motion.div variants={rise} className="mt-10 flex flex-wrap items-center gap-3">
+          <motion.div variants={rise} className="mt-8 flex flex-wrap items-center gap-3">
             <Link to="/services" className="btn-primary group">
               Explore our solutions
               <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
@@ -154,7 +154,7 @@ export default function Hero() {
             )}
           </motion.div>
 
-          <motion.ul variants={rise} className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <motion.ul variants={rise} className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3">
             {trust.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-2.5 text-sm text-ink-300">
                 <Icon size={16} className="text-lumen-500" aria-hidden="true" />
@@ -168,7 +168,7 @@ export default function Hero() {
         <motion.div
           variants={rise}
           style={fine && !reduce ? { x: cardX, y: cardY } : undefined}
-          className="relative mx-auto hidden w-full max-w-md lg:block"
+          className="relative mx-auto hidden w-full max-w-sm lg:block xl:max-w-md"
         >
           <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-white/10 bg-white/[0.04] backdrop-blur-xl">
             <img
@@ -176,7 +176,7 @@ export default function Hero() {
               alt="Feature lighting in a completed commercial interior"
               loading="eager"
               decoding="async"
-              className="h-72 w-full object-cover"
+              className="h-56 w-full object-cover xl:h-64"
             />
             <div className="p-6">
               <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-lumen-500">
@@ -197,7 +197,7 @@ export default function Hero() {
       {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4, duration: 0.8 }}
-        className="pointer-events-none absolute inset-x-0 bottom-8 flex justify-center"
+        className="pointer-events-none absolute inset-x-0 bottom-5 hidden justify-center lg:flex"
         aria-hidden="true"
       >
         <span className="flex h-11 w-7 items-start justify-center rounded-full border border-white/25 p-1.5">

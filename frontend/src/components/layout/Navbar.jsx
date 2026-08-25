@@ -68,13 +68,13 @@ export default function Navbar() {
               </motion.div>
             </Link>
 
-            <ul className="ml-auto hidden items-center gap-1 xl:flex">
+            <ul className="ml-auto hidden items-center gap-1 lg:flex">
               {navLinks.map((l) => (
                 <li key={l.to}>
                   <NavLink
                     to={l.to}
                     className={({ isActive }) =>
-                      `relative rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-300 ${
+                      `relative rounded-full px-3 py-2 text-[0.83rem] font-medium xl:px-3.5 xl:text-sm transition-colors duration-300 ${
                         isActive ? 'text-ink-900' : 'text-ink-600 hover:text-ink-900'
                       }`
                     }
@@ -97,7 +97,7 @@ export default function Navbar() {
               ))}
             </ul>
 
-            <div className="ml-auto hidden xl:ml-0 xl:block">
+            <div className="ml-auto hidden lg:ml-0 lg:block">
               <Magnetic strength={0.2}>
                 <Link to="/contact" className="btn-primary group px-6 py-3 text-sm">
                   Request a quote
@@ -111,7 +111,7 @@ export default function Navbar() {
               onClick={() => setOpen(true)}
               aria-label="Open menu"
               aria-expanded={open}
-              className="ml-auto rounded-full p-2.5 text-ink-900 transition-colors hover:bg-ink-900/[0.06] xl:hidden"
+              className="ml-auto rounded-full p-2.5 text-ink-900 transition-colors hover:bg-ink-900/[0.06] lg:hidden"
             >
               <Menu size={22} aria-hidden="true" />
             </button>
