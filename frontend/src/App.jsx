@@ -5,7 +5,6 @@ import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import FloatingActions from '@/components/layout/FloatingActions'
-import DemoRibbon from '@/components/layout/DemoRibbon'
 import ExitIntentPopup from '@/components/ui/ExitIntentPopup'
 import Spinner from '@/components/ui/Spinner'
 import PageTransition from '@/components/layout/PageTransition'
@@ -30,7 +29,6 @@ export default function App() {
         Skip to content
       </a>
       <ScrollToTop />
-      <DemoRibbon />
       <Navbar />
       <main id="main">
         <Suspense fallback={<div className="flex min-h-[60vh] items-center justify-center text-neutral-400" aria-busy="true"><Spinner size={26} /></div>}>

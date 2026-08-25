@@ -1,5 +1,6 @@
 /* One list. Desktop nav and mobile menu both read it — never duplicated. */
 export const navLinks = [
+  { to: '/', label: 'Home' },
   { to: '/services', label: 'Services' },
   { to: '/portfolio', label: 'Installations' },
   { to: '/safety', label: 'Safety' },

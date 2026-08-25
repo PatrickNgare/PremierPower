@@ -33,7 +33,7 @@ export default function TestimonialsStrip() {
         <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-neutral-500">Testimonials required</p>
         <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-neutral-600">
           Three or more real reviews, favouring the ones that mention safety and reliability.
-          This section stays empty until they arrive rather than carrying invented praise.
+          This section stays empty until they arrive rather than carrying dummy praise.
         </p>
       </div>
     )

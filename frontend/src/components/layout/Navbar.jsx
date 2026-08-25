@@ -23,29 +23,6 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Utility strip — collapses away once the user starts reading. */}
-      <motion.div
-        aria-hidden={condensed}
-        initial={false}
-        animate={{ height: condensed ? 0 : 38, opacity: condensed ? 0 : 1 }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="on-dark hidden overflow-hidden bg-ink-950 lg:block"
-      >
-        <div className="container-x flex h-[38px] items-center justify-between text-xs text-ink-300">
-          <p className="flex items-center gap-2">
-            <span aria-hidden="true" className="inline-block h-2.5 w-1 rounded-full bg-earth" />
-            NCA-registered electrical engineering contractor · Nationwide
-          </p>
-          {tel ? (
-            <a href={tel} className="flex items-center gap-2 font-semibold text-white transition-colors hover:text-lumen-500">
-              <Phone size={13} aria-hidden="true" /> {String(site.phone)}
-            </a>
-          ) : (
-            <span className="text-white/35">Phone number pending</span>
-          )}
-        </div>
-      </motion.div>
-
       <motion.header
         initial={false}
         animate={{
@@ -68,7 +45,12 @@ export default function Navbar() {
               </motion.div>
             </Link>
 
-            <ul className="ml-auto hidden items-center gap-1 lg:flex">
+            <p className="ml-6 hidden items-center gap-2 whitespace-nowrap text-xs text-ink-500 2xl:flex">
+              <span aria-hidden="true" className="inline-block h-2.5 w-1 rounded-full bg-earth-ink" />
+              NCA registered · Nationwide
+            </p>
+
+            <ul className="ml-auto hidden items-center gap-0.5 lg:flex xl:gap-1">
               {navLinks.map((l) => (
                 <li key={l.to}>
                   <NavLink
@@ -97,9 +79,19 @@ export default function Navbar() {
               ))}
             </ul>
 
-            <div className="ml-auto hidden lg:ml-0 lg:block">
+            {tel && (
+              <a
+                href={tel}
+                className="ml-auto hidden shrink-0 items-center gap-2 whitespace-nowrap text-sm font-semibold text-ink-800 transition-colors hover:text-[rgb(var(--accent-rgb))] lg:ml-0 lg:flex"
+              >
+                <Phone size={14} aria-hidden="true" />
+                {String(site.phone)}
+              </a>
+            )}
+
+            <div className="hidden lg:block">
               <Magnetic strength={0.2}>
-                <Link to="/contact" className="btn-primary group px-6 py-3 text-sm">
+                <Link to="/contact" className="btn-primary group whitespace-nowrap px-5 py-3 text-sm">
                   Request a quote
                   <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
                 </Link>

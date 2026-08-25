@@ -8,7 +8,7 @@
  * number and the testimonials. A plausible-looking licence number on an
  * electrician's site is a false credential claim in a regulated trade, and
  * invented reviews are fabricated social proof. Both render as visibly
- * labelled samples instead, so a demo build can never be mistaken for — or
+ * labelled dummy data instead, so a demo build can never be mistaken for — or
  * quietly promoted into — the real thing.
  */
 
@@ -18,37 +18,37 @@ export const demoOverrides = {
   // Contact details, address and the project list are now real, from the
   // company profile — demo mode must not shadow them with invented values.
   // Only what the client has still not supplied is filled in here.
-  warranty: '2 years (sample)',
-  yearsLicensed: '10 (sample)',
-  installsCompleted: '40+ (sample)',
-  responseTime: 'Same day (sample)',
+  warranty: '2 years (dummy)',
+  yearsLicensed: '10 (dummy)',
+  installsCompleted: '40+ (dummy)',
+  responseTime: 'Same day (dummy)',
 
   // Not a real or realistic registration number. The NCA certificate in the
   // company profile is a blank template with no number on it.
-  ncaNumber: 'SAMPLE — not a registration',
+  ncaNumber: 'DUMMY — not a registration',
 }
 
 export const demoTestimonials = [
   {
-    name: 'Sample review',
+    name: 'Dummy review',
     location: 'Lavington',
     job: 'Full rewire, three-bedroom',
     quote:
-      'Placeholder text standing in for a real customer review. Replace this before launch — reviews that mention safety and reliability do the most work here.',
+      'Dummy text standing in for a real customer review. Replace this before launch — reviews that mention safety and reliability do the most work here.',
   },
   {
-    name: 'Sample review',
+    name: 'Dummy review',
     location: 'Westlands',
     job: 'Consumer unit upgrade',
     quote:
-      'Placeholder text standing in for a real customer review. The admin CMS sorts safety-mentioning reviews to the front automatically.',
+      'Dummy text standing in for a real customer review. The admin CMS sorts safety-mentioning reviews to the front automatically.',
   },
   {
-    name: 'Sample review',
+    name: 'Dummy review',
     location: 'Kileleshwa',
     job: 'Fault finding',
     quote:
-      'Placeholder text standing in for a real customer review. Three genuine reviews is the minimum before this section should go live.',
+      'Dummy text standing in for a real customer review. Three genuine reviews is the minimum before this section should go live.',
   },
 ]
 

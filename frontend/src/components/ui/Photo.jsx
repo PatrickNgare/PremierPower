@@ -4,7 +4,7 @@ import { DEMO } from '@/config/demo'
 /**
  * Real installation photography is the hero asset. Until the client supplies
  * it, this renders an honest, labelled gap that doubles as the shot list —
- * never stock imagery. In demo mode the gap is filled but still says "sample".
+ * never stock imagery. In demo mode the gap is filled but still says "dummy".
  *
  * `fill` makes it cover its positioned parent, for full-bleed hero use.
  */
@@ -29,7 +29,7 @@ export default function Photo({
       >
         <figcaption className={`absolute inset-0 flex flex-col justify-end gap-1 ${fill ? 'p-8 pb-40 md:p-14 md:pb-44' : 'p-5'}`}>
           <span className={`text-[0.68rem] font-bold uppercase tracking-[0.16em] ${dark ? 'text-white/40' : 'text-neutral-500'}`}>
-            {DEMO ? 'Sample image' : 'Photograph required'}
+            {DEMO ? 'Dummy image' : 'Photograph required'}
           </span>
           <span className={`max-w-sm text-sm leading-snug ${dark ? 'text-white/55' : 'text-neutral-600'}`}>{brief}</span>
         </figcaption>

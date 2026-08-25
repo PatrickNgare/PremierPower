@@ -47,8 +47,8 @@ export default function Stats() {
 
       {anyPending && (
         <p className="container-x pb-10 text-xs text-white/30">
-          Figures marked — are awaiting confirmation from the client. Nothing on this
-          site displays an unverified number.
+          Figures marked — are awaiting confirmation from the client. Values shown as
+          dummy are placeholders, not real figures.
         </p>
       )}
     </section>
