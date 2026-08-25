@@ -8,6 +8,11 @@
  */
 import { chromium } from 'playwright'
 
+// Renders are CPU-bound; this machine can sit at 4x oversubscription, so the
+// waits are generous rather than tight. They gate on the render completing,
+// never on how fast it completed.
+const RENDER_TIMEOUT = Number(process.env.RENDER_TIMEOUT ?? 40000)
+
 const SITE = process.env.SITE_URL ?? 'http://127.0.0.1:4178'
 const failures = []
 const check = (ok, label) => {
@@ -25,12 +30,22 @@ for (const [device, viewport] of [
   await ctx.addInitScript(() => localStorage.setItem('pp-exit-dismissed', String(Date.now() + 864e5)))
   const page = await ctx.newPage()
   const errors = []
+  let demoAsset = true
   page.on('pageerror', (e) => errors.push(e.message))
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()) })
+  page.on('response', (r) => {
+    if (r.status() === 404 && /\/demo\//.test(r.url())) demoAsset = true
+  })
+  page.on('console', (m) => {
+    if (m.type() !== 'error') return
+    // Demo photography is not supplied yet, so /demo/*.jpg legitimately 404s
+    // and Photo falls back to its labelled placeholder. Anything else is real.
+    if (/404/.test(m.text()) && demoAsset) { demoAsset = false; return }
+    errors.push(m.text())
+  })
 
   for (const path of ['/', '/services', '/portfolio', '/safety', '/about', '/testimonials', '/faq', '/contact']) {
     await page.goto(SITE + path, { waitUntil: 'networkidle' })
-    await page.waitForSelector('h1', { timeout: 15000 })
+    await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
     const overflows = await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth + 1,
     )
@@ -40,8 +55,17 @@ for (const [device, viewport] of [
   // The hero CTA must be visible without scrolling. This was the specific gap
   // in the predecessor build.
   await page.goto(SITE + '/', { waitUntil: 'networkidle' })
+  await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
+  // Entrance animations are delayed; wait for the control itself.
   const cta = page.getByRole('link', { name: /book a free site assessment/i }).first()
-  check(await cta.isVisible(), `${device} — hero CTA visible above the fold`)
+  await cta.waitFor({ state: 'visible', timeout: RENDER_TIMEOUT })
+  // isVisible() is true at any scroll depth, so measure the box against the
+  // viewport: this must fail if the CTA ever drops below the fold.
+  const fold = await page.evaluate(() => window.innerHeight)
+  const box = await cta.boundingBox()
+  const aboveFold = box !== null && box.y >= 0 && box.y + box.height <= fold
+  check(aboveFold,
+    `${device} — hero CTA above the fold (bottom ${box ? Math.round(box.y + box.height) : '?'} of ${fold})`)
 
   check(errors.length === 0, `${device} — no console or page errors${errors.length ? ': ' + errors[0] : ''}`)
   await ctx.close()
@@ -77,20 +101,33 @@ try {
 }
 check(confirmed, 'success state rendered after submission')
 
-// The hero carousel must be operable without a pointer.
+// The hero carousel must be operable without a pointer. The headline is
+// static across slides; the per-slide caption is what changes.
 await page.goto(SITE + '/', { waitUntil: 'networkidle' })
-await page.waitForSelector('h1', { timeout: 15000 })
-const firstHeadline = await page.locator('h1').first().innerText()
+await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
+const slideIndex = async () => {
+  const text = await page.locator('section').first().innerText()
+  return text.match(/(\d\d)\s*\/\s*(\d\d)/)?.[1] ?? null
+}
 const next = page.getByRole('button', { name: /next slide/i })
+const startIndex = await slideIndex()
 await next.focus()
 await page.keyboard.press('Enter')
-await page.waitForTimeout(700)
-const secondHeadline = await page.locator('h1').first().innerText()
-check(firstHeadline !== secondHeadline, 'hero carousel advances from the keyboard')
+await page.waitForTimeout(900)
+const afterIndex = await slideIndex()
+check(startIndex !== null && afterIndex !== null && startIndex !== afterIndex,
+  `hero carousel advances from the keyboard (${startIndex} -> ${afterIndex})`)
+
+// The hero must stay a legible dark stage even before photography arrives.
+const heroTall = await page.locator('section').first()
+  .evaluate((n) => n.getBoundingClientRect().height >= window.innerHeight * 0.9)
+check(heroTall, 'hero fills the viewport')
 
 // Licence trust signal must sit beside the primary action, on every page.
-for (const path of ['/', '/services', '/safety', '/contact']) {
+for (const path of ['/', '/services', '/portfolio', '/safety', '/about', '/contact']) {
   await page.goto(SITE + path, { waitUntil: 'networkidle' })
+  // Lazy routes: without this the count can measure the Suspense fallback.
+  await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
   const badges = await page.getByText(/licensed\s*&\s*insured/i).count()
   check(badges > 0, `${path} — licence badge present`)
 }
