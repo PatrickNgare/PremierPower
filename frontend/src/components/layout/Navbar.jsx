@@ -45,7 +45,7 @@ export default function Navbar() {
               </motion.div>
             </Link>
 
-            <p className="ml-6 hidden items-center gap-2 whitespace-nowrap text-xs text-ink-500 2xl:flex">
+            <p className="ml-6 hidden items-center gap-2 whitespace-nowrap text-xs text-ink-500 xl:flex">
               <span aria-hidden="true" className="inline-block h-2.5 w-1 rounded-full bg-earth-ink" />
               NCA registered · Nationwide
             </p>
@@ -79,13 +79,18 @@ export default function Navbar() {
               ))}
             </ul>
 
+            {/* A number set as text competes with the nav links for the same
+                attention. As a quiet icon control it stays one tap away
+                without reading as a ninth menu item; the number itself is on
+                the contact page, in the CTA band and in the footer. */}
             {tel && (
               <a
                 href={tel}
-                className="ml-auto hidden shrink-0 items-center gap-2 whitespace-nowrap text-sm font-semibold text-ink-800 transition-colors hover:text-[rgb(var(--accent-rgb))] lg:ml-0 lg:flex"
+                title={`Call ${String(site.phone)}`}
+                aria-label={`Call Premier Power on ${String(site.phone)}`}
+                className="ml-auto hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink-900/12 text-ink-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-rgb))] hover:text-[rgb(var(--accent-rgb))] lg:ml-0 lg:flex"
               >
-                <Phone size={14} aria-hidden="true" />
-                {String(site.phone)}
+                <Phone size={16} aria-hidden="true" />
               </a>
             )}
 
