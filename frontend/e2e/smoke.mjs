@@ -142,9 +142,13 @@ const navVisible = await page.locator('header nav').first().isVisible()
 check(navVisible, 'navigation remains available when condensed')
 
 // The hero must stay a legible dark stage even before photography arrives.
-const heroTall = await page.locator('section').first()
-  .evaluate((n) => n.getBoundingClientRect().height >= window.innerHeight * 0.9)
-check(heroTall, 'hero fills the viewport')
+const heroFits = await page.locator('section').first().evaluate((n) => {
+  const h = n.getBoundingClientRect().height
+  // Substantial enough to read as a stage, but never taller than the screen —
+  // overflowing it is what pushed the calls to action below the fold.
+  return h >= window.innerHeight * 0.6 && h <= window.innerHeight + 1
+})
+check(heroFits, 'hero is a full stage without overflowing the viewport')
 
 // Licence trust signal must sit beside the primary action, on every page.
 for (const path of ['/', '/services', '/portfolio', '/safety', '/about', '/contact']) {
