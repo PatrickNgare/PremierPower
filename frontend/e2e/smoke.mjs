@@ -134,11 +134,23 @@ try {
 check(dialogOpened, 'clicking an image opens the viewer')
 
 if (dialogOpened) {
+  // scroll-behavior is smooth, so the page can still be animating from the
+  // scrollIntoView that preceded this. Wait for the position to settle before
+  // sampling, or the comparison measures the tail of that animation.
+  await page.evaluate(async () => {
+    let last = -1
+    for (let i = 0; i < 40 && last !== window.scrollY; i++) {
+      last = window.scrollY
+      await new Promise((r) => setTimeout(r, 50))
+    }
+  })
+  const lockedStyle = await page.evaluate(() => document.body.style.overflow)
   const scrollBefore = await page.evaluate(() => window.scrollY)
   await page.mouse.wheel(0, 700)
-  await page.waitForTimeout(400)
+  await page.waitForTimeout(500)
   const scrollAfter = await page.evaluate(() => window.scrollY)
-  check(scrollBefore === scrollAfter, 'viewer locks background scroll')
+  check(lockedStyle === 'hidden' && scrollBefore === scrollAfter,
+    `viewer locks background scroll (overflow=${lockedStyle})`)
 
   await page.keyboard.press('Escape')
   // Exit animation plus a loaded machine; poll rather than assume a duration.
