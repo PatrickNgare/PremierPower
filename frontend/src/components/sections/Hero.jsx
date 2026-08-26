@@ -4,7 +4,7 @@ import { ArrowRight, PhoneCall, ShieldCheck, MapPin, Zap, ChevronLeft, ChevronRi
 import { Link } from 'react-router-dom'
 import { telLink } from '@/config/site'
 import { heroSlides } from '@/data/heroSlides'
-import { DUR, EASE_OUT } from '@/utils/motion'
+import { DUR, EASE_OUT, EASE_EXIT } from '@/utils/motion'
 
 const AUTOPLAY_MS = 6500
 
@@ -18,6 +18,20 @@ const onEnter = (fn) => (e) => {
 }
 
 const EASE = [0.22, 1, 0.36, 1]
+
+/** Direction-aware swap: springs in from the side, with a little rotation so
+ *  it reads as a card being dealt rather than a fade. */
+const cardSwap = {
+  enter: (d) => ({ opacity: 0, x: d >= 0 ? 64 : -64, scale: 0.92, rotate: d >= 0 ? 3 : -3 }),
+  center: {
+    opacity: 1, x: 0, scale: 1, rotate: 0,
+    transition: { type: 'spring', stiffness: 260, damping: 26, mass: 0.9 },
+  },
+  exit: (d) => ({
+    opacity: 0, x: d >= 0 ? -48 : 48, scale: 0.96, rotate: d >= 0 ? -2 : 2,
+    transition: { duration: 0.24, ease: EASE_EXIT },
+  }),
+}
 
 const rise = {
   hidden: { opacity: 0, y: 26, filter: 'blur(6px)' },
@@ -35,17 +49,18 @@ export default function Hero() {
   const sectionRef = useRef(null)
   const [fine, setFine] = useState(false)
   const [i, setI] = useState(0)
+  const [dir, setDir] = useState(1)
   const [paused, setPaused] = useState(false)
   const n = heroSlides.length
   const slide = heroSlides[i]
 
-  const go = useCallback((d) => setI((p) => (p + d + n) % n), [n])
+  const go = useCallback((d) => { setDir(d); setI((p) => (p + d + n) % n) }, [n])
 
   useEffect(() => {
     // An auto-advancing carousel is motion; under a reduced-motion preference
     // it holds still and the controls remain the way through.
     if (paused || reduce || n < 2) return
-    const t = setInterval(() => setI((p) => (p + 1) % n), AUTOPLAY_MS)
+    const t = setInterval(() => { setDir(1); setI((p) => (p + 1) % n) }, AUTOPLAY_MS)
     return () => clearInterval(t)
   }, [paused, reduce, n])
 
@@ -62,6 +77,8 @@ export default function Hero() {
   const imgY = useTransform(sy, (v) => v * -18)
   const cardX = useTransform(sx, (v) => v * 42)
   const cardY = useTransform(sy, (v) => v * 30)
+  const tiltY = useTransform(sx, (v) => v * 14)
+  const tiltX = useTransform(sy, (v) => v * -10)
 
   useEffect(() => {
     // Cursor lighting is a pointer affordance; it has no meaning on touch.
@@ -219,16 +236,16 @@ export default function Hero() {
             <button
               type="button" onClick={() => go(-1)} onKeyDown={onEnter(() => go(-1))}
               aria-label="Previous slide"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:text-lumen-500"
+              className="group/nav flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:bg-lumen-500/10 hover:text-lumen-500 active:scale-90"
             >
-              <ChevronLeft size={17} aria-hidden="true" />
+              <ChevronLeft size={18} className="transition-transform duration-300 group-hover/nav:-translate-x-0.5" aria-hidden="true" />
             </button>
             <button
               type="button" onClick={() => go(1)} onKeyDown={onEnter(() => go(1))}
               aria-label="Next slide"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:text-lumen-500"
+              className="group/nav flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:bg-lumen-500/10 hover:text-lumen-500 active:scale-90"
             >
-              <ChevronRight size={17} aria-hidden="true" />
+              <ChevronRight size={18} className="transition-transform duration-300 group-hover/nav:translate-x-0.5" aria-hidden="true" />
             </button>
             <ul role="tablist" aria-label="Slides" className="ml-2 flex items-center gap-2">
               {heroSlides.map((sl, idx) => (
@@ -236,9 +253,12 @@ export default function Hero() {
                   <button
                     type="button" role="tab" aria-selected={idx === i}
                     aria-label={`Slide ${idx + 1}: ${sl.caption}`}
-                    onClick={() => setI(idx)} onKeyDown={onEnter(() => setI(idx))}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      idx === i ? 'w-7 bg-lumen-500' : 'w-1.5 bg-white/30 hover:bg-white/60'
+                    onClick={() => { setDir(idx > i ? 1 : -1); setI(idx) }}
+                    onKeyDown={onEnter(() => { setDir(idx > i ? 1 : -1); setI(idx) })}
+                    className={`h-1.5 rounded-full transition-all duration-500 ${
+                      idx === i
+                        ? 'w-9 bg-lumen-500 shadow-[0_0_14px_rgba(245,201,123,0.9)]'
+                        : 'w-1.5 bg-white/30 hover:w-3 hover:bg-white/70'
                     }`}
                   />
                 </li>
@@ -263,39 +283,45 @@ export default function Hero() {
         <motion.div
           variants={rise}
           style={fine && !reduce ? { x: cardX, y: cardY } : undefined}
-          className="relative mx-auto hidden w-full max-w-sm lg:block xl:max-w-md"
+          className="relative mx-auto hidden w-full max-w-md lg:block xl:max-w-lg"
         >
-          <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-white/10 bg-white/[0.04] backdrop-blur-xl">
-            <AnimatePresence mode="wait">
+          <motion.div
+            style={fine && !reduce ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 1200 } : undefined}
+            className="relative overflow-hidden rounded-[28px] border border-white/20 bg-white/[0.07] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.75)] backdrop-blur-2xl"
+          >
+            {/* Light catching the top edge, the way glass does. */}
+            <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+            <AnimatePresence mode="wait" custom={dir}>
               <motion.div
                 key={slide.image}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: DUR.control, ease: EASE_OUT }}
+                custom={dir}
+                variants={cardSwap}
+                initial="enter"
+                animate="center"
+                exit="exit"
               >
                 <img
                   src={slide.image}
                   alt={slide.alt}
                   loading="eager"
                   decoding="async"
-                  className="h-56 w-full object-cover xl:h-64"
+                  className="h-64 w-full object-cover xl:h-80"
                 />
-                <div className="p-6">
+                <div className="relative bg-ink-950/45 p-7 backdrop-blur-sm">
                   <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-lumen-500">
                     {slide.card.label}
                   </p>
                   <p className="mt-2 font-display text-xl font-bold text-white">
                     {slide.card.title}
                   </p>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-300">
+                  <p className="mt-2 text-sm leading-relaxed text-white/75">
                     {slide.card.line}
                   </p>
                 </div>
               </motion.div>
             </AnimatePresence>
-          </div>
-          <div aria-hidden="true" className="absolute -inset-8 -z-10 rounded-full bg-lumen-500/12 blur-3xl" />
+          </motion.div>
+          <div aria-hidden="true" className="absolute -inset-10 -z-10 rounded-full bg-lumen-500/20 blur-3xl" />
         </motion.div>
       </motion.div>
 
