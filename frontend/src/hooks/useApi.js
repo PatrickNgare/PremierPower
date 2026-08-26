@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const API = import.meta.env.VITE_API_URL ?? '/api'
 
@@ -10,6 +10,10 @@ const API = import.meta.env.VITE_API_URL ?? '/api'
 export function useApi(path, fallback) {
   const [data, setData] = useState(fallback)
   const [loading, setLoading] = useState(true)
+  // Held in a ref rather than listed as a dependency: callers pass array
+  // literals, and depending on one would re-run the effect every render.
+  const fallbackRef = useRef(fallback)
+  useEffect(() => { fallbackRef.current = fallback })
 
   useEffect(() => {
     let alive = true
@@ -18,8 +22,8 @@ export function useApi(path, fallback) {
       .then((json) => {
         if (!alive) return
         // An empty published set means "nothing to show yet", not "use fallback".
-        if (Array.isArray(json)) setData(json.length ? json : fallback)
-        else setData({ ...fallback, ...json })
+        if (Array.isArray(json)) setData(json.length ? json : fallbackRef.current)
+        else setData({ ...fallbackRef.current, ...json })
       })
       .catch(() => { /* keep the fallback */ })
       .finally(() => alive && setLoading(false))

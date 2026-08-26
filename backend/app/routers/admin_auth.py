@@ -6,6 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..core.audit import log_action
+from ..core.throttle import too_many
 from ..core.security import (
     client_ip, create_access_token, get_current_admin,
     hash_password, require_superuser, verify_password,
@@ -17,14 +18,29 @@ from ..schemas import AdminCreate, AdminOut, PasswordChange, Token
 router = APIRouter(tags=["admin"])
 
 
+# Ten attempts per address per five minutes. Slow enough to stop credential
+# stuffing, loose enough that a person mistyping a password is unaffected.
+LOGIN_LIMIT = 10
+LOGIN_WINDOW = 300.0
+
+
 @router.post("/login", response_model=Token)
 def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    ip = client_ip(request)
+    if too_many(f"login:{ip}", limit=LOGIN_LIMIT, window=LOGIN_WINDOW):
+        log_action(db, actor=form.username or "unknown", action="login-throttled",
+                   entity="admin", ip=ip)
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            "Too many sign-in attempts. Try again shortly.",
+        )
+
     admin = db.scalar(select(Admin).where(Admin.email == form.username))
     if admin is None or not admin.is_active or not verify_password(form.password, admin.password_hash):
         # One message for both cases: never reveal which accounts exist.
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Incorrect email or password")
     log_action(db, actor=admin.email, action="login", entity="admin",
-               entity_id=admin.id, ip=client_ip(request))
+               entity_id=admin.id, ip=ip)
     return Token(access_token=create_access_token(admin))
 
 

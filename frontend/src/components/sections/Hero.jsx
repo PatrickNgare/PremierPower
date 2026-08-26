@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
 import { ArrowRight, PhoneCall, ShieldCheck, MapPin, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { site, isPending, telLink } from '@/config/site'
+import { telLink } from '@/config/site'
 
 const EASE = [0.22, 1, 0.36, 1]
 

@@ -7,7 +7,6 @@ whole argument depends on real installation photography.
 """
 
 import logging
-import mimetypes
 import secrets
 from pathlib import Path
 
@@ -25,13 +24,44 @@ from ..settings import settings
 router = APIRouter(tags=["media"])
 log = logging.getLogger("premierpower.upload")
 
-ALLOWED = {"image/jpeg", "image/png", "image/webp", "image/avif"}
+# Extension is derived from the validated content type, never from the
+# uploaded filename. Trusting the filename let a caller send content-type
+# image/png named "x.svg" and have it stored — and served — as SVG, which
+# executes script. Same for .html.
+ALLOWED = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/avif": ".avif",
+}
+
+# First bytes of each permitted format. A declared content type is caller-
+# supplied and proves nothing on its own.
+MAGIC = (
+    (b"\xff\xd8\xff", "image/jpeg"),
+    (b"\x89PNG\r\n\x1a\n", "image/png"),
+)
+
+
+def _looks_like_image(data: bytes, declared: str) -> bool:
+    """RIFF/WEBP and AVIF carry their marker at offset 4/8, so they are matched
+    separately rather than by a simple prefix."""
+    for prefix, kind in MAGIC:
+        if data.startswith(prefix):
+            return kind == declared
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return declared == "image/webp"
+    if data[4:8] == b"ftyp" and b"avif" in data[8:24]:
+        return declared == "image/avif"
+    return False
 
 
 def _store_local(file: UploadFile, data: bytes) -> dict:
     root = Path(settings.upload_dir)
     root.mkdir(parents=True, exist_ok=True)
-    ext = Path(file.filename or "").suffix or mimetypes.guess_extension(file.content_type or "") or ".jpg"
+    # Name and extension are both generated; nothing from the caller reaches
+    # the filesystem path.
+    ext = ALLOWED[file.content_type]
     name = f"{secrets.token_hex(12)}{ext}"
     (root / name).write_bytes(data)
     return {"url": f"/uploads/{name}", "public_id": name, "storage": "local"}
@@ -71,6 +101,12 @@ async def upload_image(
         )
 
     data = await file.read()
+
+    if not _looks_like_image(data, file.content_type):
+        raise HTTPException(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            "File contents do not match the declared image type.",
+        )
     limit = settings.max_upload_mb * 1024 * 1024
     if len(data) > limit:
         raise HTTPException(

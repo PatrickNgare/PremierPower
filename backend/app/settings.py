@@ -35,4 +35,28 @@ class Settings(BaseSettings):
         return bool(self.cloudinary_cloud_name and self.cloudinary_api_key and self.cloudinary_api_secret)
 
 
+def _validate(s: "Settings") -> None:
+    """Refuse to run with the shipped placeholder secret, and warn on a key too
+    short to sign tokens safely. PyJWT reports anything under 32 bytes as below
+    the RFC 7518 minimum for HS256; a guessable key means forgeable admin
+    sessions."""
+    import logging
+
+    log = logging.getLogger("premierpower.settings")
+
+    if s.secret_key in ("", "change-me"):
+        raise RuntimeError(
+            "SECRET_KEY is unset or still the placeholder. Generate one with: "
+            "python -c \"import secrets; print(secrets.token_urlsafe(48))\""
+        )
+    if len(s.secret_key.encode()) < 32:
+        log.warning(
+            "SECRET_KEY is %d bytes; 32 or more is recommended for HS256.",
+            len(s.secret_key.encode()),
+        )
+    if s.admin_password in ("", "change-me"):
+        log.warning("ADMIN_PASSWORD is unset or the placeholder; no superuser will be seeded.")
+
+
 settings = Settings()
+_validate(settings)

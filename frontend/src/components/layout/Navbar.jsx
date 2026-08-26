@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { Menu, Phone, ArrowRight } from 'lucide-react'
@@ -6,7 +6,7 @@ import { navLinks } from './navLinks'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
 import Magnetic from '@/components/ui/Magnetic'
-import { site, isPending, telLink } from '@/config/site'
+import { site, telLink } from '@/config/site'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)

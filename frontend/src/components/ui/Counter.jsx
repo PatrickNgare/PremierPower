@@ -17,6 +17,8 @@ export default function Counter({ value, duration = 1600, className = '' }) {
   const target = match ? Number(match[2].replace(/,/g, '')) : null
   const suffix = match?.[3] ?? ''
 
+  // Starts at the target so the value is correct before the ramp runs and
+  // if the animation never starts (reduced motion, never scrolled into view).
   const [n, setN] = useState(target ?? 0)
 
   useEffect(() => {
@@ -29,7 +31,6 @@ export default function Counter({ value, duration = 1600, className = '' }) {
       setN(Math.round(target * (1 - Math.pow(1 - t, 3))))
       if (t < 1) raf = requestAnimationFrame(tick)
     }
-    setN(0)
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
   }, [inView, reduce, target, duration])

@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, PhoneCall, MessageCircle } from 'lucide-react'
 import Magnetic from '@/components/ui/Magnetic'
 import LicenseBadge from '@/components/ui/LicenseBadge'
-import { site, isPending, whatsappLink, telLink } from '@/config/site'
+import { site, whatsappLink, telLink } from '@/config/site'
 
 const EASE = [0.22, 1, 0.36, 1]
 

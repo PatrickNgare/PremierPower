@@ -6,7 +6,7 @@ Uses a throwaway SQLite database, so no Postgres is needed to run them.
 import os
 
 os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-os.environ["SECRET_KEY"] = "test-key"
+os.environ["SECRET_KEY"] = "test-key-that-is-at-least-32-bytes-long-for-hs256"
 os.environ["ADMIN_EMAIL"] = "admin@test.local"
 os.environ["ADMIN_PASSWORD"] = "test-password-1234"
 

@@ -6,7 +6,7 @@
  * silently shipping a fake licence number or a dead phone line.
  */
 
-export const PENDING = Symbol('pending')
+const PENDING = Symbol('pending')
 
 /** Wraps a value the client has not supplied yet. */
 const pending = (hint) => ({ [PENDING]: true, hint })

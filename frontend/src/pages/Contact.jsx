@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { FaWhatsapp } from 'react-icons/fa'
 import { FiPhone, FiMapPin, FiClock } from 'react-icons/fi'
@@ -7,37 +6,9 @@ import ContactForm from '@/components/sections/ContactForm'
 import LicenseBadge from '@/components/ui/LicenseBadge'
 import { site, isPending, value, whatsappLink, telLink } from '@/config/site'
 
-const API = import.meta.env.VITE_API_URL ?? '/api'
-
-const field =
-  'mt-1.5 w-full rounded-lg border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 ' +
-  'placeholder:text-neutral-400 transition-colors duration-200 hover:border-neutral-400 focus:border-secondary-dark focus:outline-none'
-
 export default function Contact() {
-  const [status, setStatus] = useState('idle')
-  const [error, setError] = useState('')
   const wa = whatsappLink()
   const tel = telLink()
-
-  async function onSubmit(e) {
-    e.preventDefault()
-    setStatus('sending'); setError('')
-    const data = Object.fromEntries(new FormData(e.currentTarget))
-    try {
-      const res = await fetch(`${API}/leads`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
-      if (!res.ok) throw new Error(String(res.status))
-      setStatus('sent')
-    } catch {
-      setStatus('error')
-      setError(wa
-        ? 'We could not send that just now. Message us on WhatsApp instead and it will reach us immediately.'
-        : 'We could not send that just now. Please try again in a moment.')
-    }
-  }
 
   return (
     <>

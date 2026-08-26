@@ -11,7 +11,6 @@ export function Field({
 }) {
   const id = useId()
   const [filled, setFilled] = useState(false)
-  const Tag = as
 
   const shared = {
     id, name, required, autoComplete,
