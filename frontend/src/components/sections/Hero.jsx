@@ -1,8 +1,21 @@
-import { useEffect, useRef, useState } from 'react'
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
-import { ArrowRight, PhoneCall, ShieldCheck, MapPin, Zap } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
+import { ArrowRight, PhoneCall, ShieldCheck, MapPin, Zap, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { telLink } from '@/config/site'
+import { heroSlides } from '@/data/heroSlides'
+import { DUR, EASE_OUT } from '@/utils/motion'
+
+const AUTOPLAY_MS = 6500
+
+/**
+ * Framer's tap gesture swallows Enter on a motion.button — Space activates,
+ * Enter does not. Enter is the key most people reach for, so it is handled
+ * explicitly on every control here.
+ */
+const onEnter = (fn) => (e) => {
+  if (e.key === 'Enter') { e.preventDefault(); fn() }
+}
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -21,6 +34,20 @@ export default function Hero() {
   const reduce = useReducedMotion()
   const sectionRef = useRef(null)
   const [fine, setFine] = useState(false)
+  const [i, setI] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const n = heroSlides.length
+  const slide = heroSlides[i]
+
+  const go = useCallback((d) => setI((p) => (p + d + n) % n), [n])
+
+  useEffect(() => {
+    // An auto-advancing carousel is motion; under a reduced-motion preference
+    // it holds still and the controls remain the way through.
+    if (paused || reduce || n < 2) return
+    const t = setInterval(() => setI((p) => (p + 1) % n), AUTOPLAY_MS)
+    return () => clearInterval(t)
+  }, [paused, reduce, n])
 
   // Pointer position, normalised to -0.5..0.5 around the section centre.
   const px = useMotionValue(0)
@@ -70,20 +97,32 @@ export default function Hero() {
       ref={sectionRef}
       className="on-dark relative isolate flex min-h-[min(100svh,46rem)] items-center overflow-hidden bg-ink-950"
       aria-label="Premier Power — electrical engineering and lighting"
+      aria-roledescription="carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
     >
       {/* ── Layer 1: the room ─────────────────────────────────── */}
       <motion.div
         style={fine && !reduce ? { x: imgX, y: imgY } : undefined}
         className="absolute -inset-[3%] -z-30"
       >
-        <img
-          src="/projects/stairwell.jpg"
-          alt=""
-          aria-hidden="true"
-          fetchPriority="high"
-          decoding="async"
-          className="h-full w-full object-cover object-center opacity-[0.55]"
-        />
+        <AnimatePresence initial={false}>
+          <motion.img
+            key={slide.image}
+            src={slide.image}
+            alt=""
+            aria-hidden="true"
+            fetchPriority="high"
+            decoding="async"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.55 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: DUR.cinematic, ease: EASE_OUT }}
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+        </AnimatePresence>
       </motion.div>
 
       {/* ── Layer 2: architectural shadow, so text always reads ── */}
@@ -154,6 +193,62 @@ export default function Hero() {
             )}
           </motion.div>
 
+          {/* Caption for the current slide. Fixed min-height so the controls
+              below do not shift as captions of different lengths cycle. */}
+          <motion.div variants={rise} className="mt-8 min-h-[3.25rem]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={slide.caption}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: DUR.control, ease: EASE_OUT }}
+              >
+                <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-lumen-500">
+                  {slide.eyebrow}
+                </p>
+                <p className="mt-1.5 text-sm text-ink-300">
+                  <span className="font-semibold text-white">{slide.caption}</span>
+                  {' \u2014 '}{slide.line}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
+          <motion.div variants={rise} className="mt-7 flex items-center gap-3">
+            <button
+              type="button" onClick={() => go(-1)} onKeyDown={onEnter(() => go(-1))}
+              aria-label="Previous slide"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:text-lumen-500"
+            >
+              <ChevronLeft size={17} aria-hidden="true" />
+            </button>
+            <button
+              type="button" onClick={() => go(1)} onKeyDown={onEnter(() => go(1))}
+              aria-label="Next slide"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:text-lumen-500"
+            >
+              <ChevronRight size={17} aria-hidden="true" />
+            </button>
+            <ul role="tablist" aria-label="Slides" className="ml-2 flex items-center gap-2">
+              {heroSlides.map((sl, idx) => (
+                <li key={sl.caption}>
+                  <button
+                    type="button" role="tab" aria-selected={idx === i}
+                    aria-label={`Slide ${idx + 1}: ${sl.caption}`}
+                    onClick={() => setI(idx)} onKeyDown={onEnter(() => setI(idx))}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      idx === i ? 'w-7 bg-lumen-500' : 'w-1.5 bg-white/30 hover:bg-white/60'
+                    }`}
+                  />
+                </li>
+              ))}
+            </ul>
+            <span className="ml-1 tabular text-xs font-semibold text-ink-400">
+              {String(i + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
+            </span>
+          </motion.div>
+
           <motion.ul variants={rise} className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3">
             {trust.map(({ icon: Icon, label }) => (
               <li key={label} className="flex items-center gap-2.5 text-sm text-ink-300">
@@ -171,24 +266,34 @@ export default function Hero() {
           className="relative mx-auto hidden w-full max-w-sm lg:block xl:max-w-md"
         >
           <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-white/10 bg-white/[0.04] backdrop-blur-xl">
-            <img
-              src="/projects/bar-interior.jpg"
-              alt="Feature lighting in a completed commercial interior"
-              loading="eager"
-              decoding="async"
-              className="h-56 w-full object-cover xl:h-64"
-            />
-            <div className="p-6">
-              <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-lumen-500">
-                Lighting installation
-              </p>
-              <p className="mt-2 font-display text-xl font-bold text-white">
-                Commercial interiors
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-ink-300">
-                Feature and ambient lighting designed with the interior, not fitted around it.
-              </p>
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={slide.image}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: DUR.control, ease: EASE_OUT }}
+              >
+                <img
+                  src={slide.image}
+                  alt={slide.alt}
+                  loading="eager"
+                  decoding="async"
+                  className="h-56 w-full object-cover xl:h-64"
+                />
+                <div className="p-6">
+                  <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-lumen-500">
+                    {slide.card.label}
+                  </p>
+                  <p className="mt-2 font-display text-xl font-bold text-white">
+                    {slide.card.title}
+                  </p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-300">
+                    {slide.card.line}
+                  </p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
           <div aria-hidden="true" className="absolute -inset-8 -z-10 rounded-full bg-lumen-500/12 blur-3xl" />
         </motion.div>

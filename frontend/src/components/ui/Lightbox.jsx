@@ -42,15 +42,25 @@ export default function Lightbox({ items, index, onClose, onIndex }) {
     }
 
     document.addEventListener('keydown', onKey)
-    const prevOverflow = document.body.style.overflow
+    // Locking <body> alone is not reliable — depending on which element is the
+    // scrolling box, the document can still scroll behind the overlay. Lock
+    // both, and compensate for the scrollbar so the page does not shift.
+    const prevBody = document.body.style.overflow
+    const prevRoot = document.documentElement.style.overflow
+    const prevPad = document.body.style.paddingRight
+    const gap = window.innerWidth - document.documentElement.clientWidth
     document.body.style.overflow = 'hidden'
-    panelRef.current?.focus()
+    document.documentElement.style.overflow = 'hidden'
+    if (gap > 0) document.body.style.paddingRight = `${gap}px`
+    panelRef.current?.focus({ preventScroll: true })
 
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prevOverflow
+      document.body.style.overflow = prevBody
+      document.documentElement.style.overflow = prevRoot
+      document.body.style.paddingRight = prevPad
       // Return focus to the thumbnail that opened the viewer.
-      if (restoreTo.current instanceof HTMLElement) restoreTo.current.focus()
+      if (restoreTo.current instanceof HTMLElement) restoreTo.current.focus({ preventScroll: true })
     }
   }, [open, onClose, go])
 
