@@ -279,11 +279,15 @@ export default function Hero() {
           </motion.ul>
         </div>
 
-        {/* Floating specimen card — a fixture lit by the room behind it. */}
+        {/* Floating specimen card — a fixture lit by the room behind it.
+            The row centres its children, but the text column is far taller, so a
+            centred card floats ~100px low and its top edge cuts across the middle
+            of the headline. self-start plus the eyebrow's height (mt-11) lands the
+            card's top edge on the headline's, giving the two columns a shared line. */}
         <motion.div
           variants={rise}
           style={fine && !reduce ? { x: cardX, y: cardY } : undefined}
-          className="relative mx-auto hidden w-full max-w-md lg:block xl:max-w-lg"
+          className="relative mx-auto hidden w-full max-w-md lg:mt-11 lg:block lg:self-start xl:max-w-lg"
         >
           <motion.div
             style={fine && !reduce ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 1200 } : undefined}
