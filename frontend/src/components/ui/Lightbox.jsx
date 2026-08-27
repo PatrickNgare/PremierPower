@@ -42,24 +42,45 @@ export default function Lightbox({ items, index, onClose, onIndex }) {
     }
 
     document.addEventListener('keydown', onKey)
-    // Locking <body> alone is not reliable — depending on which element is the
-    // scrolling box, the document can still scroll behind the overlay. Lock
-    // both, and compensate for the scrollbar so the page does not shift.
-    const prevBody = document.body.style.overflow
-    const prevRoot = document.documentElement.style.overflow
-    const prevPad = document.body.style.paddingRight
+
+    // Scroll lock that preserves position.
+    //
+    // Setting overflow:hidden alone collapses the scrollable height, so the
+    // browser clamps scrollY to the new maximum and the page visibly jumps
+    // upward — measured at up to 284px from a deep scroll position. Pinning
+    // the body at a negative offset keeps the page exactly where it was and
+    // still prevents scrolling; the offset is restored on close.
+    const y = window.scrollY
     const gap = window.innerWidth - document.documentElement.clientWidth
-    document.body.style.overflow = 'hidden'
-    document.documentElement.style.overflow = 'hidden'
+    const prev = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      paddingRight: document.body.style.paddingRight,
+    }
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${y}px`
+    document.body.style.width = '100%'
     if (gap > 0) document.body.style.paddingRight = `${gap}px`
+
     panelRef.current?.focus({ preventScroll: true })
 
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = prevBody
-      document.documentElement.style.overflow = prevRoot
-      document.body.style.paddingRight = prevPad
-      // Return focus to the thumbnail that opened the viewer.
+      document.body.style.position = prev.position
+      document.body.style.top = prev.top
+      document.body.style.width = prev.width
+      document.body.style.paddingRight = prev.paddingRight
+      // Restore on the next frame: immediately after unpinning, layout has
+      // not settled and scrollTo gets clamped to a stale maximum, landing the
+      // page a few dozen pixels short. Smooth behaviour is disabled so the
+      // restore does not animate.
+      const behavior = document.documentElement.style.scrollBehavior
+      document.documentElement.style.scrollBehavior = 'auto'
+      requestAnimationFrame(() => {
+        window.scrollTo(0, y)
+        document.documentElement.style.scrollBehavior = behavior
+      })
       if (restoreTo.current instanceof HTMLElement) restoreTo.current.focus({ preventScroll: true })
     }
   }, [open, onClose, go])

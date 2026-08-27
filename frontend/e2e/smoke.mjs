@@ -144,13 +144,13 @@ if (dialogOpened) {
       await new Promise((r) => setTimeout(r, 50))
     }
   })
-  const lockedStyle = await page.evaluate(() => document.body.style.overflow)
+  const lockedStyle = await page.evaluate(() => document.body.style.position)
   const scrollBefore = await page.evaluate(() => window.scrollY)
   await page.mouse.wheel(0, 700)
   await page.waitForTimeout(500)
   const scrollAfter = await page.evaluate(() => window.scrollY)
-  check(lockedStyle === 'hidden' && scrollBefore === scrollAfter,
-    `viewer locks background scroll (overflow=${lockedStyle})`)
+  check(lockedStyle === 'fixed' && scrollBefore === scrollAfter,
+    `viewer locks background scroll without moving it (position=${lockedStyle}, ${scrollBefore}->${scrollAfter})`)
 
   await page.keyboard.press('Escape')
   // Exit animation plus a loaded machine; poll rather than assume a duration.
