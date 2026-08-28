@@ -10,7 +10,7 @@ from .admin import mount_admin
 from .core.security import hash_password
 from .db import SessionLocal, engine
 from .models import (
-    Admin, Banner, BlogPost, Document, FAQ, HomepageSection, MenuItem, Product,
+    Admin, Banner, BlogPost, Document, FAQ, MenuItem, PageSection, Product,
     ProductCategory, Project, Sector, SectionItem, SeoMeta, Service, SiteSetting,
     SocialLink,
     TeamMember, Testimonial,
@@ -22,7 +22,7 @@ from .routers import (
 from .routers.crud import crud_router
 from .schemas import (
     BannerIn, BannerOut, BlogPostIn, BlogPostOut, DocumentIn, DocumentOut,
-    FAQIn, FAQOut, HomepageSectionIn, HomepageSectionOut, MenuItemIn, MenuItemOut,
+    FAQIn, FAQOut, MenuItemIn, MenuItemOut, PageSectionIn, PageSectionOut,
     ProductCategoryIn, ProductCategoryOut, ProductIn, ProductOut,
     ProjectIn, ProjectOut, SectionItemIn, SectionItemOut, SectorIn, SectorOut,
     SeoMetaIn, SeoMetaOut,
@@ -126,10 +126,11 @@ app.include_router(crud_router(model=Product, schema_in=ProductIn, schema_out=Pr
                    prefix="/api/products")
 
 # ── site structure ──────────────────────────────────────────────────────
-app.include_router(crud_router(model=HomepageSection, schema_in=HomepageSectionIn,
-                               schema_out=HomepageSectionOut, entity="section",
-                               lookup="key", search=("key", "title")),
-                   prefix="/api/homepage-sections")
+app.include_router(crud_router(model=PageSection, schema_in=PageSectionIn,
+                               schema_out=PageSectionOut, entity="section",
+                               lookup="", search=("key", "title", "page"),
+                               filters={"page": PageSection.page}),
+                   prefix="/api/page-sections")
 app.include_router(crud_router(model=MenuItem, schema_in=MenuItemIn, schema_out=MenuItemOut,
                                entity="menu item", lookup="", search=("label", "href"),
                                filters={"menu": MenuItem.menu}), prefix="/api/menu")

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import (
-    JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, func,
+    JSON, Boolean, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -318,19 +318,28 @@ class Product(Base):
 
 # ── Site structure ──────────────────────────────────────────────────────
 
-class HomepageSection(Base):
-    """Which blocks the homepage renders, in what order.
+class PageSection(Base):
+    """Which blocks a page renders, in what order.
 
     `key` names a component the frontend knows how to draw; the CMS cannot
     invent a new one, only reorder, retitle, hide or show what exists. That
     boundary is deliberate — a section list that can name a component nobody
     wrote renders a blank page and the client cannot tell why.
+
+    Started as the home page only. Every other page turned out to be the same
+    shape — a hero and a few headed blocks — so `page` carries the route and
+    one table serves all of them.
     """
 
-    __tablename__ = "homepage_sections"
+    __tablename__ = "page_sections"
+    __table_args__ = (
+        # Unique per page, not globally: "hero" exists on several pages.
+        UniqueConstraint("page", "key", name="uq_page_sections_page_key"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    key: Mapped[str] = mapped_column(String(60), unique=True, index=True)
+    page: Mapped[str] = mapped_column(String(200), default="/", server_default="/", index=True)
+    key: Mapped[str] = mapped_column(String(60), index=True)
     # The three lines every section header on the site is made of. Columns
     # rather than keys inside `config`, because these are the fields the client
     # actually edits and nobody should have to type JSON to reword a heading.
@@ -339,10 +348,14 @@ class HomepageSection(Base):
     subtitle: Mapped[str] = mapped_column(Text, default="")
     cta_label: Mapped[str] = mapped_column(String(80), default="", server_default="")
     cta_href: Mapped[str] = mapped_column(String(300), default="", server_default="")
+    # A page hero carries its own photograph; most blocks leave these empty.
+    image_url: Mapped[str] = mapped_column(String(500), default="", server_default="")
+    image_alt: Mapped[str] = mapped_column(String(300), default="", server_default="")
     position: Mapped[int] = mapped_column(Integer, default=0)
     enabled: Mapped[bool] = mapped_column(Boolean, default=True)
-    # Anything genuinely section-specific — a tile limit, an alignment. Rare
-    # by design; a section needing much here wants its own columns.
+    # Anything genuinely section-specific — a tile limit, an alignment, the
+    # breadcrumb on a page hero. Rare by design; a section needing much here
+    # wants its own columns.
     config: Mapped[dict] = mapped_column(JSON, default=dict)
 
     def __str__(self) -> str:
@@ -476,7 +489,7 @@ class SectionItem(Base):
     __tablename__ = "section_items"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    # Matches HomepageSection.key. A plain column rather than a foreign key:
+    # Matches PageSection.key. A plain column rather than a foreign key:
     # items belong to the block the code draws, and must survive a section row
     # being deleted and reseeded.
     section: Mapped[str] = mapped_column(String(60), index=True)

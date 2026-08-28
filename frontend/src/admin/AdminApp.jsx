@@ -36,6 +36,8 @@ function Authenticated() {
           <Route path="inbox" element={<Inbox />} />
           <Route path="inbox/:id" element={<Inbox />} />
           <Route path="homepage" element={<Homepage />} />
+          {/* Every other page uses the same screen, keyed by its route. */}
+          <Route path="pages/:page" element={<Homepage />} />
           <Route path="menus" element={<Menus />} />
           <Route path="media" element={<Media />} />
           <Route path="settings" element={<Settings />} />

@@ -165,7 +165,7 @@ const BLOCKS = {
 }
 
 export default function Home() {
-  const { data } = useApi('/homepage-sections', null)
+  const { data } = useApi('/page-sections/filter?page=/', null)
   // Only sections this file can actually draw. A key the CMS holds but the
   // code does not know is skipped rather than rendered as a gap.
   const sections = (Array.isArray(data) && data.length ? data : DEFAULTS)

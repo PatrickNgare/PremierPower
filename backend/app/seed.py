@@ -18,7 +18,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .models import (
-    Banner, FAQ, HomepageSection, MenuItem, Project, SectionItem, Sector, SeoMeta,
+    Banner, FAQ, MenuItem, PageSection, Project, SectionItem, Sector, SeoMeta,
     Service,
 )
 
@@ -126,6 +126,38 @@ STAT_ITEMS = [
     ("handshake", "Typical response", "response_time", ""),
 ]
 
+
+# Every other page, in the same shape: a hero and a few headed blocks. Taken
+# from what each page rendered before the CMS owned it, so seeding a fresh
+# database reproduces the site exactly.
+PAGES = {
+    '/about': [
+        dict(key='hero', eyebrow='About us', title='A leading electrical engineering company in the corporate market.', subtitle='Premier Power Limited works on electrical installation projects all over the country, and is expanding — diversifying geographical risk, with further offices planned in Kenya and across the border.', image_url='/projects/villa-modern.jpg', image_alt='Completed residential development', config={"crumb": 'About'}),
+        dict(key='section1', eyebrow='Mission & vision', title='Our mission and values'),
+        dict(key='section2', eyebrow='At a glance', title='The work, the registration and the reach.'),
+    ],
+    '/safety': [
+        dict(key='hero', eyebrow='Compliance', title='Registered, tested, and documented on every project.', subtitle='Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. Every installation is tested and certified before handover, whatever its size.', image_url='/projects/technical.jpg', image_alt='Terminating conductors during installation', config={"crumb": 'Safety'}),
+        dict(key='section1', eyebrow='Before certifying', title='What we test, every time.', subtitle='Every installation gets the full sequence, once before the plaster closes and again at handover. The recorded results go to you with the certificate.'),
+    ],
+    '/services': [
+        dict(key='hero', eyebrow='What we do', title='Eight service lines, one registered contractor.', subtitle='Our NCA registration covers electrical installation and the specialist systems that sit alongside it — security, solar, power continuity, vertical transport, transmission and gas. One contractor, coordinated on one programme.', image_url='/projects/stairwell.jpg', image_alt='Feature lighting installation in a completed stairwell', config={"crumb": 'Services'}),
+        dict(key='section1', eyebrow='How it works', title='Four stages, and you sign off before each one closes.', subtitle='Nothing gets covered until you have seen it.'),
+    ],
+    '/portfolio': [
+        dict(key='hero', eyebrow='Our work', title='Installations, photographed at the stage that matters.', subtitle='Finished rooms prove nothing — anyone can plaster over bad work. Every job here is shown open: the board, the chase, the conductors, and only then the finished wall.', image_url='/projects/resort-dusk.jpg', image_alt='Completed resort development at dusk', config={"crumb": 'Installations'}),
+    ],
+    '/contact': [
+        dict(key='hero', eyebrow='Project enquiries', title='Tell us about the project.', subtitle='Send drawings, a tender document or a short description and we will come back with scope and next steps. Site visits and assessments are free, with no obligation.', image_url='/projects/resort-pool.jpg', image_alt='Completed resort development', config={"crumb": 'Contact'}),
+    ],
+    '/faq': [
+        dict(key='hero', eyebrow='Straight answers', title='The questions people actually ask.', subtitle='Mostly about licensing. Almost never about price first — which is the right instinct.', image_url='/projects/lodge-dusk.jpg', image_alt='Completed development at dusk', config={"crumb": 'FAQ'}),
+    ],
+    '/testimonials': [
+        dict(key='hero', eyebrow='Social proof', title='What customers say.', subtitle='Weighted toward the reviews that mention safety and reliability, because that is what you are actually buying.', image_url='/projects/dining.jpg', image_alt='Completed hospitality interior', config={"crumb": 'Reviews'}),
+    ],
+}
+
 HEADER_MENU = [
     ("Home", "/"), ("Services", "/services"), ("Installations", "/portfolio"),
     ("Safety", "/safety"), ("About", "/about"), ("Reviews", "/testimonials"),
@@ -185,12 +217,21 @@ def seed_content(db: Session) -> None:
         db.add_all(model(**row) for row in rows)
         log.info("seeded %d %s", len(rows), key)
 
-    if _empty(db, HomepageSection):
+    # Per page, not per table: a database that already holds the home page's
+    # sections would otherwise never receive the other pages'. Each page is
+    # still only ever seeded into emptiness, so nothing a client wrote is
+    # touched.
+    for path, blocks in (("/", HOMEPAGE), *PAGES.items()):
+        already = db.scalar(
+            select(func.count()).select_from(PageSection).where(PageSection.page == path)
+        ) or 0
+        if already:
+            continue
         db.add_all(
-            HomepageSection(position=i, enabled=True, **{"config": {}, **row})
-            for i, row in enumerate(HOMEPAGE)
+            PageSection(page=path, position=i, enabled=True, **{"config": {}, **row})
+            for i, row in enumerate(blocks)
         )
-        log.info("seeded %d homepage sections", len(HOMEPAGE))
+        log.info("seeded %d sections for %s", len(blocks), path)
 
     if _empty(db, MenuItem):
         db.add_all(

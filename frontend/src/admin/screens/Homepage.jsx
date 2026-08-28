@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { Reorder, useDragControls } from 'framer-motion'
 import { ChevronDown, Eye, EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react'
 import { api } from '../api'
@@ -41,7 +42,19 @@ const splitTitle = (t) => String(t).replace('|', ' ')
  * a component that has to exist in the code. A CMS that lets someone name a
  * section nobody built renders a blank space they cannot diagnose.
  */
+/** Which pages the CMS can edit, and what to call them. */
+export const PAGES = [
+  ['/', 'Home page'], ['/services', 'Services page'], ['/portfolio', 'Installations page'],
+  ['/safety', 'Safety page'], ['/about', 'About page'], ['/testimonials', 'Reviews page'],
+  ['/faq', 'FAQ page'], ['/contact', 'Contact page'],
+]
+
 export default function Homepage() {
+  const params = useParams()
+  // The route carries the page without its leading slash; "/" has none.
+  const page = params.page ? `/${params.page}` : '/'
+  const pageName = PAGES.find(([p]) => p === page)?.[1] ?? page
+
   const toast = useToast()
   const { can } = useAuth()
   const editable = can('editor')
@@ -53,20 +66,20 @@ export default function Homepage() {
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const page = await api.get('/homepage-sections/all?limit=100')
-      setRows(page.items)
+      const res = await api.get('/page-sections/all?limit=300')
+      setRows(res.items.filter((r) => r.page === page))
     } catch (e) {
       toast.error(e.message)
     } finally {
       setLoading(false)
     }
-  }, [toast])
+  }, [page, toast])
 
   useEffect(() => { load() }, [load])
 
   const persistOrder = async (ordered) => {
     try {
-      await api.post('/homepage-sections/reorder', { ids: ordered.map((r) => r.id) })
+      await api.post('/page-sections/reorder', { ids: ordered.map((r) => r.id) })
     } catch (e) {
       toast.error(e.message)
       load()
@@ -75,7 +88,7 @@ export default function Homepage() {
 
   const toggle = async (row) => {
     try {
-      await api.patch(`/homepage-sections/${row.id}/publish`, { value: !row.enabled })
+      await api.patch(`/page-sections/${row.id}/publish`, { value: !row.enabled })
       setRows((rs) => rs.map((r) => (r.id === row.id ? { ...r, enabled: !r.enabled } : r)))
     } catch (e) {
       toast.error(e.message)
@@ -85,9 +98,10 @@ export default function Homepage() {
   const save = async (row) => {
     setSaving(true)
     try {
-      await api.put(`/homepage-sections/${row.id}`, {
-        key: row.key, eyebrow: row.eyebrow, title: row.title, subtitle: row.subtitle,
-        cta_label: row.cta_label, cta_href: row.cta_href,
+      await api.put(`/page-sections/${row.id}`, {
+        page: row.page, key: row.key, eyebrow: row.eyebrow, title: row.title,
+        subtitle: row.subtitle, cta_label: row.cta_label, cta_href: row.cta_href,
+        image_url: row.image_url ?? '', image_alt: row.image_alt ?? '',
         position: row.position, enabled: row.enabled, config: row.config ?? {},
       })
       toast.ok('Saved')
@@ -108,10 +122,11 @@ export default function Homepage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-extrabold text-ink-900">Home page</h1>
+      <h1 className="font-display text-2xl font-extrabold text-ink-900">{pageName}</h1>
       <p className="mt-1 text-sm text-ink-400">
-        Drag to reorder. Hide a block to take it off the page without deleting anything.
-        The content inside each block is edited in its own section.
+        {page === '/'
+          ? 'Drag to reorder. Hide a block to take it off the page without deleting anything.'
+          : 'The words on this page. The lists it shows — services, projects, reviews — are edited in their own sections.'}
       </p>
 
       <Reorder.Group

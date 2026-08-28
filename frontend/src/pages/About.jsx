@@ -12,8 +12,13 @@ import { isPending, value } from '@/config/site'
 import { photo } from '@/utils/photo'
 import { useSite } from '@/hooks/useSite'
 import Seo from '@/components/Seo'
+import { usePageSections } from '@/hooks/usePage'
 
 export default function About() {
+  const sections = usePageSections('/about')
+  const hero = sections.hero
+  const s1 = sections.section1
+  const s2 = sections.section2
   const site = useSite()
   return (
     <>
@@ -22,18 +27,22 @@ export default function About() {
         description={"Premier Power Limited is a leading electrical engineering company in the corporate market, working on installation projects across Kenya. Our mission, vision and registration."}
         canonical={"https://premierpower.co.ke/about"}
       />
-
       <PageHero
-        image={photo('/projects/villa-modern.jpg')} imageAlt="Completed residential development"
-        crumb="About" eyebrow="About us"
-        title="A leading electrical engineering company in the corporate market."
-        lede="Premier Power Limited works on electrical installation projects all over the country, and is expanding — diversifying geographical risk, with further offices planned in Kenya and across the border."
+        crumb={hero?.config?.crumb || "About"}
+        eyebrow={hero?.eyebrow || "About us"}
+        title={hero?.title || "A leading electrical engineering company in the corporate market."}
+        lede={hero?.subtitle || "Premier Power Limited works on electrical installation projects all over the country, and is expanding \u2014 diversifying geographical risk, with further offices planned in Kenya and across the border."}
+        image={hero?.image_url || photo('/projects/villa-modern.jpg')}
+        imageAlt={hero?.image_alt || "Completed residential development"}
       />
 
       <section className="section-tight">
         <div className="container-x grid gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
           <div>
-            <SectionHeader eyebrow="Mission &amp; vision" title="Our mission and values" />
+            <SectionHeader
+              eyebrow={s1?.eyebrow || "Mission & vision"}
+              title={s1?.title || "Our mission and values"}
+            />
             <motion.div {...inView} className="mt-8 space-y-5 text-base leading-relaxed text-neutral-600">
               <p>
                 To provide the best enhanced quality, innovative, safe and flexible electrical
@@ -87,8 +96,8 @@ export default function About() {
       <section className="section-tight bg-paper-warm">
         <div className="container-x">
           <SectionHeader
-            eyebrow="At a glance"
-            title="The work, the registration and the reach."
+            eyebrow={s2?.eyebrow || "At a glance"}
+            title={s2?.title || "The work, the registration and the reach."}
           />
           <AboutBento />
         </div>

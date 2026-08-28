@@ -7,6 +7,7 @@ import { useApi } from '@/hooks/useApi'
 import { faqs as fallbackFaqs } from '@/data/faqs'
 import { photo } from '@/utils/photo'
 import Seo from '@/components/Seo'
+import { usePageSections } from '@/hooks/usePage'
 
 function Item({ q, a, open, onToggle, id }) {
   return (
@@ -34,6 +35,8 @@ function Item({ q, a, open, onToggle, id }) {
 }
 
 export default function FAQ() {
+  const sections = usePageSections('/faq')
+  const hero = sections.hero
   const [open, setOpen] = useState(0)
   const { data } = useApi('/faqs', fallbackFaqs)
   // The API returns question/answer; the bundled fallback uses q/a.
@@ -54,12 +57,13 @@ export default function FAQ() {
         description={"Are you licensed? What does an assessment cost? Do we move out during a rewire? Straight answers about residential rewiring in Nairobi."}
         canonical={"https://premierpower.co.ke/faq"}
       />
-
       <PageHero
-        image={photo('/projects/lodge-dusk.jpg')} imageAlt="Completed development at dusk"
-        crumb="FAQ" eyebrow="Straight answers"
-        title="The questions people actually ask."
-        lede="Mostly about licensing. Almost never about price first — which is the right instinct."
+        crumb={hero?.config?.crumb || "FAQ"}
+        eyebrow={hero?.eyebrow || "Straight answers"}
+        title={hero?.title || "The questions people actually ask."}
+        lede={hero?.subtitle || "Mostly about licensing. Almost never about price first \u2014 which is the right instinct."}
+        image={hero?.image_url || photo('/projects/lodge-dusk.jpg')}
+        imageAlt={hero?.image_alt || "Completed development at dusk"}
       />
 
       <section className="section-tight">

@@ -7,8 +7,11 @@ import { isPending, value, whatsappLink, telLink } from '@/config/site'
 import { photo } from '@/utils/photo'
 import { useSite } from '@/hooks/useSite'
 import Seo from '@/components/Seo'
+import { usePageSections } from '@/hooks/usePage'
 
 export default function Contact() {
+  const sections = usePageSections('/contact')
+  const hero = sections.hero
   const site = useSite()
   const wa = whatsappLink(site)
   const tel = telLink(site)
@@ -20,12 +23,13 @@ export default function Contact() {
         description={"Send project drawings, tender documents or a description to Premier Power Limited — NCA-registered electrical engineering contractor working across Kenya. Free site visits, no obligation."}
         canonical={"https://premierpower.co.ke/contact"}
       />
-
       <PageHero
-        image={photo('/projects/resort-pool.jpg')} imageAlt="Completed resort development"
-        crumb="Contact" eyebrow="Project enquiries"
-        title="Tell us about the project."
-        lede="Send drawings, a tender document or a short description and we will come back with scope and next steps. Site visits and assessments are free, with no obligation."
+        crumb={hero?.config?.crumb || "Contact"}
+        eyebrow={hero?.eyebrow || "Project enquiries"}
+        title={hero?.title || "Tell us about the project."}
+        lede={hero?.subtitle || "Send drawings, a tender document or a short description and we will come back with scope and next steps. Site visits and assessments are free, with no obligation."}
+        image={hero?.image_url || photo('/projects/resort-pool.jpg')}
+        imageAlt={hero?.image_alt || "Completed resort development"}
       />
 
       <section className="section">

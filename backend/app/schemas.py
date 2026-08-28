@@ -330,19 +330,22 @@ class ProductOut(BaseModel):
 
 
 # ── site structure ──────────────────────────────────────────────────────
-class HomepageSectionIn(BaseModel):
+class PageSectionIn(BaseModel):
+    page: str = "/"
     key: str = Field(min_length=1, max_length=60)
     eyebrow: str = ""
     title: str = ""
     subtitle: str = ""
     cta_label: str = ""
     cta_href: str = ""
+    image_url: str = ""
+    image_alt: str = ""
     position: int = 0
     enabled: bool = True
     config: dict = Field(default_factory=dict)
 
 
-class HomepageSectionOut(HomepageSectionIn):
+class PageSectionOut(PageSectionIn):
     model_config = ORM
     id: int
 

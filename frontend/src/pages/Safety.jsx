@@ -9,6 +9,7 @@ import { isPending, value } from '@/config/site'
 import { photo } from '@/utils/photo'
 import { useSite } from '@/hooks/useSite'
 import Seo from '@/components/Seo'
+import { usePageSections } from '@/hooks/usePage'
 
 const tests = [
   ['Continuity of protective conductors', 'Confirms every earth path is unbroken from the board to the furthest accessory.'],
@@ -19,6 +20,9 @@ const tests = [
 ]
 
 export default function Safety() {
+  const sections = usePageSections('/safety')
+  const hero = sections.hero
+  const s1 = sections.section1
   const site = useSite()
   return (
     <>
@@ -27,18 +31,23 @@ export default function Safety() {
         description={"Our NCA registration, the tests every installation receives before certification, and our workmanship warranty terms — stated plainly."}
         canonical={"https://premierpower.co.ke/safety"}
       />
-
       <PageHero
-        image={photo('/projects/technical.jpg')} imageAlt="Terminating conductors during installation"
-        crumb="Safety" eyebrow="Compliance"
-        title="Registered, tested, and documented on every project."
-        lede="Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. Every installation is tested and certified before handover, whatever its size."
+        crumb={hero?.config?.crumb || "Safety"}
+        eyebrow={hero?.eyebrow || "Compliance"}
+        title={hero?.title || "Registered, tested, and documented on every project."}
+        lede={hero?.subtitle || "Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. Every installation is tested and certified before handover, whatever its size."}
+        image={hero?.image_url || photo('/projects/technical.jpg')}
+        imageAlt={hero?.image_alt || "Terminating conductors during installation"}
       />
 
       <section className="section-tight">
         <div className="container-x grid gap-14 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
           <div>
-            <SectionHeader eyebrow="Before certifying" title="What we test, every time." lede="Every installation gets the full sequence, once before the plaster closes and again at handover. The recorded results go to you with the certificate." />
+            <SectionHeader
+              eyebrow={s1?.eyebrow || "Before certifying"}
+              title={s1?.title || "What we test, every time."}
+              lede={s1?.subtitle || "Every installation gets the full sequence, once before the plaster closes and again at handover. The recorded results go to you with the certificate."}
+            />
             <motion.dl variants={stagger(0.06)} {...inView} className="mt-10 space-y-4">
               {tests.map(([name, why]) => (
                 <motion.div key={name} variants={fadeUp} className="flex gap-4 rounded-xl border border-neutral-200 bg-white p-5">
