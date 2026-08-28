@@ -48,7 +48,12 @@ export default function Navbar() {
               </motion.div>
             </Link>
 
-            <p className="ml-6 hidden items-center gap-2 whitespace-nowrap text-xs text-ink-500 xl:flex">
+            {/* Held back to 2xl. The nav gained a ninth link when the fittings
+                page arrived, and this strapline is the widest thing in the row
+                that is not navigation — showing it from xl pushed the quote
+                button off the right edge at 1280 and 1366. The same claim is
+                made on every page in the trust bar. */}
+            <p className="ml-6 hidden items-center gap-2 whitespace-nowrap text-xs text-ink-500 2xl:flex">
               <span aria-hidden="true" className="inline-block h-2.5 w-1 rounded-full bg-earth-ink" />
               NCA registered · Nationwide
             </p>
@@ -59,7 +64,10 @@ export default function Navbar() {
                   <NavLink
                     to={l.to}
                     className={({ isActive }) =>
-                      `relative rounded-full px-3 py-2 text-[0.83rem] font-medium xl:px-3.5 xl:text-sm transition-colors duration-300 ${
+                      // whitespace-nowrap: labels come from the CMS and can be
+                      // any length. "Lighting & fittings" wrapped onto three
+                      // lines and pushed the header to twice its height.
+                      `relative whitespace-nowrap rounded-full px-2.5 py-2 text-[0.83rem] font-medium xl:px-3 xl:text-sm transition-colors duration-300 ${
                         isActive ? 'text-ink-900' : 'text-ink-600 hover:text-ink-900'
                       }`
                     }
@@ -97,7 +105,11 @@ export default function Navbar() {
               </a>
             )}
 
-            <div className="hidden lg:block">
+            {/* From xl, not lg. Between 1024 and 1279 the nine nav links and
+                the logo already fill the row, and this button was overflowing
+                the viewport. Contact is a nav link at those widths, and the
+                phone control sits beside it, so nothing becomes unreachable. */}
+            <div className="hidden xl:block">
               <Magnetic strength={0.2}>
                 <Link to="/contact" className="btn-primary group whitespace-nowrap px-5 py-3 text-sm">
                   Request a quote

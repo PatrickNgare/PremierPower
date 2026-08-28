@@ -24,6 +24,7 @@ const FIXED = [
   { to: '/admin/inbox', label: 'Enquiries', icon: Inbox },
   { to: '/admin/homepage', label: 'Home page', icon: LayoutTemplate, group: 'Pages' },
   { to: '/admin/pages/services', label: 'Services page', icon: FileText, group: 'Pages' },
+  { to: '/admin/pages/products', label: 'Lighting & fittings page', icon: FileText, group: 'Pages' },
   { to: '/admin/pages/portfolio', label: 'Installations page', icon: FileText, group: 'Pages' },
   { to: '/admin/pages/safety', label: 'Safety page', icon: FileText, group: 'Pages' },
   { to: '/admin/pages/about', label: 'About page', icon: FileText, group: 'Pages' },

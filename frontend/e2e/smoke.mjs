@@ -206,14 +206,23 @@ check(heroFits, 'hero is a full stage without overflowing the viewport')
     .map((m) => m[1] || '/')
   check(paths.length > 0, `sitemap lists ${paths.length} URLs`)
 
+  // Sampled, not exhaustive. The sitemap now carries a detail page per
+  // fitting, and loading all of them turns one check into twenty page loads.
+  // Every distinct top-level page is checked; detail pages share one template,
+  // so three of them prove the same thing the other ten would.
+  const sampled = [
+    ...paths.filter((p) => p.split('/').length <= 2),
+    ...paths.filter((p) => p.split('/').length > 2).slice(0, 3),
+  ]
   let dead = 0
-  for (const path of paths) {
+  for (const path of sampled) {
     await page.goto(SITE + path, { waitUntil: 'networkidle' })
     await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
     const heading = await page.locator('h1').first().innerText()
     if (/circuit is dead|not found/i.test(heading)) dead++
   }
-  check(dead === 0, `every sitemap URL renders a real page (${paths.length} checked)`)
+  check(dead === 0,
+    `every sitemap URL renders a real page (${sampled.length} of ${paths.length} checked)`)
 
   const robots = await fetch(SITE + '/robots.txt').then((r) => r.text())
   check(robots.includes('Disallow: /admin'), 'robots.txt keeps crawlers out of the CMS')

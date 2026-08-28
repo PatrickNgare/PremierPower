@@ -18,7 +18,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import SeoMeta, SiteSetting
+from ..models import Product, SeoMeta, SiteSetting
 
 router = APIRouter(tags=["seo"])
 
@@ -28,7 +28,8 @@ DEFAULT_BASE = "https://premierpower.co.ke"
 
 # Rough weighting. The home page and the two pages that win work rank above
 # the supporting ones.
-PRIORITY = {"/": "1.0", "/services": "0.9", "/portfolio": "0.9", "/contact": "0.8"}
+PRIORITY = {"/": "1.0", "/services": "0.9", "/portfolio": "0.9",
+            "/products": "0.9", "/contact": "0.8"}
 
 
 def _base(db: Session) -> str:
@@ -44,14 +45,27 @@ def sitemap(db: Session = Depends(get_db)) -> Response:
     rows = db.scalars(
         select(SeoMeta).where(SeoMeta.noindex.is_(False)).order_by(SeoMeta.path)
     ).all()
+    paths = [(r.path, PRIORITY.get(r.path, "0.7")) for r in rows]
+
+    # Detail pages have no seo_meta row of their own — there is one row for
+    # /products, not one per fitting — so they would never be listed. Appended
+    # here, and only while their parent page is itself indexable.
+    if any(r.path == "/products" and not r.noindex for r in rows):
+        paths += [
+            (f"/products/{slug}", "0.6")
+            for slug in db.scalars(
+                select(Product.slug).where(Product.published.is_(True))
+                .order_by(Product.position, Product.id)
+            ).all()
+        ]
 
     urls = "\n".join(
         f"  <url>\n"
-        f"    <loc>{escape(base + r.path)}</loc>\n"
+        f"    <loc>{escape(base + path)}</loc>\n"
         f"    <lastmod>{today}</lastmod>\n"
-        f"    <priority>{PRIORITY.get(r.path, '0.7')}</priority>\n"
+        f"    <priority>{priority}</priority>\n"
         f"  </url>"
-        for r in rows
+        for path, priority in paths
     )
     body = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'

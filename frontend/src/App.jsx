@@ -17,6 +17,8 @@ const About = lazy(() => import('@/pages/About'))
 const Testimonials = lazy(() => import('@/pages/Testimonials'))
 const FAQ = lazy(() => import('@/pages/FAQ'))
 const Contact = lazy(() => import('@/pages/Contact'))
+const Products = lazy(() => import('@/pages/Products'))
+const ProductDetail = lazy(() => import('@/pages/ProductDetail'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
 // The CMS. Lazy so none of it is downloaded by a visitor who only ever sees
@@ -69,6 +71,8 @@ export default function App() {
             <Routes location={location} key={location.pathname}>
             <Route path="/" element={<PageTransition><Home /></PageTransition>} />
             <Route path="/services" element={<PageTransition><Services /></PageTransition>} />
+            <Route path="/products" element={<PageTransition><Products /></PageTransition>} />
+            <Route path="/products/:slug" element={<PageTransition><ProductDetail /></PageTransition>} />
             <Route path="/portfolio" element={<PageTransition><Portfolio /></PageTransition>} />
             <Route path="/safety" element={<PageTransition><Safety /></PageTransition>} />
             <Route path="/about" element={<PageTransition><About /></PageTransition>} />

@@ -44,7 +44,8 @@ const splitTitle = (t) => String(t).replace('|', ' ')
  */
 /** Which pages the CMS can edit, and what to call them. */
 export const PAGES = [
-  ['/', 'Home page'], ['/services', 'Services page'], ['/portfolio', 'Installations page'],
+  ['/', 'Home page'], ['/services', 'Services page'],
+  ['/products', 'Lighting & fittings page'], ['/portfolio', 'Installations page'],
   ['/safety', 'Safety page'], ['/about', 'About page'], ['/testimonials', 'Reviews page'],
   ['/faq', 'FAQ page'], ['/contact', 'Contact page'],
 ]

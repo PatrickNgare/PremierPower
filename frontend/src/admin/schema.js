@@ -158,10 +158,10 @@ export const collections = {
 
   products: {
     path: '/products',
-    title: 'Products',
+    title: 'Lighting & fittings',
     singular: 'product',
     group: 'Catalogue',
-    blurb: 'What you supply and install.',
+    blurb: 'The fittings shown on the Lighting & fittings page.',
     orderable: true,
     columns: [
       { name: 'image_url', label: '', type: 'thumb' },

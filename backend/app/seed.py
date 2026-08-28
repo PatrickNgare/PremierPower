@@ -153,15 +153,26 @@ PAGES = {
     '/faq': [
         dict(key='hero', eyebrow='Straight answers', title='The questions people actually ask.', subtitle='Mostly about licensing. Almost never about price first — which is the right instinct.', image_url='/projects/lodge-dusk.jpg', image_alt='Completed development at dusk', config={"crumb": 'FAQ'}),
     ],
+    '/products': [
+        dict(key='hero', eyebrow='Lighting & fittings',
+             title='The fittings we supply and install.',
+             subtitle='Chandeliers, pendants and linear lighting for hospitality, '
+                      'commercial interiors and residential developments \u2014 specified '
+                      'with the interior, then wired, hung and commissioned by the same '
+                      'contractor.',
+             image_url='/projects/stairwell.jpg',
+             image_alt='Feature lighting installation in a completed stairwell',
+             config={'crumb': 'Lighting & fittings'}),
+    ],
     '/testimonials': [
         dict(key='hero', eyebrow='Social proof', title='What customers say.', subtitle='Weighted toward the reviews that mention safety and reliability, because that is what you are actually buying.', image_url='/projects/dining.jpg', image_alt='Completed hospitality interior', config={"crumb": 'Reviews'}),
     ],
 }
 
 HEADER_MENU = [
-    ("Home", "/"), ("Services", "/services"), ("Installations", "/portfolio"),
-    ("Safety", "/safety"), ("About", "/about"), ("Reviews", "/testimonials"),
-    ("FAQ", "/faq"), ("Contact", "/contact"),
+    ("Home", "/"), ("Services", "/services"), ("Lighting & fittings", "/products"),
+    ("Installations", "/portfolio"), ("Safety", "/safety"), ("About", "/about"),
+    ("Reviews", "/testimonials"), ("FAQ", "/faq"), ("Contact", "/contact"),
 ]
 
 FOOTER_MENU = [
@@ -193,6 +204,9 @@ SEO = [
      "assessment involves."),
     ("/contact", "Contact — Premier Power Limited",
      "Talk to an electrical engineering contractor about your project."),
+    ("/products", "Lighting & fittings — Premier Power Limited",
+     "Chandeliers, pendants and linear lighting supplied and installed across Kenya for "
+     "hospitality, commercial interiors and residential developments."),
 ]
 
 
@@ -233,13 +247,27 @@ def seed_content(db: Session) -> None:
         )
         log.info("seeded %d sections for %s", len(blocks), path)
 
-    if _empty(db, MenuItem):
-        db.add_all(
-            MenuItem(menu=menu, label=label, href=href, position=i, published=True)
-            for menu, items in (("header", HEADER_MENU), ("footer", FOOTER_MENU))
-            for i, (label, href) in enumerate(items)
-        )
-        log.info("seeded navigation")
+    # Per link, not per table. A table-level check means a database that
+    # already has navigation never receives a link added later — which is
+    # exactly what happened when the fittings page was added. Existing links
+    # are left alone, including their order and their labels; a new one is
+    # appended to the end of its menu for the client to drag into place.
+    for menu, items in (("header", HEADER_MENU), ("footer", FOOTER_MENU)):
+        present = {
+            m.href for m in db.scalars(
+                select(MenuItem).where(MenuItem.menu == menu)
+            ).all()
+        }
+        nxt = db.scalar(
+            select(func.coalesce(func.max(MenuItem.position), -1) + 1)
+            .where(MenuItem.menu == menu)
+        ) or 0
+        for label, href in items:
+            if href in present:
+                continue
+            db.add(MenuItem(menu=menu, label=label, href=href, position=nxt, published=True))
+            log.info("added %s link: %s", menu, label)
+            nxt += 1
 
     if _empty(db, SectionItem):
         rows = []
@@ -258,12 +286,14 @@ def seed_content(db: Session) -> None:
         db.add_all(rows)
         log.info("seeded %d section items", len(rows))
 
-    if _empty(db, SeoMeta):
-        db.add_all(
-            SeoMeta(path=path, title=title, description=description,
-                    canonical=f"https://premierpower.co.ke{path}")
-            for path, title, description in SEO
-        )
-        log.info("seeded %d SEO records", len(SEO))
+    # Per path, for the same reason: a page added later needs its row, and the
+    # client's edits to existing rows must survive.
+    present = {r.path for r in db.scalars(select(SeoMeta)).all()}
+    for path, title, description in SEO:
+        if path in present:
+            continue
+        db.add(SeoMeta(path=path, title=title, description=description,
+                       canonical=f"https://premierpower.co.ke{path}"))
+        log.info("added SEO record for %s", path)
 
     db.commit()
