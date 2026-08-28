@@ -1,34 +1,13 @@
 """API tests. Run with: .venv/bin/pytest
 
-Uses a throwaway SQLite database, so no Postgres is needed to run them.
+Runs against a throwaway PostgreSQL database — the same engine as production.
+conftest.py creates and drops it; `docker compose up -d db` is enough to have
+one available.
 """
 
 import os
 
-os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-os.environ["SECRET_KEY"] = "test-key-that-is-at-least-32-bytes-long-for-hs256"
-os.environ["ADMIN_EMAIL"] = "admin@test.local"
-os.environ["ADMIN_PASSWORD"] = "test-password-1234"
-
 import pytest
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-
-@pytest.fixture(scope="module")
-def client():
-    with TestClient(app) as c:
-        yield c
-
-
-@pytest.fixture(scope="module")
-def auth(client):
-    r = client.post("/api/admin/login", data={
-        "username": "admin@test.local", "password": "test-password-1234",
-    })
-    assert r.status_code == 200, r.text
-    return {"Authorization": f"Bearer {r.json()['access_token']}"}
 
 
 # ── meta ────────────────────────────────────────────────────────────────
@@ -38,13 +17,13 @@ def test_health(client):
 
 # ── auth ────────────────────────────────────────────────────────────────
 def test_login_rejects_wrong_password(client):
-    r = client.post("/api/admin/login", data={"username": "admin@test.local", "password": "nope"})
+    r = client.post("/api/admin/login", data={"username": os.environ["ADMIN_EMAIL"], "password": "nope"})
     assert r.status_code == 401
 
 
 def test_login_reveals_nothing_about_unknown_accounts(client):
-    unknown = client.post("/api/admin/login", data={"username": "ghost@test.local", "password": "nope"})
-    wrong = client.post("/api/admin/login", data={"username": "admin@test.local", "password": "nope"})
+    unknown = client.post("/api/admin/login", data={"username": "ghost@premierpower.test", "password": "nope"})
+    wrong = client.post("/api/admin/login", data={"username": os.environ["ADMIN_EMAIL"], "password": "nope"})
     assert unknown.status_code == wrong.status_code == 401
     assert unknown.json() == wrong.json()
 
@@ -55,7 +34,7 @@ def test_me_requires_a_token(client):
 
 def test_me_returns_the_seeded_superuser(client, auth):
     body = client.get("/api/admin/me", headers=auth).json()
-    assert body["email"] == "admin@test.local"
+    assert body["email"] == os.environ["ADMIN_EMAIL"]
     assert body["is_superuser"] is True
 
 
@@ -261,9 +240,17 @@ def test_stats_report_pending_settings(client, auth):
 
 
 # ── sqladmin ────────────────────────────────────────────────────────────
-def test_admin_ui_requires_auth(client):
-    assert client.get("/admin/", follow_redirects=False).status_code == 302
+# Mounted at /sqladmin, not /admin: /admin is the CMS the client uses, which
+# is part of the frontend. This is the unlinked raw-table escape hatch.
+def test_raw_admin_requires_auth(client):
+    assert client.get("/sqladmin/", follow_redirects=False).status_code == 302
 
 
-def test_admin_ui_login_page_renders(client):
-    assert client.get("/admin/login").status_code == 200
+def test_raw_admin_login_page_renders(client):
+    assert client.get("/sqladmin/login").status_code == 200
+
+
+def test_raw_admin_no_longer_answers_on_the_cms_path(client):
+    """/admin belongs to the CMS. If the backend ever claims it again, the
+    client's admin panel is replaced by a Bootstrap table view."""
+    assert client.get("/admin/", follow_redirects=False).status_code == 404

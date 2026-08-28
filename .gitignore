@@ -15,8 +15,6 @@ venv/
 PREMIER.pdf
 *.pdf
 
-# Throwaway database the test suite creates.
-backend/test.db
 
 # Runtime uploads. In production these live on a Docker volume, not in git —
 # committing them would put client photography into the repository by accident.

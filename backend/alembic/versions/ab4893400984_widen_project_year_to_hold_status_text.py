@@ -22,25 +22,18 @@ def upgrade() -> None:
     # Widened because the column carries status, not a year: the company
     # profile lists "Ongoing — 85%", which is 13 characters and overflowed
     # String(12). It took the API down in a restart loop on first seed.
-    #
-    # batch_alter_table, not the plain alter_column autogenerate produced:
-    # SQLite cannot change a column type at all, and the test suite runs the
-    # migrations on SQLite. Batch mode recreates the table there and emits a
-    # plain ALTER on Postgres.
-    with op.batch_alter_table("projects") as batch_op:
-        batch_op.alter_column(
-            "year",
-            existing_type=sa.VARCHAR(length=12),
-            type_=sa.String(length=40),
-            existing_nullable=False,
-        )
+    op.alter_column(
+        "projects", "year",
+        existing_type=sa.VARCHAR(length=12),
+        type_=sa.String(length=40),
+        existing_nullable=False,
+    )
 
 
 def downgrade() -> None:
-    with op.batch_alter_table("projects") as batch_op:
-        batch_op.alter_column(
-            "year",
-            existing_type=sa.String(length=40),
-            type_=sa.VARCHAR(length=12),
-            existing_nullable=False,
-        )
+    op.alter_column(
+        "projects", "year",
+        existing_type=sa.String(length=40),
+        type_=sa.VARCHAR(length=12),
+        existing_nullable=False,
+    )

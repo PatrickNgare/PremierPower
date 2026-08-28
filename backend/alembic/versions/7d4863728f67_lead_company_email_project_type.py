@@ -23,8 +23,7 @@ def upgrade() -> None:
     # server_default is required, not optional: these are NOT NULL columns
     # added to a table that already holds rows, which Postgres rejects without
     # one. It is kept rather than dropped afterwards — an empty-string default
-    # is correct for these fields, and ALTER COLUMN ... DROP DEFAULT is not
-    # valid SQLite, which the test suite runs on.
+    # is correct for these fields.
     op.add_column('leads', sa.Column('company', sa.String(length=160), nullable=False, server_default=''))
     op.add_column('leads', sa.Column('email', sa.String(length=200), nullable=False, server_default=''))
     op.add_column('leads', sa.Column('project_type', sa.String(length=80), nullable=False, server_default=''))

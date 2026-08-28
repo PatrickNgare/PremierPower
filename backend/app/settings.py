@@ -44,6 +44,16 @@ def _validate(s: "Settings") -> None:
 
     log = logging.getLogger("premierpower.settings")
 
+    # Postgres is the only supported database, in development, in tests and in
+    # production. Failing here is better than failing later: the schema uses
+    # Postgres types and the migrations emit Postgres DDL, so another engine
+    # gets some distance in and then breaks somewhere far less obvious.
+    if not s.database_url.startswith("postgresql"):
+        raise RuntimeError(
+            f"DATABASE_URL must be a PostgreSQL URL, got {s.database_url.split(':', 1)[0]!r}. "
+            "This application supports PostgreSQL only."
+        )
+
     if s.secret_key in ("", "change-me"):
         raise RuntimeError(
             "SECRET_KEY is unset or still the placeholder. Generate one with: "

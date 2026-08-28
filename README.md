@@ -102,7 +102,7 @@ build can never pick it up.
 
 ```bash
 cd backend
-.venv/bin/pytest          # 7 tests, throwaway SQLite — no Postgres needed
+.venv/bin/pytest          # against a throwaway Postgres database
 ```
 
 Covers the lead round trip, validation rejection, the admin auth gate, and the
@@ -137,9 +137,11 @@ no console errors, the hero CTA visible above the fold, a lead submitted
 through the real form reaching the API, and the before/after reveal operable
 from the keyboard.
 
-Run `.venv/bin/uvicorn` with a `DATABASE_URL` pointing at SQLite
-(`sqlite:///./local.db`) for a quick local run; use Postgres for anything you
-intend to deploy.
+PostgreSQL is the only supported database. The app refuses to start against
+anything else rather than failing later in a less obvious place: the schema
+uses Postgres types and the migrations emit Postgres DDL. For a local run
+outside Docker, start just the database with `docker compose up -d db` and
+point `DATABASE_URL` at `localhost:5440`.
 
 ### Manual pass before launch
 
