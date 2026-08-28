@@ -8,12 +8,12 @@ from sqlalchemy.orm import Session
 from ..core.audit import log_action
 from ..core.throttle import too_many
 from ..core.security import (
-    client_ip, create_access_token, get_current_admin,
-    hash_password, require_superuser, verify_password,
+    client_ip, create_access_token, effective_role, get_current_admin,
+    hash_password, require_owner, verify_password,
 )
 from ..db import get_db
 from ..models import Admin
-from ..schemas import AdminCreate, AdminOut, PasswordChange, Token
+from ..schemas import AdminCreate, AdminOut, AdminUpdate, PasswordChange, Token
 
 router = APIRouter(tags=["admin"])
 
@@ -22,6 +22,17 @@ router = APIRouter(tags=["admin"])
 # stuffing, loose enough that a person mistyping a password is unaffected.
 LOGIN_LIMIT = 10
 LOGIN_WINDOW = 300.0
+
+
+def _out(admin: Admin) -> AdminOut:
+    """Always report the effective role. Reading the column raw shows a
+    superuser as an editor whenever their role was never set, which then
+    disagrees with what /me says about the same person."""
+    return AdminOut(
+        id=admin.id, email=admin.email, name=admin.name,
+        is_active=admin.is_active, is_superuser=admin.is_superuser,
+        role=effective_role(admin),
+    )
 
 
 @router.post("/login", response_model=Token)
@@ -46,7 +57,7 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Ses
 
 @router.get("/me", response_model=AdminOut)
 def me(admin: Admin = Depends(get_current_admin)):
-    return admin
+    return _out(admin)
 
 
 @router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
@@ -75,14 +86,14 @@ def logout_everywhere(
 
 
 @router.get("/users", response_model=list[AdminOut])
-def list_users(db: Session = Depends(get_db), _: Admin = Depends(require_superuser)):
-    return db.scalars(select(Admin).order_by(Admin.id)).all()
+def list_users(db: Session = Depends(get_db), _: Admin = Depends(require_owner)):
+    return [_out(a) for a in db.scalars(select(Admin).order_by(Admin.id)).all()]
 
 
 @router.post("/users", response_model=AdminOut, status_code=status.HTTP_201_CREATED)
 def create_user(
     payload: AdminCreate, request: Request,
-    db: Session = Depends(get_db), actor: Admin = Depends(require_superuser),
+    db: Session = Depends(get_db), actor: Admin = Depends(require_owner),
 ):
     if db.scalar(select(Admin).where(Admin.email == payload.email)):
         raise HTTPException(status.HTTP_409_CONFLICT, "That email already has an account")
@@ -90,19 +101,49 @@ def create_user(
         email=payload.email, name=payload.name,
         password_hash=hash_password(payload.password),
         is_superuser=payload.is_superuser,
+        role=payload.role,
     )
     db.add(admin)
     db.commit()
     db.refresh(admin)
     log_action(db, actor=actor.email, action="create", entity="admin",
                entity_id=admin.id, detail=admin.email, ip=client_ip(request))
-    return admin
+    return _out(admin)
+
+
+@router.put("/users/{id}", response_model=AdminOut)
+def update_user(
+    id: int, payload: AdminUpdate, request: Request,
+    db: Session = Depends(get_db), actor: Admin = Depends(require_owner),
+):
+    """Change someone's name, role or access.
+
+    An owner cannot demote or deactivate themselves: the last person able to
+    manage accounts locking themselves out is a support call, not a feature.
+    """
+    admin = db.get(Admin, id)
+    if admin is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Admin not found")
+    if id == actor.id and (payload.role != "owner" or not payload.is_active):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST,
+                            "You cannot remove your own owner access")
+    admin.name = payload.name
+    admin.role = payload.role
+    admin.is_active = payload.is_active
+    # Losing access takes effect now, not whenever the token happens to expire.
+    if not payload.is_active:
+        admin.token_version += 1
+    db.commit()
+    db.refresh(admin)
+    log_action(db, actor=actor.email, action="update", entity="admin",
+               entity_id=id, detail=f"{admin.email} role={admin.role}", ip=client_ip(request))
+    return _out(admin)
 
 
 @router.delete("/users/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(
     id: int, request: Request,
-    db: Session = Depends(get_db), actor: Admin = Depends(require_superuser),
+    db: Session = Depends(get_db), actor: Admin = Depends(require_owner),
 ):
     if id == actor.id:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "You cannot delete your own account")

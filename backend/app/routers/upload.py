@@ -10,12 +10,14 @@ import logging
 import secrets
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile, status
-from sqlalchemy import select
+from fastapi import (
+    APIRouter, Body, Depends, File, Form, HTTPException, Query, Request, UploadFile, status,
+)
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from ..core.audit import log_action
-from ..core.security import client_ip, get_current_admin
+from ..core.security import client_ip, get_current_admin, require_editor
 from ..db import get_db
 from ..models import Admin, MediaAsset
 from ..schemas import MediaOut
@@ -91,8 +93,11 @@ def _store_cloudinary(data: bytes, filename: str) -> dict:
 async def upload_image(
     request: Request,
     file: UploadFile = File(...),
+    folder: str = Form(""),
+    alt: str = Form(""),
+    tags: str = Form(""),
     db: Session = Depends(get_db),
-    admin: Admin = Depends(get_current_admin),
+    admin: Admin = Depends(require_editor),
 ):
     if file.content_type not in ALLOWED:
         raise HTTPException(
@@ -125,6 +130,7 @@ async def upload_image(
         filename=file.filename or "", bytes=len(data),
         width=stored.get("width", 0), height=stored.get("height", 0),
         storage=stored["storage"],
+        folder=folder.strip()[:120], alt=alt.strip()[:300], tags=tags.strip()[:300],
     )
     db.add(asset)
     db.commit()
@@ -134,15 +140,117 @@ async def upload_image(
     return asset
 
 
+# Documents are a separate door from images on purpose. The image endpoint
+# validates magic bytes against an image allowlist; widening it to accept PDFs
+# would mean one endpoint whose "is this really an image" check has to be told
+# when not to apply — exactly the shape of the bug that let SVG through before.
+DOC_ALLOWED = {"application/pdf": ".pdf"}
+DOC_MAGIC = b"%PDF-"
+
+
+@router.post("/document", status_code=status.HTTP_201_CREATED)
+async def upload_document(
+    request: Request,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_editor),
+):
+    """Store a PDF and hand back what the document form needs.
+
+    Returns metadata rather than creating the row: the client still has to give
+    the file a title a person would recognise, and "PremierPower_Profile_v3
+    (2).pdf" is not it.
+    """
+    if file.content_type not in DOC_ALLOWED:
+        raise HTTPException(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            "Only PDF documents can be uploaded.",
+        )
+    data = await file.read()
+    if not data.startswith(DOC_MAGIC):
+        raise HTTPException(
+            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            "That file is not a PDF, whatever it is named.",
+        )
+    limit = settings.max_upload_mb * 1024 * 1024
+    if len(data) > limit:
+        raise HTTPException(
+            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            f"File is larger than the {settings.max_upload_mb}MB limit",
+        )
+
+    root = Path(settings.upload_dir) / "docs"
+    root.mkdir(parents=True, exist_ok=True)
+    name = f"{secrets.token_hex(12)}.pdf"
+    (root / name).write_bytes(data)
+    log_action(db, actor=admin.email, action="upload", entity="document",
+               entity_id=None, detail=file.filename or name, ip=client_ip(request))
+    return {
+        "file_url": f"/uploads/docs/{name}",
+        "filename": file.filename or name,
+        "bytes": len(data),
+    }
+
+
 @router.get("/library", response_model=list[MediaOut])
-def library(db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
-    return db.scalars(select(MediaAsset).order_by(MediaAsset.created_at.desc())).all()
+def library(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(get_current_admin),
+    q: str = Query("", description="Search filename, alt text and tags"),
+    folder: str = Query(""),
+    limit: int = Query(200, ge=1, le=500),
+    offset: int = Query(0, ge=0),
+):
+    stmt = select(MediaAsset).order_by(MediaAsset.created_at.desc())
+    if q.strip():
+        like = f"%{q.strip()}%"
+        stmt = stmt.where(or_(
+            MediaAsset.filename.ilike(like),
+            MediaAsset.alt.ilike(like),
+            MediaAsset.tags.ilike(like),
+        ))
+    if folder:
+        stmt = stmt.where(MediaAsset.folder == folder)
+    return db.scalars(stmt.limit(limit).offset(offset)).all()
+
+
+@router.get("/folders", response_model=list[str])
+def folders(db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
+    """Folders are a column, not a table — a name only exists while something
+    is filed under it, so the list can never drift from what is really there."""
+    rows = db.scalars(
+        select(MediaAsset.folder).where(MediaAsset.folder != "").group_by(MediaAsset.folder)
+        .order_by(func.lower(MediaAsset.folder))
+    ).all()
+    return list(rows)
+
+
+@router.put("/library/{id}", response_model=MediaOut)
+def update_asset(
+    id: int,
+    alt: str = Body("", embed=True),
+    folder: str = Body("", embed=True),
+    tags: str = Body("", embed=True),
+    db: Session = Depends(get_db),
+    _: Admin = Depends(require_editor),
+):
+    """Alt text is editable after the fact because it is usually written badly
+    in the rush of uploading, and a wrong alt is worse than a late one."""
+    asset = db.get(MediaAsset, id)
+    if asset is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Asset not found")
+    asset.alt = alt.strip()[:300]
+    asset.folder = folder.strip()[:120]
+    asset.tags = tags.strip()[:300]
+    db.commit()
+    db.refresh(asset)
+    return asset
 
 
 @router.delete("/library/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_asset(
     id: int, request: Request,
-    db: Session = Depends(get_db), admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db), admin: Admin = Depends(require_editor),
 ):
     asset = db.get(MediaAsset, id)
     if asset is None:

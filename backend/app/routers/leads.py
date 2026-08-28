@@ -9,8 +9,9 @@ from ..core.security import client_ip, get_current_admin
 from ..core.throttle import too_many
 from ..db import get_db
 from ..models import Admin, Lead
-from ..schemas import LeadIn, LeadOut
+from ..schemas import LeadIn, LeadOut, LeadUpdate
 from ..settings import settings
+from .notifications import notify
 
 router = APIRouter(tags=["leads"])
 log = logging.getLogger("premierpower.leads")
@@ -30,6 +31,14 @@ def create_lead(payload: LeadIn, request: Request, db: Session = Depends(get_db)
 
     lead = Lead(**payload.model_dump())
     db.add(lead)
+    db.flush()   # assigns the id the notification links to
+    notify(
+        db,
+        kind="lead",
+        title=f"New {lead.kind} from {lead.name}",
+        body=(lead.message or lead.project_type or "")[:200],
+        link=f"/admin/inbox/{lead.id}",
+    )
     db.commit()
     target = settings.notify_email or "(no NOTIFY_EMAIL configured)"
     log.info("new lead #%s from %s — notify %s", lead.id, lead.phone, target)
@@ -37,8 +46,56 @@ def create_lead(payload: LeadIn, request: Request, db: Session = Depends(get_db)
 
 
 @router.get("", response_model=list[LeadOut])
-def list_leads(db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
-    return db.scalars(select(Lead).order_by(Lead.created_at.desc())).all()
+def list_leads(
+    db: Session = Depends(get_db),
+    _: Admin = Depends(get_current_admin),
+    q: str = "",
+    kind: str = "",
+    status_filter: str = "",
+):
+    stmt = select(Lead).order_by(Lead.created_at.desc())
+    if q.strip():
+        like = f"%{q.strip()}%"
+        stmt = stmt.where(
+            Lead.name.ilike(like) | Lead.company.ilike(like)
+            | Lead.phone.ilike(like) | Lead.email.ilike(like) | Lead.message.ilike(like)
+        )
+    if kind:
+        stmt = stmt.where(Lead.kind == kind)
+    if status_filter:
+        stmt = stmt.where(Lead.status == status_filter)
+    return db.scalars(stmt).all()
+
+
+@router.get("/{id}", response_model=LeadOut)
+def get_lead(id: int, db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
+    lead = db.get(Lead, id)
+    if lead is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Lead not found")
+    return lead
+
+
+@router.patch("/{id}", response_model=LeadOut)
+def update_lead(
+    id: int, payload: LeadUpdate, request: Request,
+    db: Session = Depends(get_db), admin: Admin = Depends(get_current_admin),
+):
+    """Move a request through the pipeline and keep a note against it.
+
+    Only the fields staff own are writable — never the enquirer's own words,
+    which stay exactly as they were submitted.
+    """
+    lead = db.get(Lead, id)
+    if lead is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Lead not found")
+    lead.status = payload.status
+    lead.notes = payload.notes
+    lead.handled = payload.status in ("won", "lost")
+    db.commit()
+    db.refresh(lead)
+    log_action(db, actor=admin.email, action="update", entity="lead",
+               entity_id=id, detail=f"status={lead.status}", ip=client_ip(request))
+    return lead
 
 
 @router.patch("/{id}/handled", response_model=LeadOut)

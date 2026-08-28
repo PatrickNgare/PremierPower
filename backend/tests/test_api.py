@@ -114,9 +114,72 @@ def test_unpublished_content_is_hidden_from_the_public(client, auth):
     })
     slugs = [p["slug"] for p in client.get("/api/projects").json()]
     assert "draft-job" not in slugs
-    # But an authenticated admin sees it.
-    all_slugs = [p["slug"] for p in client.get("/api/projects/all", headers=auth).json()]
-    assert "draft-job" in all_slugs
+    # But an authenticated admin sees it. /all is paged, so the rows are under
+    # "items" alongside the total the CMS pager needs.
+    page = client.get("/api/projects/all", headers=auth).json()
+    assert "draft-job" in [p["slug"] for p in page["items"]]
+    assert page["total"] >= 1
+
+
+def test_draft_is_visible_through_a_preview_token(client, auth):
+    """The one route by which unpublished content reaches the public site."""
+    client.post("/api/projects", headers=auth, json={
+        "slug": "preview-me", "title": "Preview me", "published": False,
+    })
+    token = client.post("/api/preview/token", headers=auth).json()["token"]
+    slugs = [p["slug"] for p in client.get(f"/api/projects?preview={token}").json()]
+    assert "preview-me" in slugs
+    # A wrong token is simply not a preview — it must not fail open.
+    slugs = [p["slug"] for p in client.get("/api/projects?preview=nonsense").json()]
+    assert "preview-me" not in slugs
+
+
+def test_reorder_rewrites_positions(client, auth):
+    made = []
+    for i, name in enumerate(("alpha", "beta", "gamma")):
+        r = client.post("/api/sectors", headers=auth, json={
+            "slug": f"order-{name}", "title": name.title(), "position": i, "published": True})
+        made.append(r.json()["id"])
+    reversed_ids = list(reversed(made))
+    assert client.post("/api/sectors/reorder", headers=auth,
+                       json={"ids": reversed_ids}).status_code == 204
+    page = client.get("/api/sectors/all", headers=auth).json()
+    got = {row["id"]: row["position"] for row in page["items"]}
+    assert [got[i] for i in reversed_ids] == [0, 1, 2]
+
+
+def test_publish_toggle_flips_public_visibility(client, auth):
+    r = client.post("/api/sectors", headers=auth, json={
+        "slug": "toggle-me", "title": "Toggle", "published": False})
+    sector_id = r.json()["id"]
+    assert "toggle-me" not in [s["slug"] for s in client.get("/api/sectors").json()]
+    client.patch(f"/api/sectors/{sector_id}/publish", headers=auth, json={"value": True})
+    assert "toggle-me" in [s["slug"] for s in client.get("/api/sectors").json()]
+
+
+def test_search_narrows_the_admin_list(client, auth):
+    client.post("/api/sectors", headers=auth, json={
+        "slug": "findable-sector", "title": "Distinctive Warehousing", "published": True})
+    page = client.get("/api/sectors/all?q=Distinctive", headers=auth).json()
+    assert [row["slug"] for row in page["items"]] == ["findable-sector"]
+
+
+def test_writes_need_more_than_a_viewer_role(client, auth):
+    """A viewer can read the CMS and change nothing in it."""
+    client.post("/api/admin/users", headers=auth, json={
+        "email": "viewer@example.com", "name": "Viewer",
+        "password": "viewer-password-1234", "role": "viewer",
+    })
+    r = client.post("/api/admin/login", data={
+        "username": "viewer@example.com", "password": "viewer-password-1234"})
+    viewer = {"Authorization": f"Bearer {r.json()['access_token']}"}
+
+    assert client.get("/api/sectors/all", headers=viewer).status_code == 200
+    assert client.post("/api/sectors", headers=viewer, json={
+        "slug": "viewer-made-this", "title": "Nope"}).status_code == 403
+    assert client.delete("/api/sectors/1", headers=viewer).status_code == 403
+    # Account management is owner-only, above editor.
+    assert client.get("/api/admin/users", headers=viewer).status_code == 403
 
 
 def test_safety_testimonials_sort_first(client, auth):
