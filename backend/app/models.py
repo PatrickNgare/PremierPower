@@ -498,6 +498,10 @@ class SectionItem(Base):
     icon: Mapped[str] = mapped_column(String(40), default="")
     image_url: Mapped[str] = mapped_column(String(500), default="")
     image_alt: Mapped[str] = mapped_column(String(300), default="")
+    # A short clip, with image_url as its poster frame. Kept beside the image
+    # rather than replacing it: the poster is what loads, and the video only
+    # downloads if someone presses play.
+    video_url: Mapped[str] = mapped_column(String(500), default="", server_default="")
     href: Mapped[str] = mapped_column(String(300), default="")
     # Free text, so "same day" and "12" are equally valid for a stat.
     value: Mapped[str] = mapped_column(String(120), default="")

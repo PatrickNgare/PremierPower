@@ -4,22 +4,32 @@ import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import PageHero from '@/components/ui/PageHero'
 import CTABanner from '@/components/sections/CTABanner'
+import SectionHeader from '@/components/ui/SectionHeader'
 import Seo from '@/components/Seo'
+import VideoTile from '@/components/ui/VideoTile'
 import { useApi } from '@/hooks/useApi'
 import { usePageSections } from '@/hooks/usePage'
+import { useSectionItems } from '@/hooks/useSection'
 import { photo } from '@/utils/photo'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 
 /**
  * The fittings showcase.
  *
- * A composed grid rather than a uniform one — the lead item spans two columns
- * so the page reads as an arrangement, matching how Solutions and the projects
- * showcase are built. Every tile links to its own page.
+ * A uniform grid, unlike the composed ones elsewhere on the site. These are
+ * catalogue shots of single objects at a consistent scale, and varying the
+ * tile size makes one fitting look bigger than another rather than more
+ * important. Every tile links to its own page.
+ *
+ * Below it, a rail of showroom clips — deliberately separate from the grid,
+ * because the clips show stock hanging in the showroom rather than any of the
+ * catalogued fittings.
  */
 export default function Products() {
   const sections = usePageSections('/products')
   const hero = sections.hero
+  const reel = sections.reel
+  const clips = useSectionItems('reel', []).filter((c) => c.video_url)
 
   const { data: products, loading } = useApi('/products', [])
   const { data: categories } = useApi('/product-categories', [])
@@ -129,6 +139,37 @@ export default function Products() {
           )}
         </div>
       </section>
+
+      {reel && clips.length > 0 && (
+        <section className="section-tight bg-paper-warm">
+          <div className="container-x">
+            <SectionHeader
+              eyebrow={reel.eyebrow || 'In the showroom'}
+              title={reel.title || 'Seen in the showroom.'}
+              lede={reel.subtitle}
+            />
+            {/* A rail rather than a grid. The clips are 9:16, and a row of
+                phone-shaped tiles is the one layout where that reads as
+                deliberate instead of as a mistake. */}
+            <ul
+              className="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4"
+              aria-label="Showroom clips"
+            >
+              {clips.map((c) => (
+                <li key={c.id} className="w-[15rem] shrink-0 snap-start sm:w-[17rem]">
+                  <VideoTile
+                    src={c.video_url}
+                    poster={c.image_url}
+                    alt={c.image_alt}
+                    label={c.value}
+                    className="aspect-[9/16]"
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       <CTABanner />
     </>

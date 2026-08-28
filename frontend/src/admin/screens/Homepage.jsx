@@ -157,6 +157,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
   // heading-only.
   const LIST = {
     safety: 'Trust marks', lighting: 'Lighting tiles', stats: 'Figures',
+    reel: 'Showroom clips',
   }
   const listLabel = LIST[row.key]
 

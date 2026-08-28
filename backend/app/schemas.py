@@ -465,6 +465,7 @@ class SectionItemIn(BaseModel):
     icon: str = ""
     image_url: str = ""
     image_alt: str = ""
+    video_url: str = ""
     href: str = ""
     value: str = ""
     position: int = 0
