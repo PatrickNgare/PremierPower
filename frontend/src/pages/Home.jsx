@@ -62,11 +62,11 @@ const DEFAULTS = [
 
 /** Each block, keyed by the name the CMS stores. `s` is the section row. */
 const BLOCKS = {
-  hero: () => <Hero />,
-  stats: () => <Stats />,
-  lighting: () => <LightingShowcase />,
-  safety: () => <SafetyBar />,
-  cta: () => <CTABanner />,
+  hero: (s) => <Hero section={s} />,
+  stats: (s) => <Stats section={s} />,
+  lighting: (s) => <LightingShowcase section={s} />,
+  safety: (s) => <SafetyBar section={s} />,
+  cta: (s) => <CTABanner section={s} />,
 
   about: (s) => (
     <section className="section-tight">

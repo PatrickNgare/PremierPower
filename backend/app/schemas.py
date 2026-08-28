@@ -453,3 +453,21 @@ class SectorIn(BaseModel):
 class SectorOut(SectorIn):
     model_config = ORM
     id: int
+
+
+class SectionItemIn(BaseModel):
+    section: str = Field(min_length=1, max_length=60)
+    title: str = ""
+    body: str = ""
+    icon: str = ""
+    image_url: str = ""
+    image_alt: str = ""
+    href: str = ""
+    value: str = ""
+    position: int = 0
+    published: bool = True
+
+
+class SectionItemOut(SectionItemIn):
+    model_config = ORM
+    id: int

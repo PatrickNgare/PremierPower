@@ -4,6 +4,7 @@ import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import { Field } from '@/components/ui/Field'
 import Magnetic from '@/components/ui/Magnetic'
 import { whatsappLink } from '@/config/site'
+import { useSite } from '@/hooks/useSite'
 
 const API = import.meta.env.VITE_API_URL ?? '/api'
 
@@ -19,9 +20,10 @@ const PROJECT_TYPES = [
 ]
 
 export default function ContactForm() {
+  const site = useSite()
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
-  const wa = whatsappLink()
+  const wa = whatsappLink(site)
 
   async function onSubmit(e) {
     e.preventDefault()

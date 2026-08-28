@@ -3,7 +3,8 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, PhoneCall, MessageCircle } from 'lucide-react'
 import Magnetic from '@/components/ui/Magnetic'
 import LicenseBadge from '@/components/ui/LicenseBadge'
-import { site, whatsappLink, telLink } from '@/config/site'
+import { whatsappLink, telLink } from '@/config/site'
+import { useSite } from '@/hooks/useSite'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -13,9 +14,10 @@ const EASE = [0.22, 1, 0.36, 1]
  * stops under prefers-reduced-motion.
  */
 export default function CTABanner() {
+  const site = useSite()
   const reduce = useReducedMotion()
-  const wa = whatsappLink()
-  const tel = telLink()
+  const wa = whatsappLink(site)
+  const tel = telLink(site)
 
   return (
     <section className="on-dark relative isolate overflow-hidden bg-ink-950">

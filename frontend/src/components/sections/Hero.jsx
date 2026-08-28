@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom'
 import { telLink } from '@/config/site'
 import { heroSlides } from '@/data/heroSlides'
 import { useApi } from '@/hooks/useApi'
+import { splitTitle } from '@/hooks/useSection'
 import { DUR, EASE_OUT, EASE_EXIT } from '@/utils/motion'
+import { useSite } from '@/hooks/useSite'
 
 const AUTOPLAY_MS = 6500
 
@@ -55,7 +57,10 @@ const fromBanner = (b) => ({
   card: { label: b.card_label, title: b.card_title, line: b.card_line },
 })
 
-export default function Hero() {
+export default function Hero({ section }) {
+  const site = useSite()
+  // The hero's own words. The slides are separate — they are the banners table.
+  const [line1, line2] = splitTitle(section?.title || 'Powering spaces.|Illuminating possibilities.')
   const reduce = useReducedMotion()
   const sectionRef = useRef(null)
   const [fine, setFine] = useState(false)
@@ -129,7 +134,7 @@ export default function Hero() {
     }
   }, [fine, reduce, px, py])
 
-  const tel = telLink()
+  const tel = telLink(site)
 
   return (
     <section
@@ -198,28 +203,30 @@ export default function Hero() {
         <div className="max-w-2xl">
           <motion.p variants={rise} className="eyebrow">
             <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-[rgb(var(--accent-rgb))]" />
-            Premier Power Limited
+            {section?.eyebrow || 'Premier Power Limited'}
           </motion.p>
 
           <motion.h1
             variants={rise}
             className="mt-5 text-[clamp(2.25rem,4.6vw,3.9rem)] font-extrabold text-white"
           >
-            Powering spaces.
-            <span className="mt-1 block bg-gradient-to-r from-lumen-300 via-lumen-500 to-lumen-700 bg-clip-text text-transparent">
-              Illuminating possibilities.
-            </span>
+            {line1}
+            {line2 && (
+              <span className="mt-1 block bg-gradient-to-r from-lumen-300 via-lumen-500 to-lumen-700 bg-clip-text text-transparent">
+                {line2}
+              </span>
+            )}
           </motion.h1>
 
           <motion.p variants={rise} className="mt-5 max-w-xl text-base leading-relaxed text-ink-300 sm:text-lg">
-            Electrical engineering and lighting installation across Kenya — for hotels and
-            lodges, commercial interiors, institutions, healthcare, industrial sites and
-            residential developments.
+            {section?.subtitle || `Electrical engineering and lighting installation across
+              Kenya — for hotels and lodges, commercial interiors, institutions, healthcare,
+              industrial sites and residential developments.`}
           </motion.p>
 
           <motion.div variants={rise} className="mt-8 flex flex-wrap items-center gap-3">
-            <Link to="/services" className="btn-primary group">
-              Explore our solutions
+            <Link to={section?.cta_href || '/services'} className="btn-primary group">
+              {section?.cta_label || 'Explore our solutions'}
               <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
             </Link>
             {tel ? (

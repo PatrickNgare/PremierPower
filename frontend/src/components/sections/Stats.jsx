@@ -2,8 +2,20 @@ import { motion } from 'framer-motion'
 import { CalendarClock, Building2, Layers, HeartHandshake } from 'lucide-react'
 import Counter from '@/components/ui/Counter'
 import { fadeUp, stagger, inView } from '@/utils/motion'
-import { site, isPending, value } from '@/config/site'
+import { isPending, value } from '@/config/site'
 import { DEMO } from '@/config/demo'
+import { useSite } from '@/hooks/useSite'
+import { useSectionItems } from '@/hooks/useSection'
+
+/** Icons the CMS may name for a stat. */
+const ICONS = { calendar: CalendarClock, building: Building2, layers: Layers, handshake: HeartHandshake }
+
+/** Company-detail key -> the field name the site config uses. */
+const FIELD = {
+  years_trading: 'yearsLicensed',
+  projects_completed: 'installsCompleted',
+  response_time: 'responseTime',
+}
 
 /**
  * Figures the client has to supply. Nothing here is invented: an unconfirmed
@@ -17,12 +29,23 @@ const rows = [
 ]
 
 export default function Stats() {
+  const site = useSite()
+  const items = useSectionItems('stats', rows)
+
+  /**
+   * A stat's figure comes from the company detail it names, so the number is
+   * typed once under Company details rather than again here. `value` on the
+   * row is a literal for facts that are not a changing figure — "7 sectors"
+   * is a property of the NCA registration, not something to keep updating.
+   */
   const resolve = (r) => {
-    if (r.literal) return r.literal
-    const v = site[r.field === 'years_trading' ? 'yearsLicensed' : r.field === 'projects_completed' ? 'installsCompleted' : 'responseTime']
+    const literal = r.value ?? r.literal
+    if (literal) return literal
+    const field = FIELD[r.href] ?? FIELD[r.field] ?? r.field
+    const v = site[field]
     return isPending(v) ? null : value(v)
   }
-  const anyPending = rows.some((r) => resolve(r) === null)
+  const anyPending = items.some((r) => resolve(r) === null)
 
   return (
     <section className="on-dark relative isolate overflow-hidden bg-ink-950">
@@ -30,15 +53,15 @@ export default function Stats() {
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px rule-fade text-white/20" />
 
       <motion.div variants={stagger(0.08)} {...inView} className="container-x grid gap-8 py-14 sm:grid-cols-2 sm:gap-10 sm:py-20 lg:grid-cols-4">
-        {rows.map((r) => {
+        {items.map((r) => {
           const v = resolve(r)
-          const Icon = r.icon
+          const Icon = ICONS[r.icon] ?? r.icon ?? Layers
           return (
-            <motion.div key={r.label} variants={fadeUp} className="group relative">
+            <motion.div key={r.title ?? r.label} variants={fadeUp} className="group relative">
               <Icon size={22} className="text-lumen-500 transition-transform duration-500 group-hover:-translate-y-0.5" aria-hidden="true" />
               <p className={`mt-4 font-display text-[2.25rem] font-extrabold leading-none sm:mt-5 sm:text-[2.75rem] ${v ? 'text-white' : 'text-white/25'}`}>
                 {v ? <Counter value={v} /> : '—'}
-                {v && DEMO && !r.literal && (
+                {v && DEMO && !(r.value ?? r.literal) && (
                   <span
                     className="ml-1 align-super text-base font-bold text-lumen-500"
                     title="Placeholder figure, awaiting confirmation"
@@ -47,7 +70,7 @@ export default function Stats() {
                   </span>
                 )}
               </p>
-              <p className="mt-3 text-sm text-ink-300">{r.label}</p>
+              <p className="mt-3 text-sm text-ink-300">{r.title ?? r.label}</p>
               <span aria-hidden="true" className="mt-5 block h-px w-12 bg-lumen-500/50 transition-all duration-500 group-hover:w-20" />
             </motion.div>
           )

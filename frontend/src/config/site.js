@@ -52,13 +52,58 @@ const real = {
 /** Demo values fill the gaps only when VITE_DEMO=1. */
 export const site = DEMO ? { ...real, ...demoOverrides } : real
 
-/** WhatsApp deep link with a prefilled message. */
-export function whatsappLink(message = "Hi PremierPower, I'd like to book a free site assessment.") {
-  if (isPending(site.whatsapp)) return null
-  return `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`
+/**
+ * Company details as stored in the CMS use snake_case keys; the site reads
+ * camelCase. Mapped explicitly rather than transformed, so adding a detail is
+ * a deliberate act and a typo in the CMS cannot invent a site field.
+ */
+const FROM_SETTINGS = {
+  phone: 'phone',
+  secondPhone: 'phone_secondary',
+  whatsapp: 'whatsapp',
+  email: 'email',
+  legalName: 'legal_name',
+  street: 'street',
+  serviceArea: 'service_area',
+  ncaNumber: 'nca_number',
+  ncaCategory: 'nca_category',
+  insured: 'insured',
+  warranty: 'warranty',
+  yearsLicensed: 'years_trading',
+  installsCompleted: 'projects_completed',
+  responseTime: 'response_time',
 }
 
-export function telLink() {
-  if (isPending(site.phone)) return null
-  return `tel:${String(site.phone).replace(/\s+/g, '')}`
+/**
+ * Overlay what the client has filled in, leaving everything else as it was.
+ *
+ * The API only returns non-empty values, so a blank field in the CMS keeps
+ * whatever the bundled config says — including a `pending(...)` marker, which
+ * is what makes the site render an honest gap instead of a fake licence
+ * number.
+ */
+export function withSettings(base, settings) {
+  if (!settings) return base
+  const merged = { ...base }
+  for (const [field, key] of Object.entries(FROM_SETTINGS)) {
+    const v = settings[key]
+    if (typeof v === 'string' && v.trim()) merged[field] = v.trim()
+  }
+  return merged
+}
+
+/** WhatsApp deep link with a prefilled message.
+ *  `from` lets a component pass the live, CMS-merged values; without it these
+ *  fall back to the bundled config. */
+export function whatsappLink(
+  message = "Hi PremierPower, I'd like to book a free site assessment.",
+  from = site,
+) {
+  if (isPending(from.whatsapp)) return null
+  return `https://wa.me/${from.whatsapp}?text=${encodeURIComponent(message)}`
+}
+
+export function telLink(from = site) {
+  if (isPending(from.phone)) return null
+  return `tel:${String(from.phone).replace(/\s+/g, '')}`
 }

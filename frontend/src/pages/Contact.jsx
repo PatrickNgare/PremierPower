@@ -4,12 +4,14 @@ import { FiPhone, FiMapPin, FiClock } from 'react-icons/fi'
 import PageHero from '@/components/ui/PageHero'
 import ContactForm from '@/components/sections/ContactForm'
 import LicenseBadge from '@/components/ui/LicenseBadge'
-import { site, isPending, value, whatsappLink, telLink } from '@/config/site'
+import { isPending, value, whatsappLink, telLink } from '@/config/site'
 import { photo } from '@/utils/photo'
+import { useSite } from '@/hooks/useSite'
 
 export default function Contact() {
-  const wa = whatsappLink()
-  const tel = telLink()
+  const site = useSite()
+  const wa = whatsappLink(site)
+  const tel = telLink(site)
 
   return (
     <>

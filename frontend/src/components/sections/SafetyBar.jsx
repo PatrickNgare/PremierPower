@@ -1,6 +1,10 @@
 import { motion } from 'framer-motion'
 import { FiFileText, FiSearch, FiZap, FiShield } from 'react-icons/fi'
 import { fadeUp, stagger, inView } from '@/utils/motion'
+import { useSectionItems } from '@/hooks/useSection'
+
+/** The CMS stores an icon by name; only names drawn here can be chosen. */
+const ICONS = { shield: FiShield, file: FiFileText, search: FiSearch, zap: FiZap }
 
 /**
  * The vertical's equivalent of an awards strip: what actually earns trust for
@@ -14,10 +18,16 @@ const marks = [
 ]
 
 export default function SafetyBar() {
+  const items = useSectionItems('safety', marks)
   return (
     <section className="border-y border-neutral-200 bg-neutral-50">
       <motion.ul variants={stagger(0.07)} {...inView} className="container-x grid gap-8 py-12 sm:grid-cols-2 lg:grid-cols-4">
-        {marks.map(({ icon: Icon, title, body }) => (
+        {items.map((item) => {
+          // Rows from the CMS name their icon; the bundled fallback carries the
+          // component itself.
+          const Icon = ICONS[item.icon] ?? item.icon ?? FiShield
+          const { title, body } = item
+          return (
           <motion.li key={title} variants={fadeUp} className="flex gap-4">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-neutral-200">
               <Icon size={19} className="text-secondary-accent" aria-hidden="true" />
@@ -27,7 +37,8 @@ export default function SafetyBar() {
               <p className="mt-1 text-sm leading-snug text-neutral-600">{body}</p>
             </div>
           </motion.li>
-        ))}
+          )
+        })}
       </motion.ul>
     </section>
   )

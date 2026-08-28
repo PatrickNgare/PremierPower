@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import { Phone, Mail, MapPin, MessageCircle, ArrowUpRight } from 'lucide-react'
 import Logo from './Logo'
-import { site, isPending, value, whatsappLink, telLink } from '@/config/site'
+import { isPending, value, whatsappLink, telLink } from '@/config/site'
+import { useSite } from '@/hooks/useSite'
 
 const columns = [
   {
@@ -51,8 +52,9 @@ function Detail({ icon: Icon, label, v, href }) {
 }
 
 export default function Footer() {
-  const wa = whatsappLink()
-  const tel = telLink()
+  const site = useSite()
+  const wa = whatsappLink(site)
+  const tel = telLink(site)
 
   return (
     <footer className="on-dark relative isolate overflow-hidden bg-ink-950">

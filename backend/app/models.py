@@ -458,3 +458,38 @@ class Sector(Base):
 
     def __str__(self) -> str:
         return self.title
+
+
+class SectionItem(Base):
+    """A repeated item inside a homepage block.
+
+    The safety marks, the lighting tiles, the stat figures: three sections that
+    are each a heading plus a short list. One table serves all of them, keyed
+    by the section it belongs to, rather than three near-identical tables and
+    three near-identical admin screens.
+
+    `icon` names an icon the frontend already imports. Like a section `key`, it
+    is a choice from a fixed set rather than free text — a name nobody drew
+    renders as a hole.
+    """
+
+    __tablename__ = "section_items"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    # Matches HomepageSection.key. A plain column rather than a foreign key:
+    # items belong to the block the code draws, and must survive a section row
+    # being deleted and reseeded.
+    section: Mapped[str] = mapped_column(String(60), index=True)
+    title: Mapped[str] = mapped_column(String(160), default="")
+    body: Mapped[str] = mapped_column(Text, default="")
+    icon: Mapped[str] = mapped_column(String(40), default="")
+    image_url: Mapped[str] = mapped_column(String(500), default="")
+    image_alt: Mapped[str] = mapped_column(String(300), default="")
+    href: Mapped[str] = mapped_column(String(300), default="")
+    # Free text, so "same day" and "12" are equally valid for a stat.
+    value: Mapped[str] = mapped_column(String(120), default="")
+    position: Mapped[int] = mapped_column(Integer, default=0)
+    published: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    def __str__(self) -> str:
+        return f"{self.section}: {self.title or self.value}"

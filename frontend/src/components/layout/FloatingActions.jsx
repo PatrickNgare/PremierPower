@@ -2,15 +2,17 @@ import { useLocation } from 'react-router-dom'
 import { FaWhatsapp } from 'react-icons/fa'
 import { FiPhone, FiCalendar } from 'react-icons/fi'
 import { whatsappLink, telLink } from '@/config/site'
+import { useSite } from '@/hooks/useSite'
 
 /**
  * Sticky bottom bar on small screens — more visible than a single FAB for a
  * decision this consequential. A quiet WhatsApp button on desktop.
  */
 export default function FloatingActions() {
+  const site = useSite()
   const { pathname } = useLocation()
-  const wa = whatsappLink()
-  const tel = telLink()
+  const wa = whatsappLink(site)
+  const tel = telLink(site)
   const onContact = pathname === '/contact'
 
   return (

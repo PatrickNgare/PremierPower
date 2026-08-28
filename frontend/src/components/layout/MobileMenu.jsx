@@ -8,11 +8,13 @@ import Logo from './Logo'
 import Button from '@/components/ui/Button'
 import LicenseBadge from '@/components/ui/LicenseBadge'
 import { whatsappLink } from '@/config/site'
+import { useSite } from '@/hooks/useSite'
 
 export default function MobileMenu({ open, onClose }) {
+  const site = useSite()
   const navLinks = useMenu('header')
   const panelRef = useRef(null)
-  const wa = whatsappLink()
+  const wa = whatsappLink(site)
 
   useEffect(() => {
     if (!open) return

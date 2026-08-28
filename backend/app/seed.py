@@ -18,7 +18,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .models import (
-    Banner, FAQ, HomepageSection, MenuItem, Project, Sector, SeoMeta, Service,
+    Banner, FAQ, HomepageSection, MenuItem, Project, SectionItem, Sector, SeoMeta,
+    Service,
 )
 
 log = logging.getLogger("premierpower.seed")
@@ -30,7 +31,15 @@ CONTENT = Path(__file__).resolve().parent / "seed_content.json"
 # invent a new one, because a key nobody wrote renders as nothing and the
 # client has no way to tell why.
 HOMEPAGE = [
-    dict(key="hero", eyebrow="", title="", subtitle=""),
+    # The hero's own words, which were hard-coded in Hero.jsx. The slides are
+    # separate — they live in the banners table.
+    dict(key="hero", eyebrow="Premier Power Limited",
+         title="Powering spaces.|Illuminating possibilities.",
+         subtitle="Electrical engineering and lighting installation across Kenya — for hotels "
+                  "and lodges, commercial interiors, institutions, healthcare, industrial sites "
+                  "and residential developments.",
+         cta_label="Explore our solutions", cta_href="/services",
+         config={"secondary_label": "Talk to an expert"}),
     dict(key="stats", eyebrow="", title="", subtitle=""),
     dict(key="about", eyebrow="Who we are",
          title="A leading electrical engineering company in the corporate market.",
@@ -49,7 +58,12 @@ HOMEPAGE = [
                   "residential markets — delivered with leading contractors in both the "
                   "private and public sectors.",
          config={"align": "center"}),
-    dict(key="lighting", eyebrow="", title="", subtitle=""),
+    dict(key="lighting", eyebrow="Lighting design",
+         title="Illuminate better.|Live brighter.",
+         subtitle="Lighting is designed with the interior rather than fitted around it — "
+                  "circuits planned to the room's use, sources placed so the fixture "
+                  "disappears and only the light remains.",
+         cta_label="See lighting projects", cta_href="/portfolio"),
     dict(key="safety", eyebrow="", title="", subtitle=""),
     dict(key="services", eyebrow="What we do",
          title="Electrical installation, and the systems that run alongside it.",
@@ -73,6 +87,43 @@ HOMEPAGE = [
                   "programme.",
          config={"align": "center"}),
     dict(key="cta", eyebrow="", title="", subtitle=""),
+]
+
+# The repeated items inside those blocks, one row each. `icon` names an icon
+# the frontend already imports; the CMS chooses from that set rather than
+# typing a name nobody drew.
+SECTION_ITEMS = {
+    "safety": [
+        ("shield", "NCA registered",
+         "Electrical Engineering Service Contractor, registered with the National "
+         "Construction Authority."),
+        ("file", "Tested & certified",
+         "Full test sequence recorded and certified before handover on every project."),
+        ("search", "Private & public sector",
+         "Delivered with leading contractors and architects across both."),
+        ("zap", "Nationwide",
+         "Projects across the country, from Nairobi to Nanyuki, Meru and the Mara."),
+    ],
+}
+
+LIGHTING_TILES = [
+    ("/projects/stairwell.jpg", "Feature stairwell",
+     "Vertical run, warm source, no visible fixture line."),
+    ("/projects/dining.jpg", "Hospitality dining",
+     "Layered ambient and task light across a long room."),
+    ("/projects/suite.jpg", "Guest suite",
+     "Bedside, wardrobe and reading circuits switched independently."),
+]
+
+# The figures beside the home page's four stats. `value` stays blank — it is
+# read from the matching company detail, so the number lives in one place.
+STAT_ITEMS = [
+    ("calendar", "Years trading", "years_trading", ""),
+    ("building", "Projects delivered", "projects_completed", ""),
+    # A literal, because it is a fact about the NCA registration rather than a
+    # figure the client keeps updating.
+    ("layers", "Sectors served", "", "7"),
+    ("handshake", "Typical response", "response_time", ""),
 ]
 
 HEADER_MENU = [
@@ -148,6 +199,23 @@ def seed_content(db: Session) -> None:
             for i, (label, href) in enumerate(items)
         )
         log.info("seeded navigation")
+
+    if _empty(db, SectionItem):
+        rows = []
+        for section, items in SECTION_ITEMS.items():
+            rows += [SectionItem(section=section, icon=icon, title=title, body=body,
+                                 position=i, published=True)
+                     for i, (icon, title, body) in enumerate(items)]
+        rows += [SectionItem(section="lighting", image_url=src, title=title, body=body,
+                             image_alt=title, position=i, published=True)
+                 for i, (src, title, body) in enumerate(LIGHTING_TILES)]
+        # `href` carries the company-detail key the figure comes from, so the
+        # number is edited once under Company details, not twice.
+        rows += [SectionItem(section="stats", icon=icon, title=title, href=key,
+                             value=literal, position=i, published=True)
+                 for i, (icon, title, key, literal) in enumerate(STAT_ITEMS)]
+        db.add_all(rows)
+        log.info("seeded %d section items", len(rows))
 
     if _empty(db, SeoMeta):
         db.add_all(

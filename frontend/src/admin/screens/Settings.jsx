@@ -41,7 +41,11 @@ export default function Settings() {
     try {
       for (const [key, value] of changed) {
         const row = rows.find((r) => r.key === key)
-        await api.put(`/settings/${row.id}`, { key: row.key, value, note: row.note })
+        // Keyed by name, not id: the endpoint upserts on the key, so posting
+        // an id here silently created a new setting called "5".
+        await api.put(`/settings/${encodeURIComponent(row.key)}`, {
+          key: row.key, value, note: row.note,
+        })
       }
       toast.ok(`Saved ${changed.length} ${changed.length === 1 ? 'detail' : 'details'}`)
       load()

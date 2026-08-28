@@ -1,10 +1,12 @@
-import { site, isPending, value } from '@/config/site'
+import { isPending, value } from '@/config/site'
+import { useSite } from '@/hooks/useSite'
 
 /**
  * The brand green appears here and nowhere else — as the earth mark beside the
  * licence, the one place a conductor colour carries meaning.
  */
 export default function LicenseBadge({ tone = 'light', className = '' }) {
+  const site = useSite()
   const unconfirmed = isPending(site.ncaNumber)
   const dark = tone === 'dark'
   return (

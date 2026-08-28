@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion
 import { ArrowRight, Sparkles, Expand } from 'lucide-react'
 import Lightbox from '@/components/ui/Lightbox'
 import { photo } from '@/utils/photo'
+import { splitTitle, useSectionItems } from '@/hooks/useSection'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -13,14 +14,28 @@ const specimens = [
   { src: photo('/projects/suite.jpg'), label: 'Guest suite', line: 'Bedside, wardrobe and reading circuits switched independently.' },
 ]
 
-const lightboxItems = specimens.map((s) => ({ src: s.src, alt: s.label, title: s.label, caption: s.line }))
+/** One shape for the tiles, whether they came from the CMS or the bundle. */
+const asTile = (s) => ({
+  src: s.image_url || s.src,
+  label: s.title || s.label,
+  line: s.body || s.line,
+  alt: s.image_alt || s.title || s.label,
+})
 
 /**
  * A showroom rather than a section. Dark ground, warm light, and the imagery
  * appears to illuminate the type beside it. Parallax is scroll-linked and
  * disabled under reduced motion.
  */
-export default function LightingShowcase() {
+export default function LightingShowcase({ section }) {
+  // The tiles, and this block's own words, both come from the CMS. `section`
+  // is the homepage_sections row the page passes down; without it the copy
+  // below is what ships.
+  const items = useSectionItems('lighting', specimens).map(asTile)
+  const lightboxItems = items.map((s) => ({
+    src: s.src, alt: s.alt, title: s.label, caption: s.line,
+  }))
+  const [line1, line2] = splitTitle(section?.title || 'Illuminate better.|Live brighter.')
   const ref = useRef(null)
   const [open, setOpen] = useState(null)
   const reduce = useReducedMotion()
@@ -49,31 +64,33 @@ export default function LightingShowcase() {
           >
             <p className="eyebrow">
               <Sparkles size={13} aria-hidden="true" />
-              Lighting
+              {section?.eyebrow || 'Lighting'}
             </p>
             <h2 className="mt-6 text-[clamp(2.1rem,4.2vw,3.4rem)] font-extrabold text-white">
-              Illuminate better.
-              <span className="block text-glow bg-gradient-to-r from-lumen-300 to-lumen-700 bg-clip-text text-transparent">
-                Live brighter.
-              </span>
+              {line1}
+              {line2 && (
+                <span className="block text-glow bg-gradient-to-r from-lumen-300 to-lumen-700 bg-clip-text text-transparent">
+                  {line2}
+                </span>
+              )}
             </h2>
             <p className="mt-6 max-w-md text-lg leading-relaxed text-ink-300">
-              Lighting is designed with the interior rather than fitted around it — circuits
-              planned to the room's use, sources placed so the fixture disappears and only the
-              light remains.
+              {section?.subtitle || `Lighting is designed with the interior rather than fitted
+                around it — circuits planned to the room's use, sources placed so the fixture
+                disappears and only the light remains.`}
             </p>
             <p className="mt-4 max-w-md leading-relaxed text-ink-400">
               Feature, ambient and task layers switched independently, so one space can be a
               working room at nine and a dining room at eight.
             </p>
-            <Link to="/portfolio" className="btn-primary group mt-9">
-              See lighting projects
+            <Link to={section?.cta_href || '/portfolio'} className="btn-primary group mt-9">
+              {section?.cta_label || 'See lighting projects'}
               <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
             </Link>
           </motion.div>
 
           <motion.div style={{ y: lift }} className="grid gap-4 sm:grid-cols-2">
-            {specimens.map((s, i) => (
+            {items.map((s, i) => (
               <motion.figure
                 key={s.label}
                 initial={{ opacity: 0, y: 34 }}
@@ -85,7 +102,7 @@ export default function LightingShowcase() {
                 } ${i > 1 ? 'hidden sm:block' : ''}`}
               >
                 <img
-                  src={s.src} alt={s.label} loading="lazy" decoding="async"
+                  src={s.src} alt={s.alt} loading="lazy" decoding="async"
                   className="h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
                 />
                 <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink-950/90 via-ink-950/20 to-transparent" />

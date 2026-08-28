@@ -6,15 +6,17 @@ import { useMenu } from '@/hooks/useMenu'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
 import Magnetic from '@/components/ui/Magnetic'
-import { site, telLink } from '@/config/site'
+import { telLink } from '@/config/site'
+import { useSite } from '@/hooks/useSite'
 
 export default function Navbar() {
+  const site = useSite()
   const navLinks = useMenu('header')
   const [open, setOpen] = useState(false)
   const [condensed, setCondensed] = useState(false)
   const { scrollY } = useScroll()
   const { pathname } = useLocation()
-  const tel = telLink()
+  const tel = telLink(site)
 
   // Condense past the fold rather than on the first pixel, so the bar does not
   // flicker when a trackpad nudges the page.

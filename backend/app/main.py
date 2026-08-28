@@ -11,7 +11,8 @@ from .core.security import hash_password
 from .db import SessionLocal, engine
 from .models import (
     Admin, Banner, BlogPost, Document, FAQ, HomepageSection, MenuItem, Product,
-    ProductCategory, Project, Sector, SeoMeta, Service, SiteSetting, SocialLink,
+    ProductCategory, Project, Sector, SectionItem, SeoMeta, Service, SiteSetting,
+    SocialLink,
     TeamMember, Testimonial,
 )
 from .routers import (
@@ -23,7 +24,8 @@ from .schemas import (
     BannerIn, BannerOut, BlogPostIn, BlogPostOut, DocumentIn, DocumentOut,
     FAQIn, FAQOut, HomepageSectionIn, HomepageSectionOut, MenuItemIn, MenuItemOut,
     ProductCategoryIn, ProductCategoryOut, ProductIn, ProductOut,
-    ProjectIn, ProjectOut, SectorIn, SectorOut, SeoMetaIn, SeoMetaOut,
+    ProjectIn, ProjectOut, SectionItemIn, SectionItemOut, SectorIn, SectorOut,
+    SeoMetaIn, SeoMetaOut,
     ServiceIn, ServiceOut,
     SocialLinkIn, SocialLinkOut, TeamMemberIn, TeamMemberOut,
     TestimonialIn, TestimonialOut,
@@ -105,6 +107,11 @@ app.include_router(crud_router(model=Banner, schema_in=BannerIn, schema_out=Bann
                                entity="banner", lookup="", search=("headline", "eyebrow")),
                    prefix="/api/banners")
 
+app.include_router(crud_router(model=SectionItem, schema_in=SectionItemIn,
+                               schema_out=SectionItemOut, entity="section item",
+                               lookup="", search=("title", "body"),
+                               filters={"section": SectionItem.section}),
+                   prefix="/api/section-items")
 app.include_router(crud_router(model=Sector, schema_in=SectorIn, schema_out=SectorOut,
                                entity="sector", search=("title", "slug")),
                    prefix="/api/sectors")

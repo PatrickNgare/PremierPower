@@ -6,8 +6,9 @@ import SectionHeader from '@/components/ui/SectionHeader'
 import LicenseBadge from '@/components/ui/LicenseBadge'
 import CTABanner from '@/components/sections/CTABanner'
 import { fadeUp, stagger, inView } from '@/utils/motion'
-import { site, isPending, value } from '@/config/site'
+import { isPending, value } from '@/config/site'
 import { photo } from '@/utils/photo'
+import { useSite } from '@/hooks/useSite'
 
 const tests = [
   ['Continuity of protective conductors', 'Confirms every earth path is unbroken from the board to the furthest accessory.'],
@@ -18,6 +19,7 @@ const tests = [
 ]
 
 export default function Safety() {
+  const site = useSite()
   return (
     <>
       <Helmet>

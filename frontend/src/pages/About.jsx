@@ -9,10 +9,12 @@ import SafetyBar from '@/components/sections/SafetyBar'
 import AboutBento from '@/components/sections/AboutBento'
 import { inView } from '@/utils/motion'
 import { demoPhotos } from '@/config/demo'
-import { site, isPending, value } from '@/config/site'
+import { isPending, value } from '@/config/site'
 import { photo } from '@/utils/photo'
+import { useSite } from '@/hooks/useSite'
 
 export default function About() {
+  const site = useSite()
   return (
     <>
       <Helmet>
