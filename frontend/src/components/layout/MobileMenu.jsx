@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FiX } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
-import { navLinks } from './navLinks'
+import { useMenu } from '@/hooks/useMenu'
 import Logo from './Logo'
 import Button from '@/components/ui/Button'
 import LicenseBadge from '@/components/ui/LicenseBadge'
 import { whatsappLink } from '@/config/site'
 
 export default function MobileMenu({ open, onClose }) {
+  const navLinks = useMenu('header')
   const panelRef = useRef(null)
   const wa = whatsappLink()
 

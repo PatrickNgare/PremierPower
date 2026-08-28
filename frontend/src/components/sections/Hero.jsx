@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
 import { ArrowRight, PhoneCall, ShieldCheck, MapPin, Zap, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { telLink } from '@/config/site'
 import { heroSlides } from '@/data/heroSlides'
+import { useApi } from '@/hooks/useApi'
 import { DUR, EASE_OUT, EASE_EXIT } from '@/utils/motion'
 
 const AUTOPLAY_MS = 6500
@@ -44,6 +45,16 @@ const trust = [
   { icon: Zap, label: 'Electrical · Lighting · Solar' },
 ]
 
+/** The CMS stores a slide flat; the composition wants it nested. */
+const fromBanner = (b) => ({
+  eyebrow: b.eyebrow,
+  caption: b.headline,
+  line: b.body,
+  image: b.image_url,
+  alt: b.image_alt,
+  card: { label: b.card_label, title: b.card_title, line: b.card_line },
+})
+
 export default function Hero() {
   const reduce = useReducedMotion()
   const sectionRef = useRef(null)
@@ -51,8 +62,19 @@ export default function Hero() {
   const [i, setI] = useState(0)
   const [dir, setDir] = useState(1)
   const [paused, setPaused] = useState(false)
-  const n = heroSlides.length
-  const slide = heroSlides[i]
+
+  // Slides come from the CMS. The bundled set is the fallback for a first
+  // paint or an unreachable API — it is the same content, not a placeholder.
+  const { data: banners } = useApi('/banners', null)
+  const slides = useMemo(
+    () => (Array.isArray(banners) && banners.length ? banners.map(fromBanner) : heroSlides),
+    [banners],
+  )
+
+  const n = slides.length
+  // The CMS can shorten the list while this is mounted; clamp so the index
+  // cannot point past the end and blank the hero.
+  const slide = slides[Math.min(i, n - 1)]
 
   const go = useCallback((d) => { setDir(d); setI((p) => (p + d + n) % n) }, [n])
 
@@ -248,7 +270,7 @@ export default function Hero() {
               <ChevronRight size={18} className="transition-transform duration-300 group-hover/nav:translate-x-0.5" aria-hidden="true" />
             </button>
             <ul role="tablist" aria-label="Slides" className="ml-2 flex items-center gap-2">
-              {heroSlides.map((sl, idx) => (
+              {slides.map((sl, idx) => (
                 <li key={sl.caption}>
                   <button
                     type="button" role="tab" aria-selected={idx === i}

@@ -5,7 +5,8 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { fadeUp, stagger, inView } from '@/utils/motion'
-import { services } from '@/data/services'
+import { services as fallback } from '@/data/services'
+import { useApi } from '@/hooks/useApi'
 
 const icons = {
   'electrical-installation': Zap,
@@ -27,6 +28,11 @@ const icons = {
  * rather than a grid.
  */
 export default function Services() {
+  const { data: services } = useApi('/services', fallback)
+  // The composition needs a lead card; nothing to lead with means nothing to
+  // draw, and an empty section is better than a broken one.
+  if (!services.length) return null
+
   const [lead, ...rest] = services
   const medium = rest.slice(0, 2)
   const list = rest.slice(2)

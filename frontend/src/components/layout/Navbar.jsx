@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { Menu, Phone, ArrowRight } from 'lucide-react'
-import { navLinks } from './navLinks'
+import { useMenu } from '@/hooks/useMenu'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
 import Magnetic from '@/components/ui/Magnetic'
 import { site, telLink } from '@/config/site'
 
 export default function Navbar() {
+  const navLinks = useMenu('header')
   const [open, setOpen] = useState(false)
   const [condensed, setCondensed] = useState(false)
   const { scrollY } = useScroll()

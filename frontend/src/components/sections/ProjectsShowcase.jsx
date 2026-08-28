@@ -3,9 +3,28 @@ import { motion } from 'framer-motion'
 import { Expand, MapPin } from 'lucide-react'
 import Lightbox from '@/components/ui/Lightbox'
 import { fadeUp, stagger, inView } from '@/utils/motion'
-import { projectShowcase } from '@/data/projectShowcase'
+import { projectShowcase as fallback } from '@/data/projectShowcase'
 import { demoPhotos } from '@/config/demo'
+import { useApi } from '@/hooks/useApi'
 import Photo from '@/components/ui/Photo'
+
+/**
+ * The CMS keeps one project row; the showcase wants a tile.
+ *
+ * `badge` has no column of its own — it was the sector label baked into the
+ * hard-coded list. The location's last part reads correctly in its place
+ * ("Maiyan, Nanyuki, Laikipia" -> "Laikipia") and, unlike a sector guessed
+ * from the title, it is drawn from something the client actually typed.
+ */
+const fromProject = (p) => ({
+  title: p.title,
+  location: p.location,
+  badge: p.year || (p.location ? p.location.split(',').pop().trim() : ''),
+  summary: p.summary,
+  image_open_url: p.image_open_url,
+  image_open_alt: p.image_open_alt,
+  briefOpen: p.title,
+})
 
 /**
  * Masonry-ish showcase: varied tile heights so the grid reads as a composition
@@ -18,8 +37,15 @@ import Photo from '@/components/ui/Photo'
 const spans = ['lg:row-span-2', '', '', '', '', 'lg:row-span-2', '', '', '']
 
 export default function ProjectsShowcase({ limit }) {
-  const shown = limit ? projectShowcase.slice(0, limit) : projectShowcase
+  const { data } = useApi('/projects', null)
   const [open, setOpen] = useState(null)
+
+  // Only projects with a photograph belong in a visual showcase; the rest are
+  // listed on the portfolio page where a tile without an image still reads.
+  const all = Array.isArray(data) && data.length
+    ? data.map(fromProject).filter((p) => p.image_open_url)
+    : fallback
+  const shown = limit ? all.slice(0, limit) : all
 
   // Only tiles with a real image are viewable; a placeholder has nothing to
   // enlarge, so it stays a plain tile rather than a dead button.

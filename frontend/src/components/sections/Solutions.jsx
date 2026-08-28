@@ -2,7 +2,13 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import { fadeUp, stagger, inView } from '@/utils/motion'
-import { solutions } from '@/data/solutions'
+import { solutions as fallback } from '@/data/solutions'
+import { useApi } from '@/hooks/useApi'
+
+/** One sectors table now feeds both this strip and the sectors grid. */
+const fromSector = (s) => ({
+  slug: s.slug, title: s.title, line: s.line, image: s.image_url, alt: s.image_alt,
+})
 
 /**
  * Each card should feel like looking into a different environment. Cards with
@@ -11,6 +17,9 @@ import { solutions } from '@/data/solutions'
  * so the grid is composed rather than uniform.
  */
 export default function Solutions() {
+  const { data } = useApi('/sectors', null)
+  const solutions = Array.isArray(data) && data.length ? data.map(fromSector) : fallback
+
   return (
     <motion.ul
       variants={stagger(0.07)}
