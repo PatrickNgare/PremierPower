@@ -7,6 +7,7 @@ whole argument depends on real installation photography.
 """
 
 import logging
+import re
 import secrets
 from pathlib import Path
 
@@ -69,9 +70,23 @@ def _store_local(file: UploadFile, data: bytes) -> dict:
     return {"url": f"/uploads/{name}", "public_id": name, "storage": "local"}
 
 
-def _store_cloudinary(data: bytes, filename: str) -> dict:
+def _public_id(filename: str) -> str:
+    """A readable, safe public_id derived from the uploaded filename.
+
+    Built here rather than left to Cloudinary's `use_filename`: that reads the
+    name off a file object, and uploads arrive as raw bytes, so every asset
+    lands as "file_ab12cd" and the Cloudinary console becomes unnavigable.
+
+    Slashes are stripped, not escaped — Cloudinary reads them as folder
+    separators, so a crafted filename would otherwise choose its own folder.
+    """
+    stem = Path(filename or "image").stem
+    safe = re.sub(r"[^A-Za-z0-9_-]+", "-", stem).strip("-").lower()[:60]
+    return f"{safe or 'image'}-{secrets.token_hex(4)}"
+
+
+def _configure_cloudinary() -> None:
     import cloudinary
-    import cloudinary.uploader
 
     cloudinary.config(
         cloud_name=settings.cloudinary_cloud_name,
@@ -79,12 +94,67 @@ def _store_cloudinary(data: bytes, filename: str) -> dict:
         api_secret=settings.cloudinary_api_secret,
         secure=True,
     )
-    result = cloudinary.uploader.upload(data, folder="premierpower", resource_type="image")
+
+
+def _store_cloudinary(data: bytes, filename: str, folder: str = "") -> dict:
+    """Upload, then store a *delivery* URL rather than the raw one.
+
+    The URL Cloudinary returns from an upload serves the original bytes at
+    their original format. `f_auto,q_auto` is the reason to be on a CDN at all:
+    it negotiates AVIF or WebP per browser and picks a quality that holds up
+    visually, which on this site's installation photography is most of the
+    page weight. Baking it into the stored URL keeps the frontend free of any
+    Cloudinary-specific rendering code — it is still just a URL.
+    """
+    import cloudinary.uploader
+    import cloudinary.utils
+
+    _configure_cloudinary()
+    result = cloudinary.uploader.upload(
+        data,
+        folder=f"premierpower/{folder}" if folder else "premierpower",
+        resource_type="image",
+        public_id=_public_id(filename),
+        overwrite=False,
+    )
+    url, _ = cloudinary.utils.cloudinary_url(
+        result["public_id"],
+        format=result.get("format"),
+        fetch_format="auto",
+        quality="auto",
+        secure=True,
+    )
     return {
-        "url": result["secure_url"],
+        "url": url or result["secure_url"],
         "public_id": result["public_id"],
         "width": result.get("width", 0),
         "height": result.get("height", 0),
+        "storage": "cloudinary",
+    }
+
+
+def _store_document_cloudinary(data: bytes, filename: str) -> dict:
+    """PDFs go up as `raw`.
+
+    Not `image`: Cloudinary will happily rasterise a PDF as an image resource,
+    which quietly turns a document a visitor should download into a picture of
+    its first page.
+    """
+    import cloudinary.uploader
+
+    _configure_cloudinary()
+    result = cloudinary.uploader.upload(
+        data,
+        folder="premierpower/documents",
+        # The extension has to stay on a raw resource or the delivered file
+        # arrives without one and the browser will not open it as a PDF.
+        public_id=f"{_public_id(filename)}.pdf",
+        resource_type="raw",
+        overwrite=False,
+    )
+    return {
+        "url": result["secure_url"],
+        "public_id": result["public_id"],
         "storage": "cloudinary",
     }
 
@@ -120,7 +190,7 @@ async def upload_image(
         )
 
     stored = (
-        _store_cloudinary(data, file.filename or "upload")
+        _store_cloudinary(data, file.filename or "upload", folder.strip())
         if settings.cloudinary_configured
         else _store_local(file, data)
     )
@@ -179,15 +249,21 @@ async def upload_document(
             f"File is larger than the {settings.max_upload_mb}MB limit",
         )
 
-    root = Path(settings.upload_dir) / "docs"
-    root.mkdir(parents=True, exist_ok=True)
-    name = f"{secrets.token_hex(12)}.pdf"
-    (root / name).write_bytes(data)
+    if settings.cloudinary_documents_enabled:
+        stored = _store_document_cloudinary(data, file.filename or "document.pdf")
+        file_url = stored["url"]
+    else:
+        root = Path(settings.upload_dir) / "docs"
+        root.mkdir(parents=True, exist_ok=True)
+        name = f"{secrets.token_hex(12)}.pdf"
+        (root / name).write_bytes(data)
+        file_url = f"/uploads/docs/{name}"
+
     log_action(db, actor=admin.email, action="upload", entity="document",
-               entity_id=None, detail=file.filename or name, ip=client_ip(request))
+               entity_id=None, detail=file.filename or file_url, ip=client_ip(request))
     return {
-        "file_url": f"/uploads/docs/{name}",
-        "filename": file.filename or name,
+        "file_url": file_url,
+        "filename": file.filename or "document.pdf",
         "bytes": len(data),
     }
 
@@ -212,6 +288,28 @@ def library(
     if folder:
         stmt = stmt.where(MediaAsset.folder == folder)
     return db.scalars(stmt.limit(limit).offset(offset)).all()
+
+
+@router.get("/storage")
+def storage(_: Admin = Depends(get_current_admin)) -> dict[str, object]:
+    """Which backend uploads land in, so the CMS can say so plainly.
+
+    Never reports the API secret or key — only whether the three values needed
+    are all present.
+    """
+    return {
+        "backend": "cloudinary" if settings.cloudinary_configured else "local",
+        "documents_backend": "cloudinary" if settings.cloudinary_documents_enabled else "local",
+        "cloud_name": settings.cloudinary_cloud_name or "",
+        "max_upload_mb": settings.max_upload_mb,
+        "missing": [
+            name for name, value in (
+                ("CLOUDINARY_CLOUD_NAME", settings.cloudinary_cloud_name),
+                ("CLOUDINARY_API_KEY", settings.cloudinary_api_key),
+                ("CLOUDINARY_API_SECRET", settings.cloudinary_api_secret),
+            ) if not value
+        ],
+    }
 
 
 @router.get("/folders", response_model=list[str])
@@ -262,7 +360,8 @@ def delete_asset(
     elif asset.storage == "cloudinary":
         try:
             import cloudinary.uploader
-            cloudinary.uploader.destroy(asset.public_id)
+            _configure_cloudinary()
+            cloudinary.uploader.destroy(asset.public_id, resource_type="image")
         except Exception:
             # The database row still goes; a stranded CDN object is preferable
             # to an admin who cannot remove a photograph from the site.

@@ -48,6 +48,15 @@ os.environ.setdefault("SECRET_KEY", "test-key-that-is-at-least-32-bytes-long-for
 os.environ.setdefault("ADMIN_EMAIL", "admin@premierpower.test")
 os.environ.setdefault("ADMIN_PASSWORD", "test-password-1234")
 
+# Force local storage regardless of what the developer's .env holds. Tests
+# that reach a real Cloudinary account leave junk in the client's media
+# library on every run, cost money, and fail with no network — none of which
+# says anything about whether the upload endpoint works.
+os.environ["CLOUDINARY_CLOUD_NAME"] = ""
+os.environ["CLOUDINARY_API_KEY"] = ""
+os.environ["CLOUDINARY_API_SECRET"] = ""
+os.environ["CLOUDINARY_DOCUMENTS"] = "false"
+
 
 def _drop_database(conn) -> None:
     # Anything still attached blocks the drop; sessions left by a previous

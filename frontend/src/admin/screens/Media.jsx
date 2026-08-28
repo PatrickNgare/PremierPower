@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Image as ImageIcon, Search, Trash2, Upload } from 'lucide-react'
+import { Cloud, HardDrive, Image as ImageIcon, Search, Trash2, Upload } from 'lucide-react'
 import { api } from '../api'
 import { useAuth } from '../auth'
 import { Button, Confirm, EmptyState, Spinner, useToast } from '../components/ui'
@@ -18,7 +18,12 @@ export default function Media() {
   const [busy, setBusy] = useState(false)
   const [confirming, setConfirming] = useState(null)
   const [editingAlt, setEditingAlt] = useState({})
+  const [storage, setStorage] = useState(null)
   const fileRef = useRef(null)
+
+  useEffect(() => {
+    api.get('/media/storage').then(setStorage).catch(() => { /* a badge is not worth an error */ })
+  }, [])
 
   const load = useCallback(async (term = '') => {
     setLoading(true)
@@ -110,6 +115,8 @@ export default function Media() {
         )}
       </div>
 
+      {storage && <StorageBadge storage={storage} />}
+
       <div className="relative mt-6 max-w-md">
         <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
         <input
@@ -176,6 +183,46 @@ export default function Media() {
         body="It will disappear from anywhere on the site that uses it. This cannot be undone."
         onConfirm={remove} onCancel={() => setConfirming(null)}
       />
+    </div>
+  )
+}
+
+/** Where uploads land. Worth stating plainly: the difference between a CDN and
+ *  a container volume is invisible until the day the volume is lost. */
+function StorageBadge({ storage }) {
+  const onCloud = storage.backend === 'cloudinary'
+  const Icon = onCloud ? Cloud : HardDrive
+  return (
+    <div className={`mt-5 flex items-start gap-3 rounded-2xl border p-4 ${
+      onCloud ? 'border-earth-ink/25 bg-earth-ink/[0.04]' : 'border-neutral-200 bg-white'
+    }`}>
+      <Icon size={17} aria-hidden="true" className={`mt-0.5 shrink-0 ${onCloud ? 'text-earth-ink' : 'text-ink-400'}`} />
+      <div className="text-sm leading-relaxed">
+        {onCloud ? (
+          <p className="text-ink-700">
+            <span className="font-semibold text-ink-900">Stored on Cloudinary</span>
+            {storage.cloud_name && <span className="text-ink-400"> · {storage.cloud_name}</span>}
+            {' — '}served from their CDN and converted to the best format each browser
+            supports.
+          </p>
+        ) : (
+          <p className="text-ink-700">
+            <span className="font-semibold text-ink-900">Stored on this server</span>
+            {' — '}photographs live on the container volume.
+            {storage.missing?.length > 0 && (
+              <> To use Cloudinary instead, set{' '}
+                <span className="font-medium">{storage.missing.join(', ')}</span> and restart.</>
+            )}
+          </p>
+        )}
+        <p className="mt-1 text-xs text-ink-400">
+          Up to {storage.max_upload_mb}MB per photograph.
+          {onCloud && storage.documents_backend === 'local' && (
+            <> PDFs are kept on this server — Cloudinary blocks PDF delivery until it is
+              switched on in their console.</>
+          )}
+        </p>
+      </div>
     </div>
   )
 }

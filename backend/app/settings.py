@@ -23,6 +23,12 @@ class Settings(BaseSettings):
     cloudinary_cloud_name: str = ""
     cloudinary_api_key: str = ""
     cloudinary_api_secret: str = ""
+    # PDFs stay on local disk even when Cloudinary is configured. Cloudinary
+    # blocks delivery of PDF and ZIP files by default at the account level: the
+    # upload succeeds, the resource is public, and the CDN still answers 401.
+    # Turn this on only after enabling "Allow delivery of PDF and ZIP files"
+    # under Settings -> Security in the Cloudinary console.
+    cloudinary_documents: bool = False
     upload_dir: str = "uploads"
     max_upload_mb: int = 10
 
@@ -33,6 +39,10 @@ class Settings(BaseSettings):
     @property
     def cloudinary_configured(self) -> bool:
         return bool(self.cloudinary_cloud_name and self.cloudinary_api_key and self.cloudinary_api_secret)
+
+    @property
+    def cloudinary_documents_enabled(self) -> bool:
+        return self.cloudinary_configured and self.cloudinary_documents
 
 
 def _validate(s: "Settings") -> None:
