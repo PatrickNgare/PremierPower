@@ -6,6 +6,7 @@ import ImageReveal from '@/components/ui/ImageReveal'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 // The full list from the company profile, not the nine shown on the site.
 import { projects } from '@/data/projects'
+import { photo } from '@/utils/photo'
 
 const LOCATIONS = ['Nairobi', 'Nanyuki', 'Laikipia', 'Meru', 'Mua Hills', 'Mlolongo', 'Maasai Mara']
 const ARCHITECTS = ['Seltar Crafts Ltd', 'Designspec Ltd', 'Construe Consultants Ltd', 'N.A Projects International Ltd']
@@ -19,7 +20,7 @@ const ARCHITECTS = ['Seltar Crafts Ltd', 'Designspec Ltd', 'Construe Consultants
 export default function AboutBento() {
   const [open, setOpen] = useState(null)
   const items = [{
-    src: '/projects/resort-dusk.jpg',
+    src: photo('/projects/resort-dusk.jpg'),
     alt: 'Completed resort development at dusk',
     title: 'Completed resort development',
     caption: 'Hospitality · Kenya',
@@ -37,7 +38,7 @@ export default function AboutBento() {
         className="group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 sm:col-span-2 lg:row-span-2"
       >
         <ImageReveal
-          src="/projects/resort-dusk.jpg" alt="Completed resort development at dusk"
+          src={photo('/projects/resort-dusk.jpg')} alt="Completed resort development at dusk"
           drift={3}
           className="h-full min-h-[15rem] w-full sm:min-h-[20rem]"
           imgClassName="transition-transform duration-[1.4s] ease-out group-hover:scale-105"

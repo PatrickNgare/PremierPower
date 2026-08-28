@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 import { services as fallback } from '@/data/services'
 import { useApi } from '@/hooks/useApi'
+import { photo } from '@/utils/photo'
 
 const icons = {
   'electrical-installation': Zap,
@@ -46,7 +47,7 @@ export default function Services() {
         className="group relative isolate overflow-hidden rounded-[var(--radius-card)] border border-white/10 lg:col-span-2 lg:row-span-2"
       >
         <img
-          src="/projects/technical.jpg" alt="Terminating conductors during installation"
+          src={photo('/projects/technical.jpg')} alt="Terminating conductors during installation"
           loading="lazy" decoding="async"
           className="absolute inset-0 -z-10 h-full w-full object-cover transition-transform duration-[1.3s] ease-out group-hover:scale-105"
         />

@@ -5,6 +5,7 @@ import PageHero from '@/components/ui/PageHero'
 import ContactForm from '@/components/sections/ContactForm'
 import LicenseBadge from '@/components/ui/LicenseBadge'
 import { site, isPending, value, whatsappLink, telLink } from '@/config/site'
+import { photo } from '@/utils/photo'
 
 export default function Contact() {
   const wa = whatsappLink()
@@ -19,7 +20,7 @@ export default function Contact() {
       </Helmet>
 
       <PageHero
-        image={'/projects/resort-pool.jpg'} imageAlt="Completed resort development"
+        image={photo('/projects/resort-pool.jpg')} imageAlt="Completed resort development"
         crumb="Contact" eyebrow="Project enquiries"
         title="Tell us about the project."
         lede="Send drawings, a tender document or a short description and we will come back with scope and next steps. Site visits and assessments are free, with no obligation."

@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Sparkles, Expand } from 'lucide-react'
 import Lightbox from '@/components/ui/Lightbox'
+import { photo } from '@/utils/photo'
 
 const EASE = [0.22, 1, 0.36, 1]
 
 const specimens = [
-  { src: '/projects/stairwell.jpg', label: 'Feature stairwell', line: 'Vertical run, warm source, no visible fixture line.' },
-  { src: '/projects/dining.jpg', label: 'Hospitality dining', line: 'Layered ambient and task light across a long room.' },
-  { src: '/projects/suite.jpg', label: 'Guest suite', line: 'Bedside, wardrobe and reading circuits switched independently.' },
+  { src: photo('/projects/stairwell.jpg'), label: 'Feature stairwell', line: 'Vertical run, warm source, no visible fixture line.' },
+  { src: photo('/projects/dining.jpg'), label: 'Hospitality dining', line: 'Layered ambient and task light across a long room.' },
+  { src: photo('/projects/suite.jpg'), label: 'Guest suite', line: 'Bedside, wardrobe and reading circuits switched independently.' },
 ]
 
 const lightboxItems = specimens.map((s) => ({ src: s.src, alt: s.label, title: s.label, caption: s.line }))

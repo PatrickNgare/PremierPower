@@ -7,6 +7,7 @@ import LicenseBadge from '@/components/ui/LicenseBadge'
 import CTABanner from '@/components/sections/CTABanner'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 import { site, isPending, value } from '@/config/site'
+import { photo } from '@/utils/photo'
 
 const tests = [
   ['Continuity of protective conductors', 'Confirms every earth path is unbroken from the board to the furthest accessory.'],
@@ -26,7 +27,7 @@ export default function Safety() {
       </Helmet>
 
       <PageHero
-        image={'/projects/technical.jpg'} imageAlt="Terminating conductors during installation"
+        image={photo('/projects/technical.jpg')} imageAlt="Terminating conductors during installation"
         crumb="Safety" eyebrow="Compliance"
         title="Registered, tested, and documented on every project."
         lede="Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. Every installation is tested and certified before handover, whatever its size."

@@ -1,3 +1,4 @@
+import { photo } from '@/utils/photo'
 /**
  * Solutions, framed by environment rather than by trade. Sectors come from the
  * company profile's list of works; `image` is set only where the profile
@@ -8,21 +9,21 @@ export const solutions = [
     slug: 'hospitality',
     title: 'Hotels, lodges & resorts',
     line: 'Light that carries a guest from arrival to their room, and an installation that survives continuous operation.',
-    image: '/projects/resort-pool.jpg',
+    image: photo('/projects/resort-pool.jpg'),
     alt: 'Completed resort development at dusk',
   },
   {
     slug: 'commercial',
     title: 'Commercial interiors',
     line: 'Bars, restaurants and retail where lighting sets the room and the electrical work stays invisible.',
-    image: '/projects/bar-interior.jpg',
+    image: photo('/projects/bar-interior.jpg'),
     alt: 'Feature lighting in a completed commercial interior',
   },
   {
     slug: 'residential',
     title: 'Residential developments',
     line: 'Villas, apartments and town houses — single homes through to multi-unit clusters.',
-    image: '/projects/villa-modern.jpg',
+    image: photo('/projects/villa-modern.jpg'),
     alt: 'Completed residential villa',
   },
   {

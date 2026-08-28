@@ -1,3 +1,4 @@
+import { photo } from '@/utils/photo'
 /**
  * Demo data.
  *
@@ -60,14 +61,14 @@ export const demoTestimonials = [
  * subject to the client confirming which images they hold rights to publish.
  */
 export const demoPhotos = {
-  hospitality: '/projects/hospitality.jpg',
-  lodge: '/projects/lodge.jpg',
-  technical: '/projects/technical.jpg',
-  residential: '/projects/residential.jpg',
-  villas: '/projects/villas.jpg',
-  apartments: '/projects/apartments.jpg',
-  clubhouse: '/projects/clubhouse.jpg',
-  houseExterior: '/projects/house-exterior.jpg',
-  interior: '/projects/interior.jpg',
-  stairDetail: '/projects/stair-detail.jpg',
+  hospitality: photo('/projects/hospitality.jpg'),
+  lodge: photo('/projects/lodge.jpg'),
+  technical: photo('/projects/technical.jpg'),
+  residential: photo('/projects/residential.jpg'),
+  villas: photo('/projects/villas.jpg'),
+  apartments: photo('/projects/apartments.jpg'),
+  clubhouse: photo('/projects/clubhouse.jpg'),
+  houseExterior: photo('/projects/house-exterior.jpg'),
+  interior: photo('/projects/interior.jpg'),
+  stairDetail: photo('/projects/stair-detail.jpg'),
 }

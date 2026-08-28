@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async'
 import PageHero from '@/components/ui/PageHero'
 import TestimonialsStrip from '@/components/sections/TestimonialsStrip'
 import CTABanner from '@/components/sections/CTABanner'
+import { photo } from '@/utils/photo'
 
 export default function Testimonials() {
   return (
@@ -13,7 +14,7 @@ export default function Testimonials() {
       </Helmet>
 
       <PageHero
-        image={'/projects/dining.jpg'} imageAlt="Completed hospitality interior"
+        image={photo('/projects/dining.jpg')} imageAlt="Completed hospitality interior"
         crumb="Reviews" eyebrow="Social proof"
         title="What customers say."
         lede="Weighted toward the reviews that mention safety and reliability, because that is what you are actually buying."

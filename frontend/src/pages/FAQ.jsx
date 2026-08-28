@@ -6,6 +6,7 @@ import PageHero from '@/components/ui/PageHero'
 import CTABanner from '@/components/sections/CTABanner'
 import { useApi } from '@/hooks/useApi'
 import { faqs as fallbackFaqs } from '@/data/faqs'
+import { photo } from '@/utils/photo'
 
 function Item({ q, a, open, onToggle, id }) {
   return (
@@ -56,7 +57,7 @@ export default function FAQ() {
       </Helmet>
 
       <PageHero
-        image={'/projects/lodge-dusk.jpg'} imageAlt="Completed development at dusk"
+        image={photo('/projects/lodge-dusk.jpg')} imageAlt="Completed development at dusk"
         crumb="FAQ" eyebrow="Straight answers"
         title="The questions people actually ask."
         lede="Mostly about licensing. Almost never about price first — which is the right instinct."
