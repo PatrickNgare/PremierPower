@@ -16,7 +16,7 @@ from .models import (
 )
 from .routers import (
     admin_auth, audit, leads, newsletter, notifications, preview,
-    settings_router, stats, upload,
+    settings_router, sitemap, stats, upload,
 )
 from .routers.crud import crud_router
 from .schemas import (
@@ -147,6 +147,10 @@ app.include_router(stats.router, prefix="/api/stats")
 app.include_router(notifications.router, prefix="/api/notifications")
 app.include_router(preview.router, prefix="/api/preview")
 
+# No /api prefix: crawlers look for these at the site root, and nginx proxies
+# the two exact paths through.
+app.include_router(sitemap.router)
+
 # Locally stored uploads. Cloudinary serves its own when configured.
 Path(settings.upload_dir).mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.upload_dir), name="uploads")
@@ -170,6 +174,7 @@ def _seed_settings() -> None:
         ("legal_name", "Registered business name"),
         ("street", "Street address for Google/LocalBusiness listing"),
         ("service_area", "Area served, e.g. 'Nairobi and nationwide'"),
+        ("site_url", "The site's public address, e.g. https://premierpower.co.ke — used by the sitemap and robots.txt"),
         ("nca_number", "NCA registration number — LAUNCH BLOCKER. The certificates in the company profile are blank templates, so this must come from the client."),
         ("nca_category", "NCA category, e.g. 'Electrical Engineering Service Contractor'"),
         ("insured", "Insurer name"),

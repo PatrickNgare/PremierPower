@@ -13,7 +13,13 @@ config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
 
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    # disable_existing_loggers defaults to True, which silently switches off
+    # every logger configured before this runs. The app calls _migrate() from
+    # its lifespan, so in the deployed container that meant uvicorn's access
+    # log and every "premierpower.*" logger went dead the moment migrations
+    # ran — the API served traffic and wrote nothing, including the traceback
+    # from a failing seed.
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 target_metadata = Base.metadata
 

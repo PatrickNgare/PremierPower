@@ -232,10 +232,20 @@ def test_writes_are_audited(client, auth):
 
 
 def test_stats_report_pending_settings(client, auth):
+    """Pending is counted, not hard-coded.
+
+    This asserted the exact seeded total, so adding one setting broke a test
+    that has nothing to do with how many there are. What matters is that the
+    count is real and that filling one in moves it.
+    """
     body = client.get("/api/stats", headers=auth).json()
-    assert body["settings"]["total"] == 14
-    # One was filled above; the rest are still the launch blockers.
-    assert body["settings"]["pending"] == 13
+    settings_rows = client.get("/api/settings/all", headers=auth).json()
+    blank = sum(1 for r in settings_rows if not str(r["value"]).strip())
+
+    assert body["settings"]["total"] == len(settings_rows)
+    assert body["settings"]["pending"] == blank
+    # At least one was filled in by an earlier test, so pending trails total.
+    assert body["settings"]["pending"] < body["settings"]["total"]
     assert body["leads"]["total"] >= 1
 
 

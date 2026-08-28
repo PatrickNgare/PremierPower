@@ -193,6 +193,33 @@ const heroFits = await page.locator('section').first().evaluate((n) => {
 })
 check(heroFits, 'hero is a full stage without overflowing the viewport')
 
+// Every URL offered to search engines must be a real page.
+//
+// The hand-written sitemap this replaced listed /work, which stopped being a
+// route long ago. The SPA answers unknown paths with 200 and a not-found
+// screen, so nothing failed loudly — a crawler was simply told to index a page
+// that does not exist. Checking the rendered heading is what catches that;
+// checking the status code does not.
+{
+  const xml = await fetch(SITE + '/sitemap.xml').then((r) => r.text())
+  const paths = [...xml.matchAll(/<loc>[^<]*?premierpower\.co\.ke([^<]*)<\/loc>/g)]
+    .map((m) => m[1] || '/')
+  check(paths.length > 0, `sitemap lists ${paths.length} URLs`)
+
+  let dead = 0
+  for (const path of paths) {
+    await page.goto(SITE + path, { waitUntil: 'networkidle' })
+    await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
+    const heading = await page.locator('h1').first().innerText()
+    if (/circuit is dead|not found/i.test(heading)) dead++
+  }
+  check(dead === 0, `every sitemap URL renders a real page (${paths.length} checked)`)
+
+  const robots = await fetch(SITE + '/robots.txt').then((r) => r.text())
+  check(robots.includes('Disallow: /admin'), 'robots.txt keeps crawlers out of the CMS')
+  check(robots.includes('Sitemap:'), 'robots.txt points at the sitemap')
+}
+
 // Licence trust signal must sit beside the primary action, on every page.
 for (const path of ['/', '/services', '/portfolio', '/safety', '/about', '/contact']) {
   await page.goto(SITE + path, { waitUntil: 'networkidle' })

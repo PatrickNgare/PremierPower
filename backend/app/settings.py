@@ -16,7 +16,18 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 480  # 8 hours
 
     cors_origins: str = "http://localhost:5173"
+
+    # Where new enquiries are emailed. Blank disables the email entirely —
+    # the enquiry is still saved and still appears in the admin.
     notify_email: str = ""
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
+    # STARTTLS on 587, implicit TLS on 465. Only turn this off for a local
+    # relay you control.
+    smtp_tls: bool = True
 
     # Media. Cloudinary is used when configured; otherwise files are written to
     # local disk and served from /uploads.
@@ -35,6 +46,16 @@ class Settings(BaseSettings):
     @property
     def origins(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
+    def email_configured(self) -> bool:
+        return bool(self.smtp_host and self.notify_email)
+
+    @property
+    def mail_from(self) -> str:
+        # Falls back to the authenticating user, which is what most providers
+        # require the From header to match anyway.
+        return self.smtp_from or self.smtp_user or self.notify_email
 
     @property
     def cloudinary_configured(self) -> bool:

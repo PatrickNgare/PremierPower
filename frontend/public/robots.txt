@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://premierpower.co.ke/sitemap.xml

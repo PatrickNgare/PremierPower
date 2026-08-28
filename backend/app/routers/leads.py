@@ -1,10 +1,11 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..core.audit import log_action
+from ..core.mailer import lead_notification, send as send_mail
 from ..core.security import client_ip, get_current_admin
 from ..core.throttle import too_many
 from ..db import get_db
@@ -21,7 +22,10 @@ LEAD_WINDOW = 3600.0
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def create_lead(payload: LeadIn, request: Request, db: Session = Depends(get_db)):
+def create_lead(
+    payload: LeadIn, request: Request, background: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
     ip = client_ip(request)
     if too_many(f"lead:{ip}", limit=LEAD_LIMIT, window=LEAD_WINDOW):
         # Still a 201: a throttled bot learns nothing, and a real person who
@@ -40,8 +44,15 @@ def create_lead(payload: LeadIn, request: Request, db: Session = Depends(get_db)
         link=f"/admin/inbox/{lead.id}",
     )
     db.commit()
-    target = settings.notify_email or "(no NOTIFY_EMAIL configured)"
-    log.info("new lead #%s from %s — notify %s", lead.id, lead.phone, target)
+
+    # Sent after the response, and best-effort: the enquiry is already saved,
+    # so a mail server that is slow or down must not make the person filling
+    # in the form wait, and must not make it look like their message failed.
+    subject, body = lead_notification(lead)
+    background.add_task(send_mail, subject, body, reply_to=lead.email or "")
+
+    log.info("new lead #%s from %s — notifying %s",
+             lead.id, lead.phone, settings.notify_email or "(NOTIFY_EMAIL unset)")
     return {"ok": True}
 
 
