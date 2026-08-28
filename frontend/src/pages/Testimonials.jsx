@@ -1,17 +1,17 @@
-import { Helmet } from 'react-helmet-async'
 import PageHero from '@/components/ui/PageHero'
 import TestimonialsStrip from '@/components/sections/TestimonialsStrip'
 import CTABanner from '@/components/sections/CTABanner'
 import { photo } from '@/utils/photo'
+import Seo from '@/components/Seo'
 
 export default function Testimonials() {
   return (
     <>
-      <Helmet>
-        <title>Reviews — What customers say | Premier Power</title>
-        <meta name="description" content="Reviews from homeowners and landlords across Nairobi, weighted toward the ones that speak to safety and reliability." />
-        <link rel="canonical" href="https://premierpower.co.ke/testimonials" />
-      </Helmet>
+      <Seo
+        title={"Reviews — What customers say | Premier Power"}
+        description={"Reviews from homeowners and landlords across Nairobi, weighted toward the ones that speak to safety and reliability."}
+        canonical={"https://premierpower.co.ke/testimonials"}
+      />
 
       <PageHero
         image={photo('/projects/dining.jpg')} imageAlt="Completed hospitality interior"

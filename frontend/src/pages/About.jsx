@@ -1,4 +1,3 @@
-import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import PageHero from '@/components/ui/PageHero'
 import SectionHeader from '@/components/ui/SectionHeader'
@@ -12,16 +11,17 @@ import { demoPhotos } from '@/config/demo'
 import { isPending, value } from '@/config/site'
 import { photo } from '@/utils/photo'
 import { useSite } from '@/hooks/useSite'
+import Seo from '@/components/Seo'
 
 export default function About() {
   const site = useSite()
   return (
     <>
-      <Helmet>
-        <title>About — Electrical engineering contractor in Kenya | Premier Power</title>
-        <meta name="description" content="Premier Power Limited is a leading electrical engineering company in the corporate market, working on installation projects across Kenya. Our mission, vision and registration." />
-        <link rel="canonical" href="https://premierpower.co.ke/about" />
-      </Helmet>
+      <Seo
+        title={"About — Electrical engineering contractor in Kenya | Premier Power"}
+        description={"Premier Power Limited is a leading electrical engineering company in the corporate market, working on installation projects across Kenya. Our mission, vision and registration."}
+        canonical={"https://premierpower.co.ke/about"}
+      />
 
       <PageHero
         image={photo('/projects/villa-modern.jpg')} imageAlt="Completed residential development"

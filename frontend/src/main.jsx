@@ -5,6 +5,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import { MotionConfig } from 'framer-motion'
 import App from '@/App'
 import { SiteProvider } from '@/hooks/useSite'
+import { SeoProvider } from '@/hooks/useSeo'
 import '@/index.css'
 
 createRoot(document.getElementById('root')).render(
@@ -17,7 +18,10 @@ createRoot(document.getElementById('root')).render(
           {/* Company details are fetched once here rather than in each of the
               dozen components that show a phone number or a registration. */}
           <SiteProvider>
-            <App />
+            {/* Per-route search metadata, fetched once for the same reason. */}
+            <SeoProvider>
+              <App />
+            </SeoProvider>
           </SiteProvider>
         </MotionConfig>
       </BrowserRouter>

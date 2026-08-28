@@ -1,4 +1,3 @@
-import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { FiCheck } from 'react-icons/fi'
 import PageHero from '@/components/ui/PageHero'
@@ -9,6 +8,7 @@ import { fadeUp, stagger, inView } from '@/utils/motion'
 import { isPending, value } from '@/config/site'
 import { photo } from '@/utils/photo'
 import { useSite } from '@/hooks/useSite'
+import Seo from '@/components/Seo'
 
 const tests = [
   ['Continuity of protective conductors', 'Confirms every earth path is unbroken from the board to the furthest accessory.'],
@@ -22,11 +22,11 @@ export default function Safety() {
   const site = useSite()
   return (
     <>
-      <Helmet>
-        <title>Safety &amp; compliance — NCA registered, tested and certified | Premier Power</title>
-        <meta name="description" content="Our NCA registration, the tests every installation receives before certification, and our workmanship warranty terms — stated plainly." />
-        <link rel="canonical" href="https://premierpower.co.ke/safety" />
-      </Helmet>
+      <Seo
+        title={"Safety & compliance — NCA registered, tested and certified | Premier Power"}
+        description={"Our NCA registration, the tests every installation receives before certification, and our workmanship warranty terms — stated plainly."}
+        canonical={"https://premierpower.co.ke/safety"}
+      />
 
       <PageHero
         image={photo('/projects/technical.jpg')} imageAlt="Terminating conductors during installation"

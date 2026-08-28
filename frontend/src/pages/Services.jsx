@@ -1,19 +1,19 @@
-import { Helmet } from 'react-helmet-async'
 import PageHero from '@/components/ui/PageHero'
 import ServicesSection from '@/components/sections/Services'
 import ProcessSteps from '@/components/sections/ProcessSteps'
 import SectionHeader from '@/components/ui/SectionHeader'
 import CTABanner from '@/components/sections/CTABanner'
 import { photo } from '@/utils/photo'
+import Seo from '@/components/Seo'
 
 export default function Services() {
   return (
     <>
-      <Helmet>
-        <title>Services — Electrical, security, solar &amp; power systems | Premier Power</title>
-        <meta name="description" content="Electrical installation, CCTV and access control, solar photovoltaics, UPS and surge protection, lifts and escalators, transmission and distribution, energy retrofitting and gas installation. NCA-registered, nationwide." />
-        <link rel="canonical" href="https://premierpower.co.ke/services" />
-      </Helmet>
+      <Seo
+        title={"Services — Electrical, security, solar & power systems | Premier Power"}
+        description={"Electrical installation, CCTV and access control, solar photovoltaics, UPS and surge protection, lifts and escalators, transmission and distribution, energy retrofitting and gas installation. NCA-registered, nationwide."}
+        canonical={"https://premierpower.co.ke/services"}
+      />
 
       <PageHero
         image={photo('/projects/stairwell.jpg')} imageAlt="Feature lighting installation in a completed stairwell"

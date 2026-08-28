@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FiPlus, FiMinus } from 'react-icons/fi'
 import PageHero from '@/components/ui/PageHero'
@@ -7,6 +6,7 @@ import CTABanner from '@/components/sections/CTABanner'
 import { useApi } from '@/hooks/useApi'
 import { faqs as fallbackFaqs } from '@/data/faqs'
 import { photo } from '@/utils/photo'
+import Seo from '@/components/Seo'
 
 function Item({ q, a, open, onToggle, id }) {
   return (
@@ -49,12 +49,11 @@ export default function FAQ() {
 
   return (
     <>
-      <Helmet>
-        <title>Questions — Licensing, cost, and what a rewire involves | Premier Power</title>
-        <meta name="description" content="Are you licensed? What does an assessment cost? Do we move out during a rewire? Straight answers about residential rewiring in Nairobi." />
-        <link rel="canonical" href="https://premierpower.co.ke/faq" />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
-      </Helmet>
+      <Seo
+        title={"Questions — Licensing, cost, and what a rewire involves | Premier Power"}
+        description={"Are you licensed? What does an assessment cost? Do we move out during a rewire? Straight answers about residential rewiring in Nairobi."}
+        canonical={"https://premierpower.co.ke/faq"}
+      />
 
       <PageHero
         image={photo('/projects/lodge-dusk.jpg')} imageAlt="Completed development at dusk"

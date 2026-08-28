@@ -1,5 +1,4 @@
 import { Fragment } from 'react'
-import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FiArrowRight } from 'react-icons/fi'
@@ -18,6 +17,7 @@ import SectionHeader from '@/components/ui/SectionHeader'
 import Button from '@/components/ui/Button'
 import { inView } from '@/utils/motion'
 import { useApi } from '@/hooks/useApi'
+import Seo from '@/components/Seo'
 
 /**
  * The home page is composed here and configured in the CMS.
@@ -173,15 +173,11 @@ export default function Home() {
 
   return (
     <>
-      <Helmet>
-        <title>Premier Power Limited — Electrical engineering &amp; installation contractor, Kenya</title>
-        <meta name="description" content="Premier Power Limited is an NCA-registered electrical engineering contractor working across Kenya — banks and commercial interiors, offices, hotels and lodges, institutions, healthcare, industrial and residential developments." />
-        <link rel="canonical" href="https://premierpower.co.ke/" />
-        <meta property="og:title" content="Premier Power Limited — Electrical engineering contractor, Kenya" />
-        <meta property="og:description" content="Electrical installation for the corporate market across Kenya, with leading contractors in the private and public sectors." />
-        <meta property="og:type" content="website" />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Helmet>
+      <Seo
+        title={"Premier Power Limited — Electrical engineering & installation contractor, Kenya"}
+        description={"Premier Power Limited is an NCA-registered electrical engineering contractor working across Kenya — banks and commercial interiors, offices, hotels and lodges, institutions, healthcare, industrial and residential developments."}
+        canonical={"https://premierpower.co.ke/"}
+      />
 
       {sections.map((s) => <Fragment key={s.key}>{BLOCKS[s.key](s)}</Fragment>)}
     </>

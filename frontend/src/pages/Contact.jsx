@@ -1,4 +1,3 @@
-import { Helmet } from 'react-helmet-async'
 import { FaWhatsapp } from 'react-icons/fa'
 import { FiPhone, FiMapPin, FiClock } from 'react-icons/fi'
 import PageHero from '@/components/ui/PageHero'
@@ -7,6 +6,7 @@ import LicenseBadge from '@/components/ui/LicenseBadge'
 import { isPending, value, whatsappLink, telLink } from '@/config/site'
 import { photo } from '@/utils/photo'
 import { useSite } from '@/hooks/useSite'
+import Seo from '@/components/Seo'
 
 export default function Contact() {
   const site = useSite()
@@ -15,11 +15,11 @@ export default function Contact() {
 
   return (
     <>
-      <Helmet>
-        <title>Request a quote — project enquiries | Premier Power</title>
-        <meta name="description" content="Send project drawings, tender documents or a description to Premier Power Limited — NCA-registered electrical engineering contractor working across Kenya. Free site visits, no obligation." />
-        <link rel="canonical" href="https://premierpower.co.ke/contact" />
-      </Helmet>
+      <Seo
+        title={"Request a quote — project enquiries | Premier Power"}
+        description={"Send project drawings, tender documents or a description to Premier Power Limited — NCA-registered electrical engineering contractor working across Kenya. Free site visits, no obligation."}
+        canonical={"https://premierpower.co.ke/contact"}
+      />
 
       <PageHero
         image={photo('/projects/resort-pool.jpg')} imageAlt="Completed resort development"
