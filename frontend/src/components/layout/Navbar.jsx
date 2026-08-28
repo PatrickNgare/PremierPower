@@ -42,23 +42,30 @@ export default function Navbar() {
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-1 items-center gap-6"
           >
-            <Link to="/" aria-label="Premier Power Limited — home" className="shrink-0">
-              <motion.div initial={false} animate={{ scale: condensed ? 0.86 : 1 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="origin-left">
-                <Logo className="h-9 sm:h-11" />
-              </motion.div>
-            </Link>
+            {/* Three zones, with the outer two flexing equally so the nav sits
+                on the centre of the page rather than in the middle of whatever
+                is left over. Pushed right by ml-auto it left a 183px hole after
+                the logo; centred in the leftover space it leaned the other way,
+                because the logo and the buttons are not the same width. Equal
+                flanks are what actually centres it. */}
+            <div className="flex flex-1 items-center gap-6">
+              <Link to="/" aria-label="Premier Power Limited — home" className="shrink-0">
+                <motion.div initial={false} animate={{ scale: condensed ? 0.86 : 1 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="origin-left">
+                  <Logo className="h-9 sm:h-11" />
+                </motion.div>
+              </Link>
 
-            {/* Held back to 2xl. The nav gained a ninth link when the fittings
-                page arrived, and this strapline is the widest thing in the row
-                that is not navigation — showing it from xl pushed the quote
-                button off the right edge at 1280 and 1366. The same claim is
-                made on every page in the trust bar. */}
-            <p className="ml-6 hidden items-center gap-2 whitespace-nowrap text-xs text-ink-500 2xl:flex">
-              <span aria-hidden="true" className="inline-block h-2.5 w-1 rounded-full bg-earth-ink" />
-              NCA registered · Nationwide
-            </p>
+              {/* The "NCA registered · Nationwide" strapline used to sit here.
+                  It was the widest non-navigation thing in the row and caused
+                  trouble twice: it pushed the quote button off the right edge
+                  once the nav reached nine links, and once the nav was centred
+                  it overlapped the first link at 2xl, because the nav cannot
+                  shrink and this could not either. The claim is already made on
+                  every page in the trust bar and again in the footer, so the
+                  header is better without it. */}
+            </div>
 
-            <ul className="ml-auto hidden items-center gap-0.5 lg:flex xl:gap-1">
+            <ul className="hidden shrink-0 items-center gap-0.5 lg:flex xl:gap-1">
               {navLinks.map((l) => (
                 <li key={l.to}>
                   <NavLink
@@ -90,43 +97,45 @@ export default function Navbar() {
               ))}
             </ul>
 
-            {/* A number set as text competes with the nav links for the same
-                attention. As a quiet icon control it stays one tap away
-                without reading as a ninth menu item; the number itself is on
-                the contact page, in the CTA band and in the footer. */}
-            {tel && (
-              <a
-                href={tel}
-                title={`Call ${String(site.phone)}`}
-                aria-label={`Call Premier Power on ${String(site.phone)}`}
-                className="ml-auto hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink-900/12 text-ink-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-rgb))] hover:text-[rgb(var(--accent-rgb))] lg:ml-0 lg:flex"
+            <div className="flex flex-1 items-center justify-end gap-3">
+              {/* A number set as text competes with the nav links for the same
+                  attention. As a quiet icon control it stays one tap away
+                  without reading as a tenth menu item; the number itself is on
+                  the contact page, in the CTA band and in the footer. */}
+              {tel && (
+                <a
+                  href={tel}
+                  title={`Call ${String(site.phone)}`}
+                  aria-label={`Call Premier Power on ${String(site.phone)}`}
+                  className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink-900/12 text-ink-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-rgb))] hover:text-[rgb(var(--accent-rgb))] lg:flex"
+                >
+                  <Phone size={16} aria-hidden="true" />
+                </a>
+              )}
+
+              {/* From xl, not lg. Between 1024 and 1279 the nine nav links and
+                  the logo already fill the row, and this button was overflowing
+                  the viewport. Contact is a nav link at those widths, and the
+                  phone control sits beside it, so nothing becomes unreachable. */}
+              <div className="hidden xl:block">
+                <Magnetic strength={0.2}>
+                  <Link to="/contact" className="btn-primary group whitespace-nowrap px-5 py-3 text-sm">
+                    Request a quote
+                    <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                  </Link>
+                </Magnetic>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                aria-label="Open menu"
+                aria-expanded={open}
+                className="rounded-full p-2.5 text-ink-900 transition-colors hover:bg-ink-900/[0.06] lg:hidden"
               >
-                <Phone size={16} aria-hidden="true" />
-              </a>
-            )}
-
-            {/* From xl, not lg. Between 1024 and 1279 the nine nav links and
-                the logo already fill the row, and this button was overflowing
-                the viewport. Contact is a nav link at those widths, and the
-                phone control sits beside it, so nothing becomes unreachable. */}
-            <div className="hidden xl:block">
-              <Magnetic strength={0.2}>
-                <Link to="/contact" className="btn-primary group whitespace-nowrap px-5 py-3 text-sm">
-                  Request a quote
-                  <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
-                </Link>
-              </Magnetic>
+                <Menu size={22} aria-hidden="true" />
+              </button>
             </div>
-
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              aria-label="Open menu"
-              aria-expanded={open}
-              className="ml-auto rounded-full p-2.5 text-ink-900 transition-colors hover:bg-ink-900/[0.06] lg:hidden"
-            >
-              <Menu size={22} aria-hidden="true" />
-            </button>
           </motion.div>
         </nav>
 
