@@ -19,8 +19,28 @@ const FAQ = lazy(() => import('@/pages/FAQ'))
 const Contact = lazy(() => import('@/pages/Contact'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
+// The CMS. Lazy so none of it is downloaded by a visitor who only ever sees
+// the public site — it is a separate chunk that loads on /admin and nowhere
+// else. It also brings its own chrome, so it renders outside the site's
+// navbar, footer and page transitions.
+const AdminApp = lazy(() => import('@/admin/AdminApp'))
+
 export default function App() {
   const location = useLocation()
+
+  if (location.pathname.startsWith('/admin')) {
+    // Mounted under a splat route, not rendered bare: the CMS's own routes are
+    // relative, and without a parent route to resolve against they match
+    // against "/" instead of "/admin" — every path misses and the catch-all
+    // redirects in a loop, rendering an empty page.
+    return (
+      <Suspense fallback={<div className="grid min-h-screen place-items-center bg-paper-warm" />}>
+        <Routes>
+          <Route path="/admin/*" element={<AdminApp />} />
+        </Routes>
+      </Suspense>
+    )
+  }
 
   return (
     <>

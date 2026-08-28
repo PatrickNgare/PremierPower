@@ -185,10 +185,18 @@ class AuditAdmin(ModelView, model=AuditLog):
 
 
 def mount_admin(app, engine) -> None:
+    """Mounted at /sqladmin, not /admin.
+
+    /admin is the CMS the client uses. This stays as a developer escape hatch:
+    a raw table view for the rare case where something needs editing that the
+    CMS has no screen for. It is not linked from anywhere and has its own
+    session login.
+    """
     admin = Admin(
         app,
         engine,
-        title="PremierPower",
+        base_url="/sqladmin",
+        title="PremierPower (raw)",
         authentication_backend=AdminAuth(secret_key=settings.secret_key),
     )
     for view in (
