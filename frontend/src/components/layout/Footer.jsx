@@ -18,7 +18,7 @@ const columns = [
     heading: 'Solutions',
     links: [
       { to: '/services', label: 'Electrical installation' },
-      { to: '/services', label: 'Lighting' },
+      { to: '/products', label: 'Lighting & fittings' },
       { to: '/services', label: 'Solar & power continuity' },
       { to: '/services', label: 'Security systems' },
     ],
@@ -61,15 +61,15 @@ export default function Footer() {
       <div aria-hidden="true" className="ambient-warm absolute inset-0 -z-10 opacity-60" />
       <div aria-hidden="true" className="rule-fade absolute inset-x-0 top-0 h-px text-white/15" />
 
-      <div className="container-x py-20">
-        <div className="grid gap-14 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
+      <div className="container-x py-16">
+        <div className="grid gap-10 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
           <div>
             <Logo tone="dark" className="h-11" />
-            <p className="mt-6 max-w-xs text-sm leading-relaxed text-muted">
+            <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted">
               Electrical engineering and lighting installation across Kenya — for the
               corporate, commercial and residential markets.
             </p>
-            <div className="mt-7 flex gap-2.5">
+            <div className="mt-6 flex gap-2.5">
               {wa && (
                 <a
                   href={wa} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
@@ -119,7 +119,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-16 grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[1.3fr_1fr_1fr]">
+        <div className="mt-12 grid gap-10 border-t border-white/10 pt-10 lg:grid-cols-[1.3fr_1fr_1fr]">
           <div>
             <h2 className="font-display text-xs font-bold uppercase tracking-[0.18em] text-white">Contact</h2>
             <ul className="mt-5 space-y-3">
@@ -156,7 +156,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="mt-14 border-t border-white/10 pt-8 text-sm text-muted">
+        <p className="mt-12 border-t border-white/10 pt-7 text-sm text-muted">
           © {new Date().getFullYear()} {isPending(site.legalName) ? site.name : value(site.legalName)}.
           {' '}Electrical engineering service contractor, registered with the National Construction Authority.
         </p>

@@ -9,6 +9,11 @@ const KEY = 'pp-exit-dismissed'
 const COOLDOWN_DAYS = 30
 /* Never interrupt someone already converting. */
 const EXCLUDED = ['/contact']
+/* Nothing fires until someone has actually been here a while. Without this the
+   listener is armed on the first frame, so a visitor who reaches for their tab
+   bar two seconds after landing gets a modal — which reads as a popup ad, not
+   as an offer. */
+const ARM_AFTER_MS = 15000
 
 export default function ExitIntentPopup() {
   const { pathname } = useLocation()
@@ -19,9 +24,17 @@ export default function ExitIntentPopup() {
     const until = Number(localStorage.getItem(KEY) || 0)
     if (Date.now() < until) return
 
-    const onLeave = (e) => { if (e.clientY <= 0) setOpen(true) }
-    document.addEventListener('mouseout', onLeave)
-    return () => document.removeEventListener('mouseout', onLeave)
+    const onLeave = (e) => {
+      // relatedTarget is null only when the pointer leaves the document
+      // entirely; without that check any hover onto an iframe or a select
+      // popup counts as an exit.
+      if (e.clientY <= 0 && !e.relatedTarget) setOpen(true)
+    }
+    const arm = setTimeout(() => document.addEventListener('mouseout', onLeave), ARM_AFTER_MS)
+    return () => {
+      clearTimeout(arm)
+      document.removeEventListener('mouseout', onLeave)
+    }
   }, [pathname])
 
   const dismiss = () => {
