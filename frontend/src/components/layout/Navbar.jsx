@@ -107,7 +107,7 @@ export default function Navbar() {
                   href={tel}
                   title={`Call ${String(site.phone)}`}
                   aria-label={`Call Premier Power on ${String(site.phone)}`}
-                  className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink-900/12 text-ink-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-rgb))] hover:text-[rgb(var(--accent-rgb))] lg:flex"
+                  className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink-900/12 text-ink-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-rgb))] hover:text-[rgb(var(--accent-rgb))] lg:flex"
                 >
                   <Phone size={16} aria-hidden="true" />
                 </a>
@@ -131,7 +131,7 @@ export default function Navbar() {
                 onClick={() => setOpen(true)}
                 aria-label="Open menu"
                 aria-expanded={open}
-                className="rounded-full p-2.5 text-ink-900 transition-colors hover:bg-ink-900/[0.06] lg:hidden"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-ink-900 transition-colors hover:bg-ink-900/[0.06] lg:hidden"
               >
                 <Menu size={22} aria-hidden="true" />
               </button>

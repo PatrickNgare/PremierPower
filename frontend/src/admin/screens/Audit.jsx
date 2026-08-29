@@ -30,7 +30,7 @@ export default function Audit() {
   return (
     <div>
       <h1 className="font-display text-2xl font-extrabold text-ink-900">Activity log</h1>
-      <p className="mt-1 text-sm text-ink-400">Every change made through the admin, most recent first.</p>
+      <p className="mt-1 text-sm text-muted">Every change made through the admin, most recent first.</p>
 
       {rows.length === 0
         ? <div className="mt-6"><EmptyState icon={ScrollText} title="Nothing recorded yet" /></div>
@@ -46,11 +46,11 @@ export default function Audit() {
                     {r.entity}{r.entity_id ? ` #${r.entity_id}` : ''}
                     {r.detail && <span className="font-normal text-ink-600"> — {r.detail}</span>}
                   </p>
-                  <p className="truncate text-xs text-ink-400">
+                  <p className="truncate text-xs text-muted">
                     {r.actor}{r.ip ? ` · ${r.ip}` : ''}
                   </p>
                 </div>
-                <time className="tabular shrink-0 text-xs text-ink-400">
+                <time className="tabular shrink-0 text-xs text-muted">
                   {r.created_at ? new Date(r.created_at).toLocaleString() : ''}
                 </time>
               </li>

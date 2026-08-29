@@ -151,7 +151,7 @@ export default function Collection() {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink-900">{def.title}</h1>
-          {def.blurb && <p className="mt-1 text-sm text-ink-400">{def.blurb}</p>}
+          {def.blurb && <p className="mt-1 text-sm text-muted">{def.blurb}</p>}
         </div>
         {editable && (
           <Button variant="primary" onClick={() => setEditing(blankOf(def))}>
@@ -162,7 +162,7 @@ export default function Collection() {
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <div className="relative min-w-[16rem] flex-1">
-          <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
+          <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
           <input
             value={q} onChange={(e) => setQ(e.target.value)}
             placeholder={`Search ${def.title.toLowerCase()}`}
@@ -182,7 +182,7 @@ export default function Collection() {
             </button>
           ))}
         </div>
-        <span className="tabular text-sm text-ink-400">{total} total</span>
+        <span className="tabular text-sm text-muted">{total} total</span>
       </div>
 
       <div className="mt-5">
@@ -253,7 +253,7 @@ function Row({ row, def, index, count, primary, editable, draggable, onEdit, onT
             type="button"
             onPointerDown={(e) => controls.start(e)}
             aria-label="Drag to reorder"
-            className="cursor-grab touch-none rounded-lg p-1.5 text-ink-400 transition-colors hover:bg-neutral-100 hover:text-ink-700 active:cursor-grabbing"
+            className="cursor-grab touch-none rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-ink-700 active:cursor-grabbing"
           >
             <GripVertical size={15} />
           </button>
@@ -263,12 +263,12 @@ function Row({ row, def, index, count, primary, editable, draggable, onEdit, onT
             <button
               type="button" onClick={() => onMove(-1)} disabled={index === 0}
               aria-label="Move up"
-              className="rounded p-0.5 text-ink-400 transition-colors hover:text-ink-900 disabled:opacity-25"
+              className="rounded p-0.5 text-muted transition-colors hover:text-ink-900 disabled:opacity-25"
             ><ChevronUp size={13} /></button>
             <button
               type="button" onClick={() => onMove(1)} disabled={index === count - 1}
               aria-label="Move down"
-              className="rounded p-0.5 text-ink-400 transition-colors hover:text-ink-900 disabled:opacity-25"
+              className="rounded p-0.5 text-muted transition-colors hover:text-ink-900 disabled:opacity-25"
             ><ChevronDown size={13} /></button>
           </div>
         </div>
@@ -278,7 +278,7 @@ function Row({ row, def, index, count, primary, editable, draggable, onEdit, onT
         <div key={c.name} className="grid h-11 w-14 shrink-0 place-items-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50">
           {row[c.name]
             ? <img src={row[c.name]} alt="" className="h-full w-full object-cover" />
-            : <span aria-hidden="true" className="text-[0.6rem] font-semibold text-ink-400">—</span>}
+            : <span aria-hidden="true" className="text-[0.6rem] font-semibold text-muted">—</span>}
         </div>
       ))}
 
@@ -287,7 +287,7 @@ function Row({ row, def, index, count, primary, editable, draggable, onEdit, onT
         className="min-w-0 flex-1 text-left focus:outline-none focus-visible:underline"
       >
         <span className="block truncate font-semibold text-ink-900">{row[primary] || 'Untitled'}</span>
-        <span className="mt-0.5 block truncate text-xs text-ink-400">
+        <span className="mt-0.5 block truncate text-xs text-muted">
           {def.columns
             .filter((c) => !c.primary && c.type !== 'thumb' && c.type !== 'status')
             .map((c) => row[c.name]).filter(Boolean).join(' · ')}
@@ -305,7 +305,7 @@ function Row({ row, def, index, count, primary, editable, draggable, onEdit, onT
       {editable && (
         <button
           type="button" onClick={onDelete} aria-label="Delete"
-          className="shrink-0 rounded-lg p-2 text-ink-400 opacity-0 transition-all hover:bg-brand-deep/10 hover:text-brand-deep focus:opacity-100 group-hover:opacity-100"
+          className="shrink-0 rounded-lg p-2 text-muted opacity-0 transition-all hover:bg-brand-deep/10 hover:text-brand-deep focus:opacity-100 group-hover:opacity-100"
         >
           <Trash2 size={15} />
         </button>
@@ -407,8 +407,8 @@ function DocumentUpload({ row, onChange }) {
     <div className="rounded-xl border border-neutral-200 bg-white p-4">
       <p className="text-sm font-semibold text-ink-800">PDF file</p>
       {row.filename
-        ? <p className="mt-1 truncate text-xs text-ink-400">{row.filename} · {Math.round((row.bytes ?? 0) / 1024)} KB</p>
-        : <p className="mt-1 text-xs text-ink-400">No file attached yet.</p>}
+        ? <p className="mt-1 truncate text-xs text-muted">{row.filename} · {Math.round((row.bytes ?? 0) / 1024)} KB</p>
+        : <p className="mt-1 text-xs text-muted">No file attached yet.</p>}
       <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-neutral-100 px-4 py-2.5 text-sm font-semibold text-ink-800 transition-colors hover:bg-neutral-200">
         <Upload size={15} aria-hidden="true" />
         {busy ? 'Uploading…' : row.filename ? 'Replace file' : 'Choose PDF'}

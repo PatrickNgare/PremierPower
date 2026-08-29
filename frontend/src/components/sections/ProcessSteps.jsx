@@ -17,7 +17,7 @@ export default function ProcessSteps({ tone = 'light' }) {
           </span>
           <span aria-hidden="true" className="mt-3 block h-0.5 w-10 rounded bg-secondary" />
           <h3 className={`mt-4 font-heading text-lg font-semibold ${dark ? 'text-white' : 'text-primary'}`}>{s.title}</h3>
-          <p className={`mt-1 text-[0.7rem] font-bold uppercase tracking-[0.14em] ${dark ? 'text-white/45' : 'text-neutral-400'}`}>
+          <p className={`mt-1 text-[0.7rem] font-bold uppercase tracking-[0.14em] ${dark ? 'text-white/45' : 'text-muted'}`}>
             {s.when}
           </p>
           <p className={`mt-3 text-sm leading-relaxed ${dark ? 'text-white/65' : 'text-neutral-600'}`}>{s.body}</p>

@@ -73,7 +73,7 @@ export default function About() {
               ].map(([label, v]) => (
                 <div key={label} className="flex justify-between gap-6 border-b border-neutral-200 py-2.5 last:border-0">
                   <dt className="text-neutral-500">{label}</dt>
-                  <dd className={isPending(v) ? 'text-neutral-400' : 'font-semibold text-primary'}>
+                  <dd className={isPending(v) ? 'text-muted' : 'font-semibold text-primary'}>
                     {isPending(v) ? '—' : value(v)}
                   </dd>
                 </div>

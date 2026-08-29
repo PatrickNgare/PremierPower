@@ -40,7 +40,7 @@ export default function ExitIntentPopup() {
             initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}>
             <button type="button" onClick={dismiss} aria-label="Close"
-              className="absolute right-4 top-4 rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700">
+              className="absolute right-4 top-4 rounded-lg p-1.5 text-muted hover:bg-neutral-100 hover:text-neutral-700">
               <FiX size={19} aria-hidden="true" />
             </button>
             <span className="eyebrow">No obligation</span>

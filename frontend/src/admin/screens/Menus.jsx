@@ -85,7 +85,7 @@ export default function Menus() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink-900">Navigation</h1>
-          <p className="mt-1 text-sm text-ink-400">The links across the top of the site and in the footer.</p>
+          <p className="mt-1 text-sm text-muted">The links across the top of the site and in the footer.</p>
         </div>
         {editable && (
           <Button variant="primary" onClick={add}><Plus size={16} aria-hidden="true" /> Add link</Button>
@@ -142,7 +142,7 @@ function LinkRow({ row, editable, onPatch, onSave, onDelete }) {
       {editable && (
         <button
           type="button" onPointerDown={(e) => controls.start(e)} aria-label="Drag to reorder"
-          className="cursor-grab touch-none rounded-lg p-1.5 text-ink-400 transition-colors hover:bg-neutral-100 active:cursor-grabbing"
+          className="cursor-grab touch-none rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 active:cursor-grabbing"
         >
           <GripVertical size={15} />
         </button>
@@ -172,7 +172,7 @@ function LinkRow({ row, editable, onPatch, onSave, onDelete }) {
       {editable && (
         <button
           type="button" onClick={onDelete} aria-label="Remove link"
-          className="rounded-lg p-2 text-ink-400 transition-colors hover:bg-brand-deep/10 hover:text-brand-deep"
+          className="rounded-lg p-2 text-muted transition-colors hover:bg-brand-deep/10 hover:text-brand-deep"
         >
           <Trash2 size={15} />
         </button>

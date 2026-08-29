@@ -293,7 +293,7 @@ export default function Hero({ section }) {
                 </li>
               ))}
             </ul>
-            <span className="ml-1 tabular text-xs font-semibold text-ink-400">
+            <span className="ml-1 tabular text-xs font-semibold text-muted">
               {String(i + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
             </span>
           </motion.div>

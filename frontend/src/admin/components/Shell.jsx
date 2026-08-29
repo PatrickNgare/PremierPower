@@ -93,7 +93,7 @@ export function Shell({ children }) {
 
       {groups.map(({ group, items }) => (
         <div key={group} className="mt-5">
-          <p className="px-3 pb-1.5 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-ink-400">
+          <p className="px-3 pb-1.5 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-muted">
             {group}
           </p>
           {items.map((item) => <NavItem key={item.key} {...item} />)}
@@ -103,7 +103,7 @@ export function Shell({ children }) {
       <div className="mt-auto border-t border-neutral-200 pt-3">
         <div className="px-3 pb-2">
           <p className="truncate text-sm font-semibold text-ink-900">{admin?.name || admin?.email}</p>
-          <p className="text-xs capitalize text-ink-400">{admin?.role}</p>
+          <p className="text-xs capitalize text-muted">{admin?.role}</p>
         </div>
         <button
           type="button" onClick={signOut}

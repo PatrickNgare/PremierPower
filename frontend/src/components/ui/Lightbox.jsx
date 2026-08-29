@@ -95,7 +95,9 @@ export default function Lightbox({ items, index, onClose, onIndex }) {
     <AnimatePresence>
       {open && item && (
         <motion.div
-          className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8"
+          // on-dark: this is a near-black overlay, so the ground-aware tokens
+          // inside it must resolve to their dark-ground values.
+          className="on-dark fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.25 }}
         >
@@ -149,7 +151,7 @@ export default function Lightbox({ items, index, onClose, onIndex }) {
                 >
                   <ChevronLeft size={18} aria-hidden="true" />
                 </button>
-                <p className="tabular text-sm text-ink-400" aria-live="polite">
+                <p className="tabular text-sm text-muted" aria-live="polite">
                   {index + 1} / {items.length}
                 </p>
                 <button

@@ -12,9 +12,9 @@ export const slugify = (s) =>
 
 const inputClass =
   'w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-ink-900 ' +
-  'outline-none transition-all duration-200 placeholder:text-ink-400 ' +
+  'outline-none transition-all duration-200 placeholder:text-muted ' +
   'focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10 ' +
-  'disabled:bg-neutral-50 disabled:text-ink-400'
+  'disabled:bg-neutral-50 disabled:text-muted'
 
 function Label({ htmlFor, children, required }) {
   return (
@@ -72,7 +72,7 @@ export function Field({ field, value, values, onChange, disabled }) {
   if (field.section) {
     return (
       <div className="pt-3">
-        <h3 className="border-b border-neutral-200 pb-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ink-400">
+        <h3 className="border-b border-neutral-200 pb-2 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted">
           {field.section}
         </h3>
       </div>
@@ -113,7 +113,7 @@ export function Field({ field, value, values, onChange, disabled }) {
         <div className="flex items-start justify-between gap-4 rounded-xl border border-neutral-200 bg-neutral-50/70 p-3.5">
           <div className="min-w-0">
             <Label htmlFor={id}>{field.label}</Label>
-            {field.help && <p className="mt-1 text-xs leading-relaxed text-ink-400">{field.help}</p>}
+            {field.help && <p className="mt-1 text-xs leading-relaxed text-muted">{field.help}</p>}
           </div>
           <Switch id={id} checked={!!value} onChange={onChange} disabled={disabled} />
         </div>
@@ -147,12 +147,12 @@ export function Field({ field, value, values, onChange, disabled }) {
       return (
         <div>
           <Label htmlFor={id} required={field.required}>{field.label}</Label>
-          {field.help && <p className="mt-1 text-xs leading-relaxed text-ink-400">{field.help}</p>}
+          {field.help && <p className="mt-1 text-xs leading-relaxed text-muted">{field.help}</p>}
           <div className="mt-2 flex items-start gap-3">
             <div className="grid h-24 w-32 shrink-0 place-items-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50">
               {value
                 ? <img src={value} alt="" className="h-full w-full object-cover" />
-                : <ImageIcon size={20} className="text-ink-400" aria-hidden="true" />}
+                : <ImageIcon size={20} className="text-muted" aria-hidden="true" />}
             </div>
             <div className="flex flex-1 flex-col gap-2">
               <div className="flex gap-2">
@@ -168,7 +168,7 @@ export function Field({ field, value, values, onChange, disabled }) {
               {/* The address stays editable: some images are already hosted
                   elsewhere and never pass through the library. */}
               <div className="relative">
-                <Link2 size={14} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
+                <Link2 size={14} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
                 <input
                   {...common} id={id} value={value ?? ''}
                   onChange={(e) => onChange(e.target.value)}
@@ -208,7 +208,7 @@ export function Field({ field, value, values, onChange, disabled }) {
   return (
     <div>
       <Label htmlFor={id} required={field.required}>{field.label}</Label>
-      {field.help && <p className="mb-2 mt-1 text-xs leading-relaxed text-ink-400">{field.help}</p>}
+      {field.help && <p className="mb-2 mt-1 text-xs leading-relaxed text-muted">{field.help}</p>}
       <div className={field.help ? '' : 'mt-2'}>{control}</div>
     </div>
   )

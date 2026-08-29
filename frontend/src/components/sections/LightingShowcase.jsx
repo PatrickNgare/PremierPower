@@ -79,7 +79,7 @@ export default function LightingShowcase({ section }) {
                 around it — circuits planned to the room's use, sources placed so the fixture
                 disappears and only the light remains.`}
             </p>
-            <p className="mt-4 max-w-md leading-relaxed text-ink-400">
+            <p className="mt-4 max-w-md leading-relaxed text-muted">
               Feature, ambient and task layers switched independently, so one space can be a
               working room at nine and a dining room at eight.
             </p>

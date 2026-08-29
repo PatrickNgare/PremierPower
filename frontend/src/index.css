@@ -128,6 +128,18 @@
   :root    { --accent-rgb: 194 0 0; }
   .on-dark { --accent-rgb: 255 59 47; }
 
+  /* Ground-aware muted text, on the same principle.
+     ink-400 is the site's quiet tone and reads well on near-black, but on the
+     light grounds it measures 3.24:1 on white and 2.97:1 on paper-warm — under
+     AA for anything that is not large text, and it was carrying help text,
+     field labels and captions. The scale had no legible muted step: it jumped
+     from ink-400 straight to ink-600 at 10.7:1, which is too heavy for a
+     caption. #646978 fills the gap at 5.48:1 on white and 4.52:1 on the
+     darkest light surface, and inside .on-dark this hands back to ink-400 so
+     nothing on a dark ground changes. */
+  :root    { --muted-rgb: 100 105 120; }
+  .on-dark { --muted-rgb: 138 143 156; }
+
   ::selection { background-color: var(--color-brand); color: #fff; }
 
   :root { caret-color: var(--color-brand-fill); accent-color: var(--color-brand-fill); }
@@ -260,9 +272,16 @@
    UTILITIES — light as a material
    ═══════════════════════════════════════════════════════════════ */
 @layer utilities {
+  /* Declared here rather than as an @theme colour on purpose. Tailwind
+     resolves an @theme value once, against :root, so `--color-muted:
+     rgb(var(--muted-rgb))` froze at the light-ground value and .on-dark never
+     reached it — the footer rendered its quiet text at 3.65:1. A utility
+     referencing the raw var resolves at the element, which is also why the
+     accent works. */
+  .text-muted { color: rgb(var(--muted-rgb)); }
+
   .on-dark { color: var(--color-paper); }
   .on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: #fff; }
-  .on-dark .muted { color: var(--color-ink-300); }
 
   /* Ambient pool of warm light. Sits behind content, never over it. */
   .ambient-warm {

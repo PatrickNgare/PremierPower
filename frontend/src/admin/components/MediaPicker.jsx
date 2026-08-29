@@ -94,7 +94,7 @@ export function MediaPicker({ open, onPick, onClose }) {
           >
             <header className="flex items-center gap-3 border-b border-neutral-200 p-4">
               <div className="relative flex-1">
-                <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
+                <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
                 <input
                   value={q} onChange={(e) => setQ(e.target.value)}
                   placeholder="Search photographs"
@@ -140,7 +140,7 @@ export function MediaPicker({ open, onPick, onClose }) {
                         <button
                           type="button" onClick={() => remove(a)}
                           aria-label={`Delete ${a.filename || 'photograph'}`}
-                          className="absolute right-1.5 top-1.5 rounded-lg bg-white/90 p-1.5 text-ink-400 opacity-0 shadow-lift transition-all hover:text-brand-deep focus:opacity-100 group-hover:opacity-100"
+                          className="absolute right-1.5 top-1.5 rounded-lg bg-white/90 p-1.5 text-muted opacity-0 shadow-lift transition-all hover:text-brand-deep focus:opacity-100 group-hover:opacity-100"
                         >
                           <Trash2 size={13} />
                         </button>

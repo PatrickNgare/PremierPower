@@ -34,7 +34,7 @@ export default function FloatingActions() {
                   <FiPhone size={19} aria-hidden="true" /> Call
                 </a>
               ) : (
-                <span className="flex flex-col items-center gap-1 py-2.5 text-[0.7rem] font-semibold text-neutral-400">
+                <span className="flex flex-col items-center gap-1 py-2.5 text-[0.7rem] font-semibold text-muted">
                   <FiPhone size={19} aria-hidden="true" /> Call
                 </span>
               )}
@@ -44,7 +44,7 @@ export default function FloatingActions() {
                   <FaWhatsapp size={19} aria-hidden="true" /> WhatsApp
                 </a>
               ) : (
-                <span className="flex flex-col items-center gap-1 py-2.5 text-[0.7rem] font-semibold text-neutral-400">
+                <span className="flex flex-col items-center gap-1 py-2.5 text-[0.7rem] font-semibold text-muted">
                   <FaWhatsapp size={19} aria-hidden="true" /> WhatsApp
                 </span>
               )}

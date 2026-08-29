@@ -67,7 +67,7 @@ export default function Settings() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink-900">Company details</h1>
-          <p className="mt-1 max-w-2xl text-sm text-ink-400">
+          <p className="mt-1 max-w-2xl text-sm text-muted">
             These appear across the whole site. Anything left blank is hidden rather than
             guessed at — the site will not invent a licence number or a phone line.
           </p>
@@ -99,7 +99,7 @@ export default function Settings() {
               <label htmlFor={`s-${row.key}`} className="block text-sm font-semibold text-ink-800">
                 {row.key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase())}
               </label>
-              {row.note && <p className="mt-1 text-xs leading-relaxed text-ink-400">{row.note}</p>}
+              {row.note && <p className="mt-1 text-xs leading-relaxed text-muted">{row.note}</p>}
               <input
                 id={`s-${row.key}`} value={value} disabled={!editable}
                 onChange={(e) => setDirty((d) => ({ ...d, [row.key]: e.target.value }))}

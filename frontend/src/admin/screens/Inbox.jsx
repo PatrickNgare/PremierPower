@@ -14,7 +14,7 @@ const TONE = {
   in_progress: 'bg-lumen-100 text-lumen-700',
   quoted: 'bg-neutral-100 text-ink-700',
   won: 'bg-earth-ink/10 text-earth-ink',
-  lost: 'bg-neutral-100 text-ink-400',
+  lost: 'bg-neutral-100 text-muted',
 }
 
 export default function Inbox() {
@@ -77,14 +77,14 @@ export default function Inbox() {
   return (
     <div>
       <h1 className="font-display text-2xl font-extrabold text-ink-900">Enquiries</h1>
-      <p className="mt-1 text-sm text-ink-400">
+      <p className="mt-1 text-sm text-muted">
         Everything submitted through the website. What people wrote cannot be edited — only the
         stage and your own notes.
       </p>
 
       <div className="mt-6 flex flex-wrap items-center gap-3">
         <div className="relative min-w-[16rem] flex-1">
-          <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
+          <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
           <input
             value={q} onChange={(e) => setQ(e.target.value)}
             placeholder="Search name, company, phone or message"
@@ -130,7 +130,7 @@ export default function Inbox() {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold text-ink-900">{l.name}</p>
-                      <p className="truncate text-xs text-ink-400">
+                      <p className="truncate text-xs text-muted">
                         {[l.company, l.project_type, l.area].filter(Boolean).join(' · ') || l.phone}
                       </p>
                     </div>
@@ -187,7 +187,7 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
             <header className="flex items-start justify-between gap-3 border-b border-neutral-200 bg-white px-6 py-4">
               <div className="min-w-0">
                 <h2 className="truncate font-display text-lg font-bold text-ink-900">{lead.name}</h2>
-                {lead.company && <p className="truncate text-sm text-ink-400">{lead.company}</p>}
+                {lead.company && <p className="truncate text-sm text-muted">{lead.company}</p>}
               </div>
               <Button variant="ghost" onClick={onClose} aria-label="Close"><X size={17} /></Button>
             </header>
@@ -215,7 +215,7 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
                   ['Received', lead.created_at ? new Date(lead.created_at).toLocaleString() : ''],
                 ].filter(([, v]) => v).map(([k, v]) => (
                   <div key={k}>
-                    <dt className="text-xs text-ink-400">{k}</dt>
+                    <dt className="text-xs text-muted">{k}</dt>
                     <dd className="mt-0.5 font-medium text-ink-900">{v}</dd>
                   </div>
                 ))}

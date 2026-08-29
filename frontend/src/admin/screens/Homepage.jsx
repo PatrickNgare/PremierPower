@@ -124,7 +124,7 @@ export default function Homepage() {
   return (
     <div>
       <h1 className="font-display text-2xl font-extrabold text-ink-900">{pageName}</h1>
-      <p className="mt-1 text-sm text-ink-400">
+      <p className="mt-1 text-sm text-muted">
         {page === '/'
           ? 'Drag to reorder. Hide a block to take it off the page without deleting anything.'
           : 'The words on this page. The lists it shows — services, projects, reviews — are edited in their own sections.'}
@@ -172,7 +172,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
         {editable && (
           <button
             type="button" onPointerDown={(e) => controls.start(e)} aria-label="Drag to reorder"
-            className="cursor-grab touch-none rounded-lg p-1.5 text-ink-400 transition-colors hover:bg-neutral-100 hover:text-ink-700 active:cursor-grabbing"
+            className="cursor-grab touch-none rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-ink-700 active:cursor-grabbing"
           >
             <GripVertical size={15} />
           </button>
@@ -182,13 +182,13 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
         <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
           <ChevronDown
             size={15} aria-hidden="true"
-            className={`shrink-0 text-ink-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+            className={`shrink-0 text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           />
           <span className="min-w-0">
-            <span className={`block truncate font-semibold ${row.enabled ? 'text-ink-900' : 'text-ink-400'}`}>
+            <span className={`block truncate font-semibold ${row.enabled ? 'text-ink-900' : 'text-muted'}`}>
               {row.title ? splitTitle(row.title) : row.eyebrow || SECTION_NAMES[row.key] || row.key}
             </span>
-            <span className="mt-0.5 block truncate text-xs text-ink-400">
+            <span className="mt-0.5 block truncate text-xs text-muted">
               {row.subtitle || SECTION_BLURBS[row.key] || row.key}
             </span>
           </span>
@@ -197,7 +197,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
         <button
           type="button" onClick={onToggle} disabled={!editable}
           aria-label={row.enabled ? 'Hide this block' : 'Show this block'}
-          className="shrink-0 rounded-lg p-2 text-ink-400 transition-colors hover:bg-neutral-100 hover:text-ink-900 disabled:pointer-events-none"
+          className="shrink-0 rounded-lg p-2 text-muted transition-colors hover:bg-neutral-100 hover:text-ink-900 disabled:pointer-events-none"
         >
           {row.enabled ? <Eye size={16} /> : <EyeOff size={16} />}
         </button>
@@ -316,12 +316,12 @@ function SectionItems({ section, label, editable }) {
 
   const input = 'w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
 
-  if (loading) return <p className="pt-2 text-sm text-ink-400">Loading {label.toLowerCase()}…</p>
+  if (loading) return <p className="pt-2 text-sm text-muted">Loading {label.toLowerCase()}…</p>
 
   return (
     <div className="border-t border-neutral-200 pt-4">
       <div className="flex items-center justify-between">
-        <h4 className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-ink-400">{label}</h4>
+        <h4 className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted">{label}</h4>
         {editable && (
           <Button variant="ghost" onClick={add}><Plus size={14} aria-hidden="true" /> Add</Button>
         )}
@@ -338,7 +338,7 @@ function SectionItems({ section, label, editable }) {
               {editable && (
                 <button
                   type="button" onClick={() => remove(row)} aria-label="Remove"
-                  className="shrink-0 rounded-lg p-2 text-ink-400 transition-colors hover:bg-brand-deep/10 hover:text-brand-deep"
+                  className="shrink-0 rounded-lg p-2 text-muted transition-colors hover:bg-brand-deep/10 hover:text-brand-deep"
                 >
                   <Trash2 size={14} />
                 </button>
@@ -347,7 +347,7 @@ function SectionItems({ section, label, editable }) {
             {/* A figure taken from Company details has nothing to type here —
                 showing an empty body box would invite typing the number twice. */}
             {row.href ? (
-              <p className="mt-2 text-xs text-ink-400">
+              <p className="mt-2 text-xs text-muted">
                 Figure taken from Company details: <span className="font-medium">{row.href}</span>
               </p>
             ) : (

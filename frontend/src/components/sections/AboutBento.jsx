@@ -125,7 +125,7 @@ export default function AboutBento() {
         variants={fadeUp}
         className="relative hidden overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-7 sm:col-span-2 sm:block"
       >
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-ink-400">
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
           Delivered alongside
         </p>
         <ul className="mt-4 grid gap-2 sm:grid-cols-2">

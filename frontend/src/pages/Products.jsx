@@ -81,7 +81,7 @@ export default function Products() {
           )}
 
           {loading ? null : shown.length === 0 ? (
-            <p className="mt-12 text-base text-ink-400">
+            <p className="mt-12 text-base text-muted">
               Nothing to show here yet.
             </p>
           ) : (
@@ -110,7 +110,7 @@ export default function Products() {
                           className="h-full w-full object-contain transition-transform duration-[1.2s] ease-out group-hover:scale-[1.04]"
                         />
                       ) : (
-                        <span className="flex h-full items-center justify-center text-sm text-ink-400">
+                        <span className="flex h-full items-center justify-center text-sm text-muted">
                           Photograph required
                         </span>
                       )}
@@ -129,7 +129,7 @@ export default function Products() {
                       </div>
                       <ArrowUpRight
                         size={17} aria-hidden="true"
-                        className="mt-1 shrink-0 text-ink-400 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-deep"
+                        className="mt-1 shrink-0 text-muted transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-deep"
                       />
                     </div>
                   </Link>

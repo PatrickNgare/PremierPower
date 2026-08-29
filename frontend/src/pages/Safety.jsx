@@ -71,7 +71,7 @@ export default function Safety() {
                 {[['NCA registration', site.ncaNumber], ['Category', site.ncaCategory], ['Insured by', site.insured]].map(([l, v]) => (
                   <div key={l} className="flex justify-between gap-4 border-b border-neutral-200 pb-3">
                     <dt className="text-neutral-500">{l}</dt>
-                    <dd className={isPending(v) ? 'text-neutral-400' : 'font-semibold text-primary'}>
+                    <dd className={isPending(v) ? 'text-muted' : 'font-semibold text-primary'}>
                       {isPending(v) ? '—' : value(v)}
                     </dd>
                   </div>
@@ -81,7 +81,7 @@ export default function Safety() {
               <h2 className="mt-8 font-heading text-lg font-semibold text-primary">Warranty, plainly</h2>
               <p className="mt-3 text-sm leading-relaxed text-neutral-600">
                 {isPending(site.warranty) ? (
-                  <span className="text-neutral-400">
+                  <span className="text-muted">
                     [Warranty term pending — the client must supply this. It belongs here, stated
                     plainly, not buried in a contract.]
                   </span>

@@ -43,11 +43,11 @@ export default function Login() {
           className="rounded-2xl border border-white/70 bg-white/80 p-7 shadow-lift backdrop-blur-xl"
         >
           <h1 className="font-display text-xl font-extrabold text-ink-900">Sign in</h1>
-          <p className="mt-1 text-sm text-ink-400">Manage the Premier Power website.</p>
+          <p className="mt-1 text-sm text-muted">Manage the Premier Power website.</p>
 
           <div className="mt-6 space-y-3">
             <div className="relative">
-              <Mail size={16} aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400" />
+              <Mail size={16} aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="email" value={email} onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email address" aria-label="Email address"
@@ -55,7 +55,7 @@ export default function Login() {
               />
             </div>
             <div className="relative">
-              <Lock size={16} aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400" />
+              <Lock size={16} aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
               <input
                 type="password" value={password} onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password" aria-label="Password"

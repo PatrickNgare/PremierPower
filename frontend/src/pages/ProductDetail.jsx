@@ -92,7 +92,7 @@ export default function ProductDetail() {
                 </span>
               </button>
             ) : (
-              <div className="grid h-80 place-items-center rounded-[var(--radius-card)] border border-dashed border-ink-900/15 bg-paper-warm text-sm text-ink-400">
+              <div className="grid h-80 place-items-center rounded-[var(--radius-card)] border border-dashed border-ink-900/15 bg-paper-warm text-sm text-muted">
                 Photograph required
               </div>
             )}
@@ -113,7 +113,7 @@ export default function ProductDetail() {
             )}
 
             {product.brand && (
-              <p className="mt-6 text-sm text-ink-400">
+              <p className="mt-6 text-sm text-muted">
                 Brand <span className="font-semibold text-ink-700">{product.brand}</span>
               </p>
             )}
@@ -129,7 +129,7 @@ export default function ProductDetail() {
                     : ['', line]
                   return (
                     <div key={line} className="flex gap-6 py-3 text-sm">
-                      {label && <dt className="w-40 shrink-0 text-ink-400">{label}</dt>}
+                      {label && <dt className="w-40 shrink-0 text-muted">{label}</dt>}
                       <dd className="font-medium text-ink-800">{value}</dd>
                     </div>
                   )

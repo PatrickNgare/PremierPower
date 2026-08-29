@@ -134,7 +134,7 @@ export default function ContactForm() {
                   )}
                 </button>
               </Magnetic>
-              <p className="text-sm text-ink-400">We reply to every enquiry.</p>
+              <p className="text-sm text-muted">We reply to every enquiry.</p>
             </div>
           </motion.form>
         )}

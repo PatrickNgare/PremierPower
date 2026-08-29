@@ -44,7 +44,7 @@ export default function Dashboard() {
       <h1 className="font-display text-2xl font-extrabold text-ink-900">
         {admin?.name ? `Hello, ${admin.name.split(' ')[0]}` : 'Hello'}
       </h1>
-      <p className="mt-1 text-sm text-ink-400">Here is what is waiting for you.</p>
+      <p className="mt-1 text-sm text-muted">Here is what is waiting for you.</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {stats.map((s, i) => (
@@ -55,8 +55,8 @@ export default function Dashboard() {
           >
             <Link to={s.to} className={`${card} block transition-shadow hover:shadow-raise`}>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-ink-400">{s.label}</p>
-                <s.icon size={16} className="text-ink-400" aria-hidden="true" />
+                <p className="text-sm font-medium text-muted">{s.label}</p>
+                <s.icon size={16} className="text-muted" aria-hidden="true" />
               </div>
               <p className="tabular mt-2 font-display text-3xl font-extrabold text-ink-900">{s.value}</p>
             </Link>
@@ -73,7 +73,7 @@ export default function Dashboard() {
             </Link>
           </div>
           {leads.length === 0
-            ? <p className="mt-4 text-sm text-ink-400">Nothing yet. Enquiries from the website arrive here.</p>
+            ? <p className="mt-4 text-sm text-muted">Nothing yet. Enquiries from the website arrive here.</p>
             : (
               <ul className="mt-4 space-y-2.5">
                 {leads.slice(0, 5).map((l) => (
@@ -81,7 +81,7 @@ export default function Dashboard() {
                     <Link to="/admin/inbox" className="flex items-center gap-3 rounded-xl border border-neutral-200 p-3 transition-colors hover:border-neutral-300">
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-ink-900">{l.name}</p>
-                        <p className="truncate text-xs text-ink-400">
+                        <p className="truncate text-xs text-muted">
                           {[l.company, l.project_type, l.phone].filter(Boolean).join(' · ')}
                         </p>
                       </div>
@@ -96,13 +96,13 @@ export default function Dashboard() {
         <section className={card}>
           <h2 className="font-display font-bold text-ink-900">Recent activity</h2>
           {notes.length === 0
-            ? <p className="mt-4 text-sm text-ink-400">Nothing to report.</p>
+            ? <p className="mt-4 text-sm text-muted">Nothing to report.</p>
             : (
               <ul className="mt-4 space-y-2.5">
                 {notes.map((n) => (
                   <li key={n.id} className="rounded-xl border border-neutral-200 p-3">
                     <p className="text-sm font-semibold text-ink-900">{n.title}</p>
-                    {n.body && <p className="mt-0.5 line-clamp-2 text-xs text-ink-400">{n.body}</p>}
+                    {n.body && <p className="mt-0.5 line-clamp-2 text-xs text-muted">{n.body}</p>}
                   </li>
                 ))}
               </ul>

@@ -37,7 +37,7 @@ export function Field({
 
       <label
         htmlFor={id}
-        className={`pointer-events-none absolute left-4 origin-left text-ink-400 transition-all duration-200 ${
+        className={`pointer-events-none absolute left-4 origin-left text-muted transition-all duration-200 ${
           filled ? 'top-2 text-[0.68rem] font-semibold uppercase tracking-wider' : 'top-4 text-[0.95rem]'
         } peer-focus:top-2 peer-focus:text-[0.68rem] peer-focus:font-semibold peer-focus:uppercase peer-focus:tracking-wider peer-focus:text-brand-deep`}
       >

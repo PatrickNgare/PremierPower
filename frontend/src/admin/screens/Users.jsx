@@ -73,7 +73,7 @@ export default function Users() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink-900">People</h1>
-          <p className="mt-1 text-sm text-ink-400">Who can sign in, and what they are allowed to do.</p>
+          <p className="mt-1 text-sm text-muted">Who can sign in, and what they are allowed to do.</p>
         </div>
         <Button variant="primary" onClick={() => setAdding(true)}>
           <Plus size={16} aria-hidden="true" /> Add person
@@ -88,16 +88,16 @@ export default function Users() {
               <div className="min-w-0 flex-1">
                 <p className="truncate font-semibold text-ink-900">
                   {row.name || row.email}
-                  {isMe && <span className="ml-2 text-xs font-medium text-ink-400">(you)</span>}
+                  {isMe && <span className="ml-2 text-xs font-medium text-muted">(you)</span>}
                 </p>
-                <p className="truncate text-xs text-ink-400">{row.email}</p>
+                <p className="truncate text-xs text-muted">{row.email}</p>
               </div>
 
               <select
                 value={row.role} onChange={(e) => setRole(row, e.target.value)}
                 aria-label={`Role for ${row.email}`}
                 disabled={isMe}
-                className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none transition-all focus:border-brand-fill disabled:bg-neutral-50 disabled:text-ink-400"
+                className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm outline-none transition-all focus:border-brand-fill disabled:bg-neutral-50 disabled:text-muted"
               >
                 {ROLES.map(([v, label]) => <option key={v} value={v}>{label}</option>)}
               </select>
@@ -113,7 +113,7 @@ export default function Users() {
               <button
                 type="button" onClick={() => setConfirming(row)} disabled={isMe}
                 aria-label={`Delete ${row.email}`}
-                className="rounded-lg p-2 text-ink-400 transition-colors hover:bg-brand-deep/10 hover:text-brand-deep disabled:pointer-events-none disabled:opacity-30"
+                className="rounded-lg p-2 text-muted transition-colors hover:bg-brand-deep/10 hover:text-brand-deep disabled:pointer-events-none disabled:opacity-30"
               >
                 <Trash2 size={15} />
               </button>
@@ -197,7 +197,7 @@ function AddPerson({ open, onClose, onAdded }) {
             <label htmlFor="np-pass" className="text-sm font-semibold text-ink-800">Temporary password</label>
             <input id="np-pass" type="text" required minLength={10} className={input}
               value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
-            <p className="mt-1 text-xs text-ink-400">
+            <p className="mt-1 text-xs text-muted">
               At least 10 characters. They can change it once signed in.
             </p>
           </div>

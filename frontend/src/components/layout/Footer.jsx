@@ -65,7 +65,7 @@ export default function Footer() {
         <div className="grid gap-14 lg:grid-cols-[1.3fr_repeat(3,1fr)]">
           <div>
             <Logo tone="dark" className="h-11" />
-            <p className="mt-6 max-w-xs text-sm leading-relaxed text-ink-400">
+            <p className="mt-6 max-w-xs text-sm leading-relaxed text-muted">
               Electrical engineering and lighting installation across Kenya — for the
               corporate, commercial and residential markets.
             </p>
@@ -73,7 +73,7 @@ export default function Footer() {
               {wa && (
                 <a
                   href={wa} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:text-lumen-500"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:text-lumen-500"
                 >
                   <MessageCircle size={17} aria-hidden="true" />
                 </a>
@@ -81,7 +81,7 @@ export default function Footer() {
               {tel && (
                 <a
                   href={tel} aria-label="Call Premier Power"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:text-lumen-500"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white transition-all duration-300 hover:-translate-y-0.5 hover:border-lumen-500 hover:text-lumen-500"
                 >
                   <Phone size={16} aria-hidden="true" />
                 </a>
@@ -94,12 +94,16 @@ export default function Footer() {
               <h2 className="font-display text-xs font-bold uppercase tracking-[0.18em] text-white">
                 {col.heading}
               </h2>
-              <ul className="mt-5 space-y-3">
+              {/* space-y-1 with padding on the link, not space-y-3 on the
+                  item: the gap was outside the target, so each link was a
+                  20px-tall tap area with dead space between. The padding moves
+                  that same gap inside the target and clears the 24px floor. */}
+              <ul className="mt-4 space-y-1">
                 {col.links.map((l) => (
                   <li key={l.label}>
                     <Link
                       to={l.to}
-                      className="group inline-flex items-center gap-1 text-sm text-ink-400 transition-colors hover:text-white"
+                      className="group inline-flex min-h-[28px] items-center gap-1 py-1 text-sm text-muted transition-colors hover:text-white"
                     >
                       {l.label}
                       <ArrowUpRight
@@ -130,13 +134,13 @@ export default function Footer() {
             <h2 className="font-display text-xs font-bold uppercase tracking-[0.18em] text-white">Registration</h2>
             <dl className="mt-5 space-y-3 text-sm">
               <div className="flex justify-between gap-4">
-                <dt className="text-ink-400">NCA</dt>
+                <dt className="text-muted">NCA</dt>
                 <dd className={isPending(site.ncaNumber) ? 'text-white/25' : 'text-ink-300'}>
                   {isPending(site.ncaNumber) ? 'Registered' : value(site.ncaNumber)}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-ink-400">Category</dt>
+                <dt className="text-muted">Category</dt>
                 <dd className="text-right text-ink-300">{value(site.ncaCategory, '—')}</dd>
               </div>
             </dl>
@@ -144,7 +148,7 @@ export default function Footer() {
 
           <div>
             <h2 className="font-display text-xs font-bold uppercase tracking-[0.18em] text-white">Hours</h2>
-            <p className="mt-5 text-sm leading-relaxed text-ink-400">
+            <p className="mt-5 text-sm leading-relaxed text-muted">
               Monday to Friday, 8am – 5pm<br />
               Saturday by arrangement<br />
               <span className="text-ink-300">Site emergencies — call directly</span>
@@ -152,7 +156,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="mt-14 border-t border-white/10 pt-8 text-sm text-ink-400">
+        <p className="mt-14 border-t border-white/10 pt-8 text-sm text-muted">
           © {new Date().getFullYear()} {isPending(site.legalName) ? site.name : value(site.legalName)}.
           {' '}Electrical engineering service contractor, registered with the National Construction Authority.
         </p>

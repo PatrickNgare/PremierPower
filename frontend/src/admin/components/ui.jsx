@@ -54,7 +54,7 @@ export function ToastProvider({ children }) {
               <p className="flex-1 text-sm font-medium leading-snug">{t.message}</p>
               <button
                 type="button" onClick={() => dismiss(t.id)} aria-label="Dismiss"
-                className="rounded-lg p-1.5 text-ink-400 transition-colors hover:bg-neutral-100 hover:text-ink-700"
+                className="rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-ink-700"
               >
                 <X size={14} />
               </button>
@@ -101,7 +101,7 @@ export function Button({ variant = 'soft', busy, className = '', children, ...re
 export function StatusPill({ on, onLabel = 'Published', offLabel = 'Draft' }) {
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.7rem] font-bold uppercase tracking-wide ${
-      on ? 'bg-earth-ink/10 text-earth-ink' : 'bg-neutral-100 text-ink-400'
+      on ? 'bg-earth-ink/10 text-earth-ink' : 'bg-neutral-100 text-muted'
     }`}>
       <span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${on ? 'bg-earth-ink' : 'bg-ink-400'}`} />
       {on ? onLabel : offLabel}
@@ -111,7 +111,7 @@ export function StatusPill({ on, onLabel = 'Published', offLabel = 'Draft' }) {
 
 export function Spinner({ label = 'Loading' }) {
   return (
-    <div className="flex items-center justify-center gap-2.5 py-16 text-sm text-ink-400" role="status">
+    <div className="flex items-center justify-center gap-2.5 py-16 text-sm text-muted" role="status">
       <Loader2 size={17} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
       {label}…
     </div>
@@ -121,9 +121,9 @@ export function Spinner({ label = 'Loading' }) {
 export function EmptyState({ icon: Icon, title, body, action }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-neutral-50/60 px-6 py-16 text-center">
-      {Icon && <Icon size={26} className="mb-4 text-ink-400" aria-hidden="true" />}
+      {Icon && <Icon size={26} className="mb-4 text-muted" aria-hidden="true" />}
       <p className="font-display text-lg font-bold text-ink-900">{title}</p>
-      {body && <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-ink-400">{body}</p>}
+      {body && <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-muted">{body}</p>}
       {action && <div className="mt-6">{action}</div>}
     </div>
   )

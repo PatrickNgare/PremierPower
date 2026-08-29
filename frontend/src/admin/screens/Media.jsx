@@ -96,7 +96,7 @@ export default function Media() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-extrabold text-ink-900">Photographs</h1>
-          <p className="mt-1 text-sm text-ink-400">
+          <p className="mt-1 text-sm text-muted">
             Every image used across the site. Describe each one — it is read aloud to visitors
             using a screen reader, and shown if the image fails to load.
           </p>
@@ -118,7 +118,7 @@ export default function Media() {
       {storage && <StorageBadge storage={storage} />}
 
       <div className="relative mt-6 max-w-md">
-        <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-400" />
+        <Search size={15} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
         <input
           value={q} onChange={(e) => setQ(e.target.value)}
           placeholder="Search by name or description" aria-label="Search photographs"
@@ -166,7 +166,7 @@ export default function Media() {
                       aria-label={`Description for ${a.filename}`}
                       className="w-full rounded-lg border border-neutral-200 bg-white px-2.5 py-2 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10 disabled:bg-neutral-50"
                     />
-                    <p className="mt-1.5 truncate text-xs text-ink-400">
+                    <p className="mt-1.5 truncate text-xs text-muted">
                       {a.filename || a.url} · {Math.round((a.bytes ?? 0) / 1024)} KB
                       {a.width ? ` · ${a.width}×${a.height}` : ''}
                     </p>
@@ -196,12 +196,12 @@ function StorageBadge({ storage }) {
     <div className={`mt-5 flex items-start gap-3 rounded-2xl border p-4 ${
       onCloud ? 'border-earth-ink/25 bg-earth-ink/[0.04]' : 'border-neutral-200 bg-white'
     }`}>
-      <Icon size={17} aria-hidden="true" className={`mt-0.5 shrink-0 ${onCloud ? 'text-earth-ink' : 'text-ink-400'}`} />
+      <Icon size={17} aria-hidden="true" className={`mt-0.5 shrink-0 ${onCloud ? 'text-earth-ink' : 'text-muted'}`} />
       <div className="text-sm leading-relaxed">
         {onCloud ? (
           <p className="text-ink-700">
             <span className="font-semibold text-ink-900">Stored on Cloudinary</span>
-            {storage.cloud_name && <span className="text-ink-400"> · {storage.cloud_name}</span>}
+            {storage.cloud_name && <span className="text-muted"> · {storage.cloud_name}</span>}
             {' — '}served from their CDN and converted to the best format each browser
             supports.
           </p>
@@ -215,7 +215,7 @@ function StorageBadge({ storage }) {
             )}
           </p>
         )}
-        <p className="mt-1 text-xs text-ink-400">
+        <p className="mt-1 text-xs text-muted">
           Up to {storage.max_upload_mb}MB per photograph.
           {onCloud && storage.documents_backend === 'local' && (
             <> PDFs are kept on this server — Cloudinary blocks PDF delivery until it is
