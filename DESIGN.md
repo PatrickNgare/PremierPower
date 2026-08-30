@@ -39,9 +39,23 @@ call site. Marking a dark section `.on-dark` fixes every accent inside it.
 
 ## Type
 
-- Headings: **Poppins** 500/600/700 — SpaceInfra's heading face.
-- Body: **Inter Variable** — SpaceInfra's body face.
-- Both self-hosted via fontsource.
+Two faces, self-hosted via fontsource. Nothing else ships.
+
+- **Manrope Variable** — the display voice, at 600–800. Hero headings, section
+  titles, statistics, card titles. Geometric with open counters and flat
+  terminals: it reads architectural and technical rather than friendly, which
+  is what a lighting brand wants. It replaced Plus Jakarta Sans, which in turn
+  had replaced the Poppins this document used to name.
+- **Inter Variable** — everything meant to be read rather than looked at, at
+  400–600. Body copy, navigation, buttons, forms, specifications, captions.
+
+Tracking and leading step with size rather than being set once for all
+headings: -0.034em/1.04 at h1 down to -0.012em/1.3 at h4. A single pair cannot
+serve a 62px hero line and an 18px card title. Body sits at 1.65 leading.
+Tracking never goes below -0.04em.
+
+Five weights are in use across the whole site — 400, 500, 600, 700, 800 — and
+that is the ceiling.
 
 ## Structure
 
