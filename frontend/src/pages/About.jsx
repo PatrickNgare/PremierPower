@@ -66,8 +66,10 @@ export default function About() {
             <dl className="mt-8 max-w-md rounded-xl border border-neutral-200 bg-neutral-50 p-6 text-sm">
               {[
                 ['Registered name', site.legalName],
+                ['EPRA licence', site.epraNumber],
+                ['EPRA class', site.epraClass],
                 ['NCA registration', site.ncaNumber],
-                ['Category', site.ncaCategory],
+                ['NCA category', site.ncaCategory],
                 ['Insured by', site.insured],
                 ['Service area', site.serviceArea],
               ].map(([label, v]) => (

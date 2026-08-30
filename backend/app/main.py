@@ -185,6 +185,8 @@ def _seed_settings() -> None:
         ("site_url", "The site's public address, e.g. https://premierpower.co.ke — used by the sitemap and robots.txt"),
         ("nca_number", "NCA registration number — LAUNCH BLOCKER. The certificates in the company profile are blank templates, so this must come from the client."),
         ("nca_category", "NCA category, e.g. 'Electrical Engineering Service Contractor'"),
+        ("epra_number", "EPRA Electrical Contractor Licence number. EPRA licences the electrical work itself; NCA registers the contractor. Both are shown."),
+        ("epra_class", "EPRA contractor class, e.g. 'Class A1'"),
         ("insured", "Insurer name"),
         ("warranty", "Workmanship warranty term, e.g. '2 years'"),
         ("years_trading", "Years trading"),
@@ -192,11 +194,15 @@ def _seed_settings() -> None:
         ("response_time", "Typical response time, e.g. 'same day'"),
     ]
     # Keys that were renamed. Seeding only ever adds, so without this an
-    # existing database keeps the old rows forever and the client sees
-    # "EPRA licence number" in the CMS long after the site stopped using it.
+    # existing database keeps the old rows forever.
+    #
+    # epra_number and epra_class used to be retired into the NCA keys, on the
+    # reading that EPRA had come from a generic blueprint rather than from the
+    # client. The client has since confirmed they hold an EPRA Electrical
+    # Contractor Licence, so the two credentials are separate again and both
+    # are seeded above. Retiring them here would delete the new rows on every
+    # startup.
     retired = {
-        "epra_number": "nca_number",
-        "epra_class": "nca_category",
         "years_licensed": "years_trading",
         "installs_completed": "projects_completed",
     }

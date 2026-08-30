@@ -68,7 +68,9 @@ export default function Safety() {
               <h2 className="font-heading text-lg font-semibold text-primary">Our registration</h2>
               <LicenseBadge className="mt-4 w-full" />
               <dl className="mt-6 space-y-3 text-sm">
-                {[['NCA registration', site.ncaNumber], ['Category', site.ncaCategory], ['Insured by', site.insured]].map(([l, v]) => (
+                {[['EPRA licence', site.epraNumber], ['EPRA class', site.epraClass],
+                  ['NCA registration', site.ncaNumber], ['NCA category', site.ncaCategory],
+                  ['Insured by', site.insured]].map(([l, v]) => (
                   <div key={l} className="flex justify-between gap-4 border-b border-neutral-200 pb-3">
                     <dt className="text-neutral-500">{l}</dt>
                     <dd className={isPending(v) ? 'text-muted' : 'font-semibold text-primary'}>

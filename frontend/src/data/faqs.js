@@ -8,8 +8,8 @@ export const faqs = [
     a: 'Electrical installation across the corporate, commercial and residential markets — banks and commercial interiors, office buildings, institutions, hotels, lodges and resorts, industrial projects, health care facilities, and residential housing from single homes to multi-unit developments.',
   },
   {
-    q: 'Are you registered?',
-    a: 'Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. That registration covers electrical installation, electronic security and surveillance, lifts and escalators, solar power generation and photovoltaics, compressed air and gas installation, UPS and surge protection, energy-efficiency retrofitting, and the construction of power transmission lines.',
+    q: 'Are you licensed and registered?',
+    a: 'Both. Premier Power Limited holds an EPRA Electrical Contractor Licence, which is what licenses the electrical work itself, and is registered with the National Construction Authority as an Electrical Engineering Service Contractor. The NCA registration covers electrical installation, electronic security and surveillance, lifts and escalators, solar power generation and photovoltaics, compressed air and gas installation, UPS and surge protection, energy-efficiency retrofitting, and the construction of power transmission lines.',
   },
   {
     q: 'Do you work outside Nairobi?',

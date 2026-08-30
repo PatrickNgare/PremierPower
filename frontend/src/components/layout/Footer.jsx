@@ -133,6 +133,14 @@ export default function Footer() {
           <div>
             <h2 className="font-display text-xs font-bold uppercase tracking-[0.18em] text-white">Registration</h2>
             <dl className="mt-5 space-y-3 text-sm">
+              {/* EPRA first: it licences the electrical work, which is what a
+                  specifier is checking. NCA registers the company. */}
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">EPRA</dt>
+                <dd className={isPending(site.epraNumber) ? 'text-white/25' : 'text-ink-300'}>
+                  {isPending(site.epraNumber) ? 'Licensed' : value(site.epraNumber)}
+                </dd>
+              </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">NCA</dt>
                 <dd className={isPending(site.ncaNumber) ? 'text-white/25' : 'text-ink-300'}>

@@ -230,13 +230,22 @@ check(heroFits, 'hero is a full stage without overflowing the viewport')
 }
 
 // Licence trust signal must sit beside the primary action, on every page.
+//
+// Both credentials are asserted, because they are different claims and the
+// site has had each of them wrong at some point: it once advertised an EPRA
+// licence taken from a generic blueprint, then stripped EPRA out entirely on
+// the reading that the client did not hold one. They do. EPRA licences the
+// electrical work; NCA registers the contractor.
+//
+// Matched on the regulator's name alone rather than on the following word,
+// since the number replaces "licensed"/"registered" once it is supplied.
 for (const path of ['/', '/services', '/portfolio', '/safety', '/about', '/contact']) {
   await page.goto(SITE + path, { waitUntil: 'networkidle' })
   // Lazy routes: without this the count can measure the Suspense fallback.
   await page.waitForSelector('h1', { timeout: RENDER_TIMEOUT })
-  // The credential is NCA registration, not an EPRA licence.
-  const badges = await page.getByText(/nca\s*(contractor|registered)/i).count()
-  check(badges > 0, `${path} — NCA credential present`)
+  const body = await page.locator('body').innerText()
+  check(/\bEPRA\b/.test(body), `${path} — EPRA credential present`)
+  check(/\bNCA\b/.test(body), `${path} — NCA credential present`)
 }
 
 await browser.close()

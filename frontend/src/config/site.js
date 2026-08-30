@@ -41,6 +41,12 @@ const real = {
   // legible in the profile PDF and must be confirmed before launch.
   ncaNumber: pending('NCA registration number — confirm with the client'),
   ncaCategory: 'Electrical Engineering Service Contractor',
+  // EPRA licences the electrical work; NCA registers the contractor. They are
+  // different regulators covering different things, and this company holds
+  // both. An earlier build dropped EPRA on the reading that it had come from a
+  // generic blueprint; the client has since confirmed it.
+  epraNumber: pending('EPRA Electrical Contractor Licence number — confirm with the client'),
+  epraClass: pending('EPRA contractor class, e.g. "Class A1"'),
   insured: pending('insurer name, or false if not insured'),
   warranty: pending('workmanship warranty term, e.g. "2 years"'),
   secondPhone: '+254 705 720 502',
@@ -67,6 +73,8 @@ const FROM_SETTINGS = {
   serviceArea: 'service_area',
   ncaNumber: 'nca_number',
   ncaCategory: 'nca_category',
+  epraNumber: 'epra_number',
+  epraClass: 'epra_class',
   insured: 'insured',
   warranty: 'warranty',
   yearsLicensed: 'years_trading',

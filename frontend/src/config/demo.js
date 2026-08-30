@@ -29,6 +29,8 @@ export const demoOverrides = {
   // Not a real or realistic registration number. The NCA certificate in the
   // company profile is a blank template with no number on it.
   ncaNumber: 'DUMMY — not a registration',
+  epraNumber: 'DUMMY — not a licence',
+  epraClass: 'DUMMY — not a class',
 }
 
 export const demoTestimonials = [

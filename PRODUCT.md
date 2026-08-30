@@ -20,8 +20,13 @@ wins.
 - **Delivery model:** electrical installation with leading contractors in both
   the private and public sectors, coordinating directly with the project
   architect.
-- **Registration:** National Construction Authority (NCA), Electrical
-  Engineering Service Contractor. Covers electrical installation; electronic
+- **Credentials:** two, and they are not interchangeable.
+  - **EPRA Electrical Contractor Licence** — licences the electrical work
+    itself. Confirmed by the client on 30 August 2026. The licence number and
+    class are still outstanding.
+  - **National Construction Authority (NCA)** registration, Electrical
+    Engineering Service Contractor — registers the company as a contractor.
+    Covers: Covers electrical installation; electronic
   security, surveillance (CCTV), intruder alarm and access control; lifts,
   hoists, escalators, mechanical ramps, travolators, conveyors and belt
   installation; solar power generation and photovoltaics; compressed air,
@@ -34,14 +39,22 @@ wins.
 ## Correction history
 
 The first build of this site was **residential-only** and built its trust layer
-around an **EPRA licence**. Both were wrong:
+around an **EPRA licence**.
 
-- The company works the corporate market across seven sectors; the site had
-  said in two places that it does not take on commercial work.
-- The credential is NCA registration. EPRA appears nowhere in the client's
-  documents — it came from the generic blueprint, not from the client.
+The residential-only framing was wrong: the company works the corporate market
+across seven sectors, and the site had said in two places that it does not take
+on commercial work. That was corrected once the company profile was read.
 
-Both were corrected once the company profile was read.
+The EPRA question went wrong in **both directions**, which is worth recording.
+EPRA appears nowhere in the company profile, so the second build concluded it
+had come from the generic blueprint rather than from the client, and stripped
+it out site-wide — replacing it with NCA. On 30 August 2026 the client
+confirmed they do hold an EPRA Electrical Contractor Licence. Absence from one
+document was treated as evidence of absence, and it was not.
+
+Both credentials are now shown, because they are different claims: EPRA
+licences the electrical work, NCA registers the contractor. A specifier
+choosing an electrical subcontractor checks the first.
 
 ## Contact (confirmed, from the profile)
 
@@ -63,6 +76,9 @@ carry the specialist systems alongside the electrical package.
 
 ## Still outstanding
 
+- [ ] **EPRA licence number and contractor class.** The client has confirmed the
+      licence exists; the number and class are not yet supplied, so the site
+      says "EPRA licensed" without a number.
 - [ ] **NCA registration number.** The certificate reproduced in the profile is
       a blank template with no number, dates, or company name filled in. The
       site therefore says "NCA registered" without a number. Confirm the number
