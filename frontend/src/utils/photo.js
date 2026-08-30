@@ -14,3 +14,29 @@ import mediaMap from '@/data/mediaMap.json'
  * degrades to exactly the previous behaviour rather than to a broken image.
  */
 export const photo = (path) => mediaMap[path] ?? path
+
+/** The reverse map: CDN URL back to the file that still ships in the build. */
+const LOCAL_FOR = Object.fromEntries(Object.entries(mediaMap).map(([local, cdn]) => [cdn, local]))
+
+/**
+ * Fall back to the bundled copy when a CDN image fails.
+ *
+ * Every photograph on the site is now served from Cloudinary, so anything
+ * between the visitor and that CDN — a blocked domain, a dropped connection, a
+ * privacy extension — takes out every image at once and the page reads as
+ * broken. The originals still ship in the build, so there is a local copy of
+ * each one sitting unused.
+ *
+ * Guards against a loop: if the local copy fails too, it stops rather than
+ * swapping back and forth.
+ *
+ *   <img src={photo('/projects/lodge.jpg')} onError={fallbackToLocal} />
+ */
+export function fallbackToLocal(event) {
+  const img = event.currentTarget
+  if (img.dataset.fellBack) return
+  const local = LOCAL_FOR[img.getAttribute('src')]
+  if (!local) return
+  img.dataset.fellBack = '1'
+  img.src = local
+}

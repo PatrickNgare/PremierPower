@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { fallbackToLocal } from '@/utils/photo'
 
 const EASE = [0.22, 1, 0.36, 1]
 
@@ -130,7 +131,7 @@ export default function Lightbox({ items, index, onClose, onIndex }) {
 
             <div className="relative flex min-h-0 flex-1 items-center justify-center">
               <AnimatePresence mode="wait">
-                <motion.img
+                <motion.img onError={fallbackToLocal}
                   key={item.src}
                   src={item.src}
                   alt={item.alt || ''}

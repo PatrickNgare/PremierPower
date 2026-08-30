@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 import { solutions as fallback } from '@/data/solutions'
 import { useApi } from '@/hooks/useApi'
+import { fallbackToLocal } from '@/utils/photo'
 
 /** One sectors table now feeds both this strip and the sectors grid. */
 const fromSector = (s) => ({
@@ -47,7 +48,7 @@ export default function Solutions() {
           >
             {s.image ? (
               <>
-                <img
+                <img onError={fallbackToLocal}
                   src={s.image} alt={s.alt ?? ''} loading="lazy" decoding="async"
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.1s] ease-out group-hover:scale-[1.06]"
                 />

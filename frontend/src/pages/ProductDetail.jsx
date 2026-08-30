@@ -10,6 +10,7 @@ import NotFound from '@/pages/NotFound'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useApi } from '@/hooks/useApi'
 import { fadeUp, inView } from '@/utils/motion'
+import { fallbackToLocal } from '@/utils/photo'
 
 /**
  * One fitting.
@@ -82,7 +83,7 @@ export default function ProductDetail() {
                 aria-label={`View ${product.name} larger`}
                 className="group relative block w-full overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-paper-warm"
               >
-                <img
+                <img onError={fallbackToLocal}
                   src={product.image_url}
                   alt={product.image_alt || product.name}
                   className="mx-auto max-h-[34rem] w-full object-contain p-6 transition-transform duration-[1.2s] ease-out group-hover:scale-[1.03]"
@@ -163,7 +164,7 @@ export default function ProductDetail() {
                     className="group block overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white transition-shadow duration-300 hover:shadow-lift"
                   >
                     <div className="aspect-[4/5] overflow-hidden bg-paper-warm p-3">
-                      <img
+                      <img onError={fallbackToLocal}
                         src={p.image_url} alt={p.image_alt || p.name} loading="lazy"
                         className="h-full w-full object-contain transition-transform duration-[1.2s] ease-out group-hover:scale-[1.04]"
                       />

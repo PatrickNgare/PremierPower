@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { motion, useInView, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { DUR, EASE_OUT } from '@/utils/motion'
+import { fallbackToLocal } from '@/utils/photo'
 
 /**
  * Uncovers a photograph on scroll: a mask lifts while the image itself settles
@@ -29,6 +30,7 @@ export default function ImageReveal({
     return (
       <div ref={ref} className={`overflow-hidden ${className}`}>
         <img src={src} alt={alt} sizes={sizes} loading={priority ? 'eager' : 'lazy'} decoding="async"
+          onError={fallbackToLocal}
           className={`h-full w-full object-cover ${imgClassName}`} />
       </div>
     )
@@ -45,6 +47,7 @@ export default function ImageReveal({
         <motion.img
           src={src} alt={alt} sizes={sizes}
           loading={priority ? 'eager' : 'lazy'} decoding="async"
+          onError={fallbackToLocal}
           style={drift ? { y } : undefined}
           initial={{ scale: 1.14 }}
           animate={{ scale: shown ? 1 : 1.14 }}

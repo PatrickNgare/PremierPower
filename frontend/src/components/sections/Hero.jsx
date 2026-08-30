@@ -8,6 +8,7 @@ import { useApi } from '@/hooks/useApi'
 import { splitTitle } from '@/hooks/useSection'
 import { DUR, EASE_OUT, EASE_EXIT } from '@/utils/motion'
 import { useSite } from '@/hooks/useSite'
+import { fallbackToLocal } from '@/utils/photo'
 
 const AUTOPLAY_MS = 6500
 
@@ -153,7 +154,7 @@ export default function Hero({ section }) {
         className="absolute -inset-[3%] -z-30"
       >
         <AnimatePresence initial={false}>
-          <motion.img
+          <motion.img onError={fallbackToLocal}
             key={slide.image}
             src={slide.image}
             alt=""
@@ -333,7 +334,7 @@ export default function Hero({ section }) {
                 animate="center"
                 exit="exit"
               >
-                <img
+                <img onError={fallbackToLocal}
                   src={slide.image}
                   alt={slide.alt}
                   loading="eager"

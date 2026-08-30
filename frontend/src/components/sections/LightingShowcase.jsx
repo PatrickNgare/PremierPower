@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Sparkles, Expand } from 'lucide-react'
 import Lightbox from '@/components/ui/Lightbox'
-import { photo } from '@/utils/photo'
+import { photo, fallbackToLocal } from '@/utils/photo'
 import { splitTitle, useSectionItems } from '@/hooks/useSection'
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -101,7 +101,7 @@ export default function LightingShowcase({ section }) {
                   i === 0 ? 'sm:row-span-2 h-[20rem] sm:h-auto' : 'h-48 sm:h-56'
                 } ${i > 1 ? 'hidden sm:block' : ''}`}
               >
-                <img
+                <img onError={fallbackToLocal}
                   src={s.src} alt={s.alt} loading="lazy" decoding="async"
                   className="h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
                 />

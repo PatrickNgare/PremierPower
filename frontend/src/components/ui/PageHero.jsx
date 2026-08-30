@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { FiChevronRight } from 'react-icons/fi'
 import { fadeUp, stagger } from '@/utils/motion'
 import TextReveal from './TextReveal'
+import { fallbackToLocal } from '@/utils/photo'
 
 /** The banner every interior page opens with, matching one rhythm. */
 export default function PageHero({ eyebrow, title, lede, crumb, image, imageAlt = '' }) {
@@ -10,7 +11,7 @@ export default function PageHero({ eyebrow, title, lede, crumb, image, imageAlt 
     <section className="on-dark relative overflow-hidden bg-primary-dark">
       {image && (
         <>
-          <img
+          <img onError={fallbackToLocal}
             src={image} alt={imageAlt} aria-hidden={imageAlt ? undefined : 'true'}
             className="absolute inset-0 h-full w-full object-cover"
             loading="eager" fetchPriority="high" decoding="async"

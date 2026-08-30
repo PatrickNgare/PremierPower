@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { DEMO } from '@/config/demo'
+import { fallbackToLocal } from '@/utils/photo'
 
 /**
  * Real installation photography is the hero asset. Until the client supplies
@@ -42,7 +43,14 @@ export default function Photo({
       src={resolved}
       alt={alt}
       sizes={sizes}
-      onError={() => setFailed(true)}
+      // Try the copy that still ships in the build before giving up. Only
+      // if that fails too does the honest "photograph required" gap appear —
+      // a labelled gap is right when we have no picture, wrong when we have
+      // one sitting in the bundle and the CDN is merely unreachable.
+      onError={(e) => {
+        if (e.currentTarget.dataset.fellBack) setFailed(true)
+        else fallbackToLocal(e)
+      }}
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : undefined}
       decoding={priority ? 'sync' : 'async'}

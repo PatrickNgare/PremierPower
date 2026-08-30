@@ -10,7 +10,7 @@ import VideoTile from '@/components/ui/VideoTile'
 import { useApi } from '@/hooks/useApi'
 import { usePageSections } from '@/hooks/usePage'
 import { useSectionItems } from '@/hooks/useSection'
-import { photo } from '@/utils/photo'
+import { photo, fallbackToLocal } from '@/utils/photo'
 import { fadeUp, stagger, inView } from '@/utils/motion'
 
 /**
@@ -102,7 +102,7 @@ export default function Products() {
                         chandelier, which is the part someone is looking at. */}
                     <div className="aspect-[4/5] overflow-hidden bg-paper-warm p-4">
                       {p.image_url ? (
-                        <img
+                        <img onError={fallbackToLocal}
                           src={p.image_url}
                           alt={p.image_alt || p.name}
                           loading={i < 3 ? 'eager' : 'lazy'}
