@@ -337,7 +337,9 @@ export const collections = {
     columns: [
       { name: 'path', label: 'Page', primary: true },
       { name: 'title', label: 'Search title' },
-      { name: 'noindex', label: 'Hidden', type: 'status', invert: true },
+      // Inverted: the stored flag is noindex, so false is the good state.
+      { name: 'noindex', label: 'Search', type: 'status', invert: true,
+        onLabel: 'Indexed', offLabel: 'Hidden' },
     ],
     fields: [
       { name: 'path', label: 'Page address', type: FIELD.text, required: true, placeholder: '/services' },

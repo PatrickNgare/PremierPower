@@ -10,6 +10,29 @@ import { collections, FIELD } from '../schema'
 import { Field } from '../components/Field'
 import { Button, Confirm, EmptyState, Spinner, StatusPill, useToast } from '../components/ui'
 
+/**
+ * What "status" means for this content type, taken from the schema rather than
+ * guessed from the row.
+ *
+ * Most types gate on `published`; homepage blocks gate on `enabled`. SEO
+ * records have neither — their flag is `noindex`, which reads backwards, and
+ * there is no publish endpoint for them at all. Guessing produced a "DRAFT"
+ * pill on every SEO row when all nine were live, and a toggle that would have
+ * 404ed.
+ */
+function statusOf(def) {
+  const col = def.columns.find((c) => c.type === 'status')
+  if (!col) return null
+  return {
+    field: col.name,
+    invert: Boolean(col.invert),
+    on: col.onLabel ?? (col.invert ? 'Visible' : 'Published'),
+    off: col.offLabel ?? (col.invert ? 'Hidden' : 'Draft'),
+    // Only the real gates have a publish endpoint behind them.
+    toggleable: col.name === 'published' || col.name === 'enabled',
+  }
+}
+
 /** Build a blank record from the schema, so every field is controlled. */
 function blankOf(def) {
   const row = {}
@@ -103,7 +126,8 @@ export default function Collection() {
   }
 
   const togglePublished = async (row) => {
-    const gate = 'published' in row ? 'published' : 'enabled'
+    const gate = statusOf(def)?.field
+    if (!gate) return
     try {
       await api.patch(`${def.path}/${row.id}/publish`, { value: !row[gate] })
       setRows((rs) => rs.map((r) => (r.id === row.id ? { ...r, [gate]: !r[gate] } : r)))
@@ -143,6 +167,7 @@ export default function Collection() {
   }
 
   const primary = useMemo(() => def?.columns.find((c) => c.primary)?.name, [def])
+  const status = useMemo(() => (def ? statusOf(def) : null), [def])
 
   if (!def) return <EmptyState title="Unknown section" body={`There is no content type called "${name}".`} />
 
@@ -170,8 +195,11 @@ export default function Collection() {
             className="w-full rounded-xl border border-neutral-200 bg-white py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
           />
         </div>
+        {status?.toggleable && (
         <div className="flex rounded-xl border border-neutral-200 bg-white p-1">
-          {[['', 'All'], ['true', 'Published'], ['false', 'Drafts']].map(([v, label]) => (
+          {/* Plural here: these filter a list. The pill on a row names one
+              record's state and stays singular. */}
+          {[['', 'All'], ['true', `${status.on}`], ['false', `${status.off}s`]].map(([v, label]) => (
             <button
               key={label} type="button" onClick={() => setFilter(v)}
               className={`rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-colors ${
@@ -182,6 +210,7 @@ export default function Collection() {
             </button>
           ))}
         </div>
+        )}
         <span className="tabular text-sm text-muted">{total} total</span>
       </div>
 
@@ -210,7 +239,7 @@ export default function Collection() {
               {rows.map((row, i) => (
                 <Row
                   key={row.id} row={row} def={def} index={i} count={rows.length}
-                  primary={primary} editable={editable}
+                  primary={primary} editable={editable} status={status}
                   draggable={Boolean(def.orderable && editable && !q && !filter)}
                   onEdit={() => setEditing({ ...row })}
                   onToggle={() => togglePublished(row)}
@@ -238,9 +267,10 @@ export default function Collection() {
   )
 }
 
-function Row({ row, def, index, count, primary, editable, draggable, onEdit, onToggle, onDelete, onMove }) {
+function Row({ row, def, index, count, primary, editable, status, draggable, onEdit, onToggle, onDelete, onMove }) {
   const controls = useDragControls()
-  const gate = 'published' in row ? 'published' : 'enabled'
+  // invert: a SEO record stores `noindex`, so false is the good state.
+  const flag = status ? (status.invert ? !row[status.field] : Boolean(row[status.field])) : null
 
   return (
     <Reorder.Item
@@ -294,13 +324,23 @@ function Row({ row, def, index, count, primary, editable, draggable, onEdit, onT
         </span>
       </button>
 
-      <button
-        type="button" onClick={onToggle} disabled={!editable}
-        className="shrink-0 disabled:pointer-events-none"
-        aria-label={row[gate] ? 'Unpublish' : 'Publish'}
-      >
-        <StatusPill on={Boolean(row[gate])} />
-      </button>
+      {status && (
+        status.toggleable ? (
+          <button
+            type="button" onClick={onToggle} disabled={!editable}
+            className="shrink-0 disabled:pointer-events-none"
+            aria-label={flag ? `Set to ${status.off}` : `Set to ${status.on}`}
+          >
+            <StatusPill on={flag} onLabel={status.on} offLabel={status.off} />
+          </button>
+        ) : (
+          // Not a gate, so not a control. This state is edited in the form —
+          // there is no publish endpoint behind it to call.
+          <span className="shrink-0">
+            <StatusPill on={flag} onLabel={status.on} offLabel={status.off} />
+          </span>
+        )
+      )}
 
       {editable && (
         <button
