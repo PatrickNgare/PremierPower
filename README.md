@@ -143,6 +143,27 @@ uses Postgres types and the migrations emit Postgres DDL. For a local run
 outside Docker, start just the database with `docker compose up -d db` and
 point `DATABASE_URL` at `localhost:5440`.
 
+## Before it goes live
+
+Everything below is configuration, not code. The site runs without any of it —
+which is the risk, because nothing fails loudly except where noted.
+
+| | What | Why it matters |
+|---|---|---|
+| 1 | `SMTP_PASSWORD` — a Google App Password for the `SMTP_USER` account | **Until this is set, no enquiry is emailed to anyone.** They are still saved and still appear in the admin, so the failure is silent. The admin dashboard shows a red warning naming the count while it is unset. |
+| 2 | `VITE_DEMO=0`, then rebuild the frontend | With demo mode on, the footer of every page prints "NCA DUMMY — not a registration" and the stats band shows placeholder figures marked with an asterisk. |
+| 3 | Company details, in the CMS under **Company details** | Sixteen fields — phone, email, address, EPRA and NCA numbers, insurer, warranty, trading figures. Anything left blank is hidden rather than invented, so the site stays honest but says less than it could. |
+| 4 | `site_url` | Used by `sitemap.xml` and `robots.txt`. Defaults to `https://premierpower.co.ke`. |
+| 5 | Real reviews | The reviews page ships placeholder text. Three genuine ones do more for conversion than anything visual. |
+
+Two credentials are outstanding and can only come from the client: the **EPRA
+Electrical Contractor Licence number and class**, and the **NCA registration
+number**. Both render as "licensed" / "registered" without a number until
+supplied.
+
+Postgres runs on a Docker volume. `docker compose down` preserves it;
+`docker compose down -v` deletes every enquiry, CMS edit and upload.
+
 ### Manual pass before launch
 
 Automation does not cover these:

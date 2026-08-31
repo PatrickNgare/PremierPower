@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from ..core.security import get_current_admin
 from ..db import get_db
+from ..settings import settings as app_settings
 from ..models import (
     Admin, Banner, BlogPost, FAQ, Lead, MediaAsset,
     NewsletterSubscriber, Project, Service, SiteSetting, TeamMember, Testimonial,
@@ -37,4 +38,15 @@ def dashboard_stats(db: Session = Depends(get_db), _: Admin = Depends(get_curren
         # The launch gate: how much client truth is still missing.
         "settings": {"total": settings_total, "filled": settings_filled,
                      "pending": settings_total - settings_filled},
+        # Whether anyone is actually being told about enquiries. An unconfigured
+        # mailer is silent by design — the enquiry still saves and the bell
+        # still lights — so without surfacing it here a live site can collect
+        # leads for weeks with nobody reading them.
+        "email": {
+            "configured": app_settings.email_configured
+            and bool(app_settings.smtp_password),
+            "notify": app_settings.notify_email,
+            # Everything that arrived while nobody was being emailed.
+            "unsent": count(Lead) if not app_settings.smtp_password else 0,
+        },
     }

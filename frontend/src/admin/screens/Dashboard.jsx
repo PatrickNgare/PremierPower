@@ -18,16 +18,18 @@ export default function Dashboard() {
       api.get('/leads').catch(() => []),
       api.get('/notifications?limit=6').catch(() => []),
       api.get('/settings/all').catch(() => []),
-    ]).then(([leads, notes, settings]) => {
+      api.get('/stats').catch(() => null),
+    ]).then(([leads, notes, settings, counts]) => {
       if (!alive) return
-      setState({ loading: false, leads, notes, settings })
+      setState({ loading: false, leads, notes, settings, counts })
     })
     return () => { alive = false }
   }, [])
 
   if (state.loading) return <Spinner label="Loading your dashboard" />
 
-  const { leads, notes, settings } = state
+  const { leads, notes, settings, counts } = state
+  const email = counts?.email
   const open = leads.filter((l) => l.status === 'new').length
   // Settings the client has still not supplied. Surfaced here rather than
   // buried, because an empty NCA number is a launch blocker, not a detail.
@@ -109,6 +111,27 @@ export default function Dashboard() {
             )}
         </section>
       </div>
+
+      {email && !email.configured && (
+        <section className="mt-4 rounded-2xl border border-brand-deep/25 bg-brand-deep/[0.04] p-5">
+          <div className="flex items-start gap-3">
+            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-brand-deep" aria-hidden="true" />
+            <div>
+              <h2 className="font-display font-bold text-ink-900">
+                Nobody is being emailed about enquiries
+              </h2>
+              <p className="mt-1 text-sm leading-relaxed text-ink-600">
+                {email.unsent > 0
+                  ? `${email.unsent} ${email.unsent === 1 ? 'enquiry has' : 'enquiries have'} arrived and
+                     been saved, but no email was sent for any of them.`
+                  : 'Enquiries will be saved and shown here, but no email will be sent.'}
+                {' '}Set <span className="font-medium">SMTP_PASSWORD</span> in the server
+                environment{email.notify ? <> so they reach <span className="font-medium">{email.notify}</span></> : null}.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {blanks.length > 0 && (
         <section className="mt-4 rounded-2xl border border-lumen-700/25 bg-lumen-100 p-5">
