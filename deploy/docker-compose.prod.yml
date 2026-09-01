@@ -1,0 +1,54 @@
+# Production overlay. Use it alongside the base file, never on its own:
+#
+#   docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+#
+# What it changes: nothing about the app. It adds a reverse proxy that
+# terminates TLS and is the only thing listening on a public port. The db, api
+# and web services keep their host ports pinned to loopback by the *_BIND
+# variables in .env, so the only route in from the internet is through Caddy.
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      # Caddy reads these inside the Caddyfile.
+      SITE_DOMAIN: ${SITE_DOMAIN:?set SITE_DOMAIN in .env, e.g. premierpower.duckdns.org}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # Certificates live here. Losing this volume means re-issuing them, and
+      # Let's Encrypt rate-limits that to 5 per domain per week.
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+  # One fewer moving part than a cron job: Postgres dumps itself every night
+  # and keeps a week. A pitch site with a client's real content in it should
+  # not be one `docker compose down -v` away from starting over.
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-premierpower}
+    volumes:
+      - ./deploy/backups:/backups
+    entrypoint: >
+      sh -c 'while true; do
+        pg_dump -h db -U "${POSTGRES_USER:-premierpower}" -d "${POSTGRES_DB:-premierpower}"
+          | gzip > "/backups/$$(date +%Y-%m-%d).sql.gz" 2>/dev/null
+          && echo "backed up $$(date -I)";
+        find /backups -name "*.sql.gz" -mtime +7 -delete;
+        sleep 86400;
+      done'
+
+volumes:
+  caddy_data:
+  caddy_config:
