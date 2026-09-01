@@ -23,6 +23,39 @@ Check which one your account is on before assuming twelve months.
 **Set a billing alarm before you start.** Billing → Budgets → create a zero-spend
 budget, or a $1 alarm. This is the single cheapest insurance available.
 
+## 0. One command, or by hand
+
+Everything in sections 1–3 is automated. Install the CLI, give it your keys —
+they stay on your machine, nothing is sent anywhere — and run one script:
+
+```bash
+# Ubuntu
+sudo apt-get install -y awscli        # or: pipx install awscli
+
+aws configure                          # access key, secret, region (e.g. eu-west-1)
+./deploy/aws-provision.sh
+```
+
+It creates the key pair, security group, Elastic IP and instance, then installs
+Docker, swap and this repository on the box. It prints a plan and asks before
+creating anything billable, and re-running finds what already exists rather
+than making a second copy.
+
+Then skip to section 2.
+
+To stop paying entirely, at any point:
+
+```bash
+./deploy/aws-teardown.sh               # terminates everything, releases the IP
+```
+
+Releasing the Elastic IP matters: an allocated address that is *not* attached
+to a running instance is billed by the hour, which is the classic way a torn
+-down free-tier project keeps costing money.
+
+The rest of this section describes the same thing through the console, if you
+would rather see what is being made.
+
 ## 1. The instance
 
 EC2 → Launch instance:
