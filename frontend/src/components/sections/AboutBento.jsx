@@ -35,7 +35,7 @@ export default function AboutBento() {
       {/* Tall photograph — anchors the arrangement. */}
       <motion.figure
         variants={fadeUp}
-        className="group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 sm:col-span-2 lg:row-span-2"
+        className="group relative overflow-hidden rounded-[var(--radius-card)] border border-line sm:col-span-2 lg:row-span-2"
       >
         <ImageReveal
           src={photo('/projects/resort-dusk.jpg')} alt="Completed resort development at dusk"
@@ -66,14 +66,14 @@ export default function AboutBento() {
       {/* Mission — quiet, typographic, warm ground. */}
       <motion.blockquote
         variants={fadeUp}
-        className="relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-lumen-100 p-6 sm:col-span-2 sm:p-7"
+        className="relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-lumen-100 p-6 sm:col-span-2 sm:p-7"
       >
         <Quote size={20} className="text-lumen-700" aria-hidden="true" />
-        <p className="mt-4 font-display text-lg font-bold leading-snug text-ink-900">
+        <p className="mt-4 font-display text-lg font-bold leading-snug text-body">
           “To provide the best enhanced quality, innovative, safe and flexible electrical
           services.”
         </p>
-        <footer className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-ink-500">
+        <footer className="mt-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted">
           Premier Power Limited — our mission
         </footer>
       </motion.blockquote>
@@ -81,11 +81,11 @@ export default function AboutBento() {
       {/* Registration */}
       <motion.div
         variants={fadeUp}
-        className="group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-7"
+        className="group relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface p-7"
       >
         <ShieldCheck size={20} className="text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
-        <p className="mt-4 font-display text-base font-bold text-ink-900">NCA registered</p>
-        <p className="mt-2 text-sm leading-relaxed text-ink-600">
+        <p className="mt-4 font-display text-base font-bold text-body">NCA registered</p>
+        <p className="mt-2 text-sm leading-relaxed text-body-soft">
           Electrical Engineering Service Contractor, National Construction Authority.
         </p>
       </motion.div>
@@ -93,11 +93,11 @@ export default function AboutBento() {
       {/* Sectors */}
       <motion.div
         variants={fadeUp}
-        className="relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-7"
+        className="relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface p-7"
       >
         <Layers size={20} className="text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
-        <p className="mt-4 font-display text-base font-bold text-ink-900">Seven sectors</p>
-        <p className="mt-2 text-sm leading-relaxed text-ink-600">
+        <p className="mt-4 font-display text-base font-bold text-body">Seven sectors</p>
+        <p className="mt-2 text-sm leading-relaxed text-body-soft">
           Hospitality, commercial, residential, offices, healthcare, institutions and
           industrial.
         </p>
@@ -123,14 +123,14 @@ export default function AboutBento() {
       {/* Wide data tile — architects worked with. */}
       <motion.div
         variants={fadeUp}
-        className="relative hidden overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-7 sm:col-span-2 sm:block"
+        className="relative hidden overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface p-7 sm:col-span-2 sm:block"
       >
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted">
           Delivered alongside
         </p>
         <ul className="mt-4 grid gap-2 sm:grid-cols-2">
           {ARCHITECTS.map((a) => (
-            <li key={a} className="flex items-center gap-2.5 text-sm text-ink-700">
+            <li key={a} className="flex items-center gap-2.5 text-sm text-body-mid">
               <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-[rgb(var(--accent-rgb))]" />
               {a}
             </li>

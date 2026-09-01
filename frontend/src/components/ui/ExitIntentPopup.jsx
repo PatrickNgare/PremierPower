@@ -49,7 +49,7 @@ export default function ExitIntentPopup() {
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <div className="absolute inset-0 bg-primary-dark/60" onClick={dismiss} />
           <motion.div role="dialog" aria-modal="true" aria-labelledby="exit-title"
-            className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl"
+            className="relative w-full max-w-md rounded-2xl bg-surface p-8 shadow-2xl"
             initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, opacity: 0 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}>
             <button type="button" onClick={dismiss} aria-label="Close"
@@ -57,7 +57,7 @@ export default function ExitIntentPopup() {
               <FiX size={19} aria-hidden="true" />
             </button>
             <span className="eyebrow">No obligation</span>
-            <h2 id="exit-title" className="mt-3 font-heading text-2xl font-bold text-primary">
+            <h2 id="exit-title" className="mt-3 font-heading text-2xl font-bold text-body">
               Before you go — the assessment is free.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-neutral-600">

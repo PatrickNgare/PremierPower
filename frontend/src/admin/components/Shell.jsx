@@ -10,6 +10,8 @@ import { useAuth } from '../auth'
 import { collections, GROUPS } from '../schema'
 import { Button, useToast } from './ui'
 import Logo from '@/components/layout/Logo'
+import { useTheme } from '@/hooks/useTheme'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 
 const ICONS = {
   banners: LayoutTemplate, sectors: LayoutTemplate, services: FileText,
@@ -39,6 +41,7 @@ const FIXED = [
 ]
 
 export function Shell({ children }) {
+  const { isDark } = useTheme()
   const { admin, signOut, can } = useAuth()
   const toast = useToast()
   const location = useLocation()
@@ -85,7 +88,7 @@ export function Shell({ children }) {
 
   const nav = (
     <nav className="flex h-full flex-col gap-1 overflow-y-auto p-3">
-      <div className="px-2 py-3"><Logo /></div>
+      <div className="px-2 py-3"><Logo tone={isDark ? 'dark' : 'light'} /></div>
 
       {FIXED.filter((f) => !f.group).map((f) => (
         <NavItem key={f.to} {...f} />
@@ -102,12 +105,12 @@ export function Shell({ children }) {
 
       <div className="mt-auto border-t border-neutral-200 pt-3">
         <div className="px-3 pb-2">
-          <p className="truncate text-sm font-semibold text-ink-900">{admin?.name || admin?.email}</p>
+          <p className="truncate text-sm font-semibold text-body">{admin?.name || admin?.email}</p>
           <p className="text-xs capitalize text-muted">{admin?.role}</p>
         </div>
         <button
           type="button" onClick={signOut}
-          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-600 transition-colors hover:bg-neutral-100 hover:text-ink-900"
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-body-soft transition-colors hover:bg-neutral-100 hover:text-body"
         >
           <LogOut size={16} aria-hidden="true" /> Sign out
         </button>
@@ -116,9 +119,9 @@ export function Shell({ children }) {
   )
 
   return (
-    <div className="min-h-screen bg-paper-warm">
+    <div className="min-h-screen bg-page-warm">
       {/* Desktop rail */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-neutral-200 bg-white lg:block">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-neutral-200 bg-surface lg:block">
         {nav}
       </aside>
 
@@ -133,7 +136,7 @@ export function Shell({ children }) {
             <motion.div
               initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
               transition={{ type: 'spring', stiffness: 340, damping: 34 }}
-              className="h-full w-72 bg-white"
+              className="h-full w-72 bg-surface"
             >
               {nav}
             </motion.div>
@@ -142,10 +145,10 @@ export function Shell({ children }) {
       </AnimatePresence>
 
       <div className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-neutral-200 bg-white/85 px-4 py-3 backdrop-blur-xl sm:px-6">
+        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-neutral-200 bg-surface/85 px-4 py-3 backdrop-blur-xl sm:px-6">
           <button
             type="button" onClick={() => setOpen(true)} aria-label="Open menu"
-            className="rounded-xl p-2 text-ink-700 transition-colors hover:bg-neutral-100 lg:hidden"
+            className="rounded-xl p-2 text-body-mid transition-colors hover:bg-neutral-100 lg:hidden"
           >
             <MenuIcon size={19} />
           </button>
@@ -157,14 +160,16 @@ export function Shell({ children }) {
             </Button>
             <a
               href="/" target="_blank" rel="noopener"
-              className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-ink-600 transition-colors hover:bg-neutral-100 hover:text-ink-900"
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-body-soft transition-colors hover:bg-neutral-100 hover:text-body"
             >
               <ExternalLink size={15} aria-hidden="true" />
               <span className="hidden sm:inline">View site</span>
             </a>
+            <ThemeToggle variant="bare" />
+
             <Link
               to="/admin/inbox"
-              className="relative rounded-xl p-2.5 text-ink-600 transition-colors hover:bg-neutral-100 hover:text-ink-900"
+              className="relative rounded-xl p-2.5 text-body-soft transition-colors hover:bg-neutral-100 hover:text-body"
               aria-label={unread ? `${unread} unread notifications` : 'Notifications'}
             >
               <Bell size={17} />
@@ -191,7 +196,7 @@ function NavItem({ to, label, icon: Icon, end }) {
       to={to} end={end}
       className={({ isActive }) =>
         `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-          isActive ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-neutral-100 hover:text-ink-900'
+          isActive ? 'bg-ink-900 text-white' : 'text-body-soft hover:bg-neutral-100 hover:text-body'
         }`
       }
     >

@@ -38,10 +38,10 @@ export default function LicenseBadge({ tone = 'light', className = '' }) {
 
   return (
     <p className={`inline-flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-lg border px-3 py-2 text-xs ${
-      dark ? 'border-white/20 bg-white/5 text-white/70' : 'border-neutral-200 bg-white text-muted'
+      dark ? 'border-white/20 bg-white/5 text-white/70' : 'border-neutral-200 bg-surface text-muted'
     } ${className}`}>
       <span aria-hidden="true" className="h-3.5 w-1 shrink-0 rounded-full bg-earth" />
-      <span className={`font-semibold ${dark ? 'text-white' : 'text-primary'}`}>
+      <span className={`font-semibold ${dark ? 'text-white' : 'text-body'}`}>
         Licensed&nbsp;&amp;&nbsp;registered
       </span>
       {marks.map((m) => (

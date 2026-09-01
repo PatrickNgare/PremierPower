@@ -35,8 +35,8 @@ export default function Contact() {
       <section className="section">
         <div className="container-x grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
           <div>
-            <h2 className="font-display text-2xl font-bold text-ink-900">Reach us directly</h2>
-            <p className="mt-3 max-w-sm leading-relaxed text-ink-600">
+            <h2 className="font-display text-2xl font-bold text-body">Reach us directly</h2>
+            <p className="mt-3 max-w-sm leading-relaxed text-body-soft">
               For tender documents, drawings or a site visit, call or message — we answer
               enquiries the same day wherever we can.
             </p>
@@ -54,17 +54,17 @@ export default function Contact() {
               )}
             </div>
 
-            <ul className="mt-10 space-y-5 border-t border-ink-900/10 pt-8 text-sm">
+            <ul className="mt-10 space-y-5 border-t border-line pt-8 text-sm">
               <li className="flex gap-3">
                 <FiMapPin size={16} className="mt-0.5 shrink-0 text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
-                <span className="text-ink-600">
+                <span className="text-body-soft">
                   {isPending(site.street) ? 'Address pending' : value(site.street)}<br />
                   {isPending(site.serviceArea) ? '' : value(site.serviceArea)}
                 </span>
               </li>
               <li className="flex gap-3">
                 <FiClock size={16} className="mt-0.5 shrink-0 text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
-                <span className="text-ink-600">Monday to Friday, 8am – 5pm<br />Saturday by arrangement</span>
+                <span className="text-body-soft">Monday to Friday, 8am – 5pm<br />Saturday by arrangement</span>
               </li>
             </ul>
 

@@ -10,9 +10,9 @@ const STAGES = [
 ]
 
 const TONE = {
-  new: 'bg-brand-fill/10 text-brand-deep',
+  new: 'bg-brand-fill/10 text-accent',
   in_progress: 'bg-lumen-100 text-lumen-700',
-  quoted: 'bg-neutral-100 text-ink-700',
+  quoted: 'bg-neutral-100 text-body-mid',
   won: 'bg-earth-ink/10 text-earth-ink',
   lost: 'bg-neutral-100 text-muted',
 }
@@ -76,7 +76,7 @@ export default function Inbox() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-extrabold text-ink-900">Enquiries</h1>
+      <h1 className="font-display text-2xl font-extrabold text-body">Enquiries</h1>
       <p className="mt-1 text-sm text-muted">
         Everything submitted through the website. What people wrote cannot be edited — only the
         stage and your own notes.
@@ -89,21 +89,21 @@ export default function Inbox() {
             value={q} onChange={(e) => setQ(e.target.value)}
             placeholder="Search name, company, phone or message"
             aria-label="Search enquiries"
-            className="w-full rounded-xl border border-neutral-200 bg-white py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
+            className="w-full rounded-xl border border-neutral-200 bg-surface py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
           />
         </div>
-        <div className="flex flex-wrap rounded-xl border border-neutral-200 bg-white p-1">
+        <div className="flex flex-wrap rounded-xl border border-neutral-200 bg-surface p-1">
           <button
             type="button" onClick={() => setStage('')}
             className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-              stage === '' ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-neutral-100'
+              stage === '' ? 'bg-ink-900 text-white' : 'text-body-soft hover:bg-neutral-100'
             }`}
           >All</button>
           {STAGES.map(([v, label]) => (
             <button
               key={v} type="button" onClick={() => setStage(v)}
               className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-                stage === v ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-neutral-100'
+                stage === v ? 'bg-ink-900 text-white' : 'text-body-soft hover:bg-neutral-100'
               }`}
             >{label}</button>
           ))}
@@ -126,10 +126,10 @@ export default function Inbox() {
                 <li key={l.id}>
                   <button
                     type="button" onClick={() => setOpen(l)}
-                    className="flex w-full items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3.5 text-left transition-colors hover:border-neutral-300"
+                    className="flex w-full items-center gap-3 rounded-xl border border-neutral-200 bg-surface p-3.5 text-left transition-colors hover:border-neutral-300"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold text-ink-900">{l.name}</p>
+                      <p className="truncate font-semibold text-body">{l.name}</p>
                       <p className="truncate text-xs text-muted">
                         {[l.company, l.project_type, l.area].filter(Boolean).join(' · ') || l.phone}
                       </p>
@@ -182,11 +182,11 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 36 }}
             role="dialog" aria-modal="true" aria-label={`Enquiry from ${lead.name}`}
-            className="flex h-full w-full max-w-lg flex-col bg-paper shadow-raise"
+            className="flex h-full w-full max-w-lg flex-col bg-page shadow-raise"
           >
-            <header className="flex items-start justify-between gap-3 border-b border-neutral-200 bg-white px-6 py-4">
+            <header className="flex items-start justify-between gap-3 border-b border-neutral-200 bg-surface px-6 py-4">
               <div className="min-w-0">
-                <h2 className="truncate font-display text-lg font-bold text-ink-900">{lead.name}</h2>
+                <h2 className="truncate font-display text-lg font-bold text-body">{lead.name}</h2>
                 {lead.company && <p className="truncate text-sm text-muted">{lead.company}</p>}
               </div>
               <Button variant="ghost" onClick={onClose} aria-label="Close"><X size={17} /></Button>
@@ -196,19 +196,19 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
               <div className="flex flex-wrap gap-2">
                 {lead.phone && (
                   <a href={`tel:${lead.phone.replace(/\s+/g, '')}`}
-                    className="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-ink-800 shadow-lift transition-shadow hover:shadow-raise">
+                    className="inline-flex items-center gap-2 rounded-xl bg-surface px-3.5 py-2.5 text-sm font-semibold text-body-strong shadow-lift transition-shadow hover:shadow-raise">
                     <Phone size={14} aria-hidden="true" /> {lead.phone}
                   </a>
                 )}
                 {lead.email && (
                   <a href={`mailto:${lead.email}`}
-                    className="inline-flex items-center gap-2 rounded-xl bg-white px-3.5 py-2.5 text-sm font-semibold text-ink-800 shadow-lift transition-shadow hover:shadow-raise">
+                    className="inline-flex items-center gap-2 rounded-xl bg-surface px-3.5 py-2.5 text-sm font-semibold text-body-strong shadow-lift transition-shadow hover:shadow-raise">
                     <Mail size={14} aria-hidden="true" /> {lead.email}
                   </a>
                 )}
               </div>
 
-              <dl className="grid grid-cols-2 gap-3 rounded-xl border border-neutral-200 bg-white p-4 text-sm">
+              <dl className="grid grid-cols-2 gap-3 rounded-xl border border-neutral-200 bg-surface p-4 text-sm">
                 {[
                   ['Type', lead.kind], ['Project', lead.project_type], ['Area', lead.area],
                   ['Property', lead.property],
@@ -216,28 +216,28 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
                 ].filter(([, v]) => v).map(([k, v]) => (
                   <div key={k}>
                     <dt className="text-xs text-muted">{k}</dt>
-                    <dd className="mt-0.5 font-medium text-ink-900">{v}</dd>
+                    <dd className="mt-0.5 font-medium text-body">{v}</dd>
                   </div>
                 ))}
               </dl>
 
               {lead.message && (
                 <div>
-                  <h3 className="text-sm font-semibold text-ink-800">What they wrote</h3>
-                  <p className="mt-2 whitespace-pre-wrap rounded-xl border border-neutral-200 bg-white p-4 text-sm leading-relaxed text-ink-700">
+                  <h3 className="text-sm font-semibold text-body-strong">What they wrote</h3>
+                  <p className="mt-2 whitespace-pre-wrap rounded-xl border border-neutral-200 bg-surface p-4 text-sm leading-relaxed text-body-mid">
                     {lead.message}
                   </p>
                 </div>
               )}
 
               <div>
-                <h3 className="text-sm font-semibold text-ink-800">Stage</h3>
+                <h3 className="text-sm font-semibold text-body-strong">Stage</h3>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {STAGES.map(([v, label]) => (
                     <button
                       key={v} type="button" onClick={() => onUpdate(lead, { status: v })}
                       className={`rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors ${
-                        lead.status === v ? 'bg-ink-900 text-white' : 'bg-white text-ink-600 shadow-lift hover:text-ink-900'
+                        lead.status === v ? 'bg-ink-900 text-white' : 'bg-surface text-body-soft shadow-lift hover:text-body'
                       }`}
                     >{label}</button>
                   ))}
@@ -245,11 +245,11 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
               </div>
 
               <div>
-                <label htmlFor="lead-notes" className="text-sm font-semibold text-ink-800">Your notes</label>
+                <label htmlFor="lead-notes" className="text-sm font-semibold text-body-strong">Your notes</label>
                 <textarea
                   id="lead-notes" rows={5} value={notes} onChange={(e) => setNotes(e.target.value)}
                   placeholder="Quoted 14 March, waiting on drawings…"
-                  className="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
+                  className="mt-2 w-full rounded-xl border border-neutral-200 bg-surface px-3.5 py-2.5 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
                 />
                 <Button
                   className="mt-2" onClick={() => onUpdate(lead, { notes })}
@@ -258,7 +258,7 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
               </div>
             </div>
 
-            <footer className="flex justify-between border-t border-neutral-200 bg-white px-6 py-4">
+            <footer className="flex justify-between border-t border-neutral-200 bg-surface px-6 py-4">
               <Button variant="danger" onClick={onDelete}>
                 <Trash2 size={15} aria-hidden="true" /> Delete
               </Button>

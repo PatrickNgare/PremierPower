@@ -14,6 +14,29 @@
   --color-paper-warm: #F7F5F1;
   --color-paper-edge: #ECE9E4;
 
+  /* ── Semantic ground and text ────────────────────────────────
+     The tokens above name pigments; these name *roles*. Only these
+     flip between light and dark, which is what makes one switch
+     retheme the site. Every light value here is byte-identical to
+     the literal it replaced, so light mode renders unchanged.
+     They are redefined on :root[data-theme="dark"] below — and that
+     works precisely because it is the root element. The same trick
+     failed for .on-dark once (see .text-muted) because Tailwind
+     resolves an @theme value once, at :root, and .on-dark is a
+     descendant. data-theme is not. */
+  --color-surface:    #FFFFFF;   /* cards, panels, raised things   */
+  --color-surface-2:  #F8F7F5;   /* a quieter card, inset wells    */
+  --color-surface-3:  #ECE9E4;   /* chips, track fills             */
+  --color-page:       #FCFCFB;   /* the page ground                */
+  --color-page-warm:  #F7F5F1;   /* alternating band               */
+  --color-line:       #E4E1DC;   /* hairline borders               */
+  --color-line-soft:  #ECE9E4;   /* the quietest divider           */
+  --color-line-firm:  #CFCBC4;   /* an input border, a real edge   */
+  --color-body:       #0D0E11;   /* primary text                   */
+  --color-body-strong:#16181D;   /* headings that are not h1       */
+  --color-body-mid:   #22252C;   /* secondary text                 */
+  --color-body-soft:  #3A3E48;   /* tertiary text                  */
+
   /* Structural dark — the showroom ground */
   --color-ink-950: #08080A;
   --color-ink-900: #0D0E11;
@@ -52,6 +75,12 @@
 
   --radius-card: 18px;
 
+  /* The sticky bar used to animate a literal rgba() from JS, which no theme
+     could reach. It reads these instead. */
+  --nav-bg:           rgb(252 252 251 / 1);
+  --nav-bg-condensed: rgb(252 252 251 / 0.86);
+  --nav-shadow:       0 1px 0 rgb(8 8 10 / 0.07), 0 10px 30px -18px rgb(8 8 10 / 0.4);
+
   /* ── Migration shim ──────────────────────────────────────────
      The palette above is the source of truth. These older names are
      still used by sections not yet rewritten; each one resolves onto a
@@ -69,16 +98,16 @@
   --color-secondary-ink:    var(--color-brand-deep);
   --color-secondary-accent: rgb(var(--accent-rgb));
 
-  --color-neutral-50:  #F8F7F5;
-  --color-neutral-100: var(--color-paper-edge);
-  --color-neutral-200: #E4E1DC;
-  --color-neutral-300: #CFCBC4;
+  --color-neutral-50:  var(--color-surface-2);
+  --color-neutral-100: var(--color-line-soft);
+  --color-neutral-200: var(--color-line);
+  --color-neutral-300: var(--color-line-firm);
   --color-neutral-400: var(--color-ink-400);
   --color-neutral-500: #6B7080;
-  --color-neutral-600: var(--color-ink-600);
-  --color-neutral-700: var(--color-ink-700);
-  --color-neutral-800: var(--color-ink-800);
-  --color-neutral-900: var(--color-ink-900);
+  --color-neutral-600: var(--color-body-soft);
+  --color-neutral-700: var(--color-body-mid);
+  --color-neutral-800: var(--color-body-strong);
+  --color-neutral-900: var(--color-body);
 
   --color-earth-ink: #0A8F3C;
 
@@ -110,8 +139,8 @@
 
   body {
     font-family: var(--font-sans);
-    background-color: var(--color-paper);
-    color: var(--color-ink-900);
+    background-color: var(--color-page);
+    color: var(--color-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -138,6 +167,98 @@
      utilities sit in a later cascade layer than this. */
   p { text-wrap: pretty; line-height: 1.65; }
 
+  /* ═════════════════════════════════════════════════════════════
+     DARK MODE
+     One switch, because the roles above are the only colours the
+     page reads. The pigment scales (ink-*, brand-*, lumen-*, white)
+     do not move: a section that is deliberately near-black stays
+     near-black, and text-white stays white. What flips is which
+     role each pigment plays.
+
+     The ladder inverts rather than merely darkening. In light mode a
+     card is lighter than the page; in dark mode it has to be too, or
+     every panel disappears into the ground. So page < surface, and
+     the always-dark sections drop to ink-950 to stay distinct from
+     a page that is now itself dark.
+     ═════════════════════════════════════════════════════════════ */
+  :root[data-theme="dark"] {
+    --color-page:       #0D0E11;
+    --color-page-warm:  #101318;
+    --color-surface:    #16181D;
+    --color-surface-2:  #1B1E24;
+    --color-surface-3:  #22252C;
+
+    --color-line:       #292D35;
+    --color-line-soft:  #1F232A;
+    --color-line-firm:  #3A3E48;
+
+    --color-body:       #EDEFF2;
+    --color-body-strong:#DCE0E6;
+
+    /* Warm-light family, inverted. lumen-100 was a cream surface carrying dark
+       text; on a dark ground it becomes a warm dark surface and lumen-700 —
+       previously the ink on that cream — becomes the light warm ink. Without
+       this the mission card and every "in progress" badge render light-on-cream.
+       The earth mark brightens for the same reason: #0A8F3C is a mid green that
+       reads on paper and disappears on near-black. */
+    --color-neutral-500: #9AA0AC;
+    --color-lumen-100:  #221B10;
+    --color-lumen-700:  #F0C275;
+    --color-earth-ink:  #35D67E;
+    --color-body-mid:   #C6CAD2;
+    --color-body-soft:  #A5ABB7;
+
+    /* Same reasoning as .on-dark: the deep red fails on a dark ground,
+       and ink-400 becomes the readable quiet tone. */
+    --accent-rgb: 255 59 47;
+    --muted-rgb:  138 143 156;
+
+    --nav-bg:           rgb(13 14 17 / 1);
+    --nav-bg-condensed: rgb(13 14 17 / 0.86);
+    --nav-shadow:       0 1px 0 rgb(0 0 0 / 0.6), 0 10px 30px -18px rgb(0 0 0 / 0.9);
+
+    /* A shadow tuned for white paper is invisible on near-black; depth on a
+       dark ground comes from a lighter edge plus a deeper cast. */
+    --shadow-lift:  0 1px 0 rgb(255 255 255 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.7);
+    --shadow-raise: 0 1px 0 rgb(255 255 255 / 0.06), 0 18px 48px -12px rgb(0 0 0 / 0.85);
+
+    /* Tells the browser to render form controls, scrollbars and the
+       page's own chrome dark. Without it, native selects and date
+       pickers stay white and the page looks half-converted. */
+    color-scheme: dark;
+  }
+
+  /* No stored preference: follow the operating system. Scoped away from an
+     explicit light choice so the toggle wins in both directions. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --color-page:       #0D0E11;
+      --color-page-warm:  #101318;
+      --color-surface:    #16181D;
+      --color-surface-2:  #1B1E24;
+      --color-surface-3:  #22252C;
+      --color-line:       #292D35;
+      --color-line-soft:  #1F232A;
+      --color-line-firm:  #3A3E48;
+      --color-body:       #EDEFF2;
+      --color-body-strong:#DCE0E6;
+      --color-neutral-500: #9AA0AC;
+    --color-lumen-100:  #221B10;
+      --color-lumen-700:  #F0C275;
+      --color-earth-ink:  #35D67E;
+      --color-body-mid:   #C6CAD2;
+      --color-body-soft:  #A5ABB7;
+      --accent-rgb: 255 59 47;
+      --muted-rgb:  138 143 156;
+      --nav-bg:           rgb(13 14 17 / 1);
+      --nav-bg-condensed: rgb(13 14 17 / 0.86);
+      --nav-shadow:       0 1px 0 rgb(0 0 0 / 0.6), 0 10px 30px -18px rgb(0 0 0 / 0.9);
+      --shadow-lift:  0 1px 0 rgb(255 255 255 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.7);
+      --shadow-raise: 0 1px 0 rgb(255 255 255 / 0.06), 0 18px 48px -12px rgb(0 0 0 / 0.85);
+      color-scheme: dark;
+    }
+  }
+
   /* Ground-aware accent: the brand red is 4.0:1 on white, which fails AA, but
      5.25:1 on near-black. One class stays legible on both grounds. */
   :root    { --accent-rgb: 194 0 0; }
@@ -160,9 +281,9 @@
   :root { caret-color: var(--color-brand-fill); accent-color: var(--color-brand-fill); }
 
   ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-track { background: var(--color-paper-warm); }
-  ::-webkit-scrollbar-thumb { background: var(--color-ink-600); border-radius: 99px; border: 3px solid var(--color-paper-warm); }
-  ::-webkit-scrollbar-thumb:hover { background: var(--color-ink-800); }
+  ::-webkit-scrollbar-track { background: var(--color-page-warm); }
+  ::-webkit-scrollbar-thumb { background: var(--color-line-firm); border-radius: 99px; border: 3px solid var(--color-page-warm); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-body-soft); }
 
   :focus-visible {
     outline: 2px solid var(--color-brand-fill);
@@ -187,6 +308,20 @@
    ═══════════════════════════════════════════════════════════════ */
 @layer components {
   .container-x { @apply mx-auto w-full max-w-[88rem] px-5 sm:px-8 lg:px-12; }
+
+  /* Driven by an attribute rather than a JS-animated colour, so the bar
+     follows the theme. The transition keeps the condense as smooth as the
+     spring it replaced. */
+  .navbar-surface {
+    background-color: var(--nav-bg);
+    box-shadow: 0 0 0 rgb(0 0 0 / 0);
+    transition: background-color 350ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow    350ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .navbar-surface[data-condensed="true"] {
+    background-color: var(--nav-bg-condensed);
+    box-shadow: var(--nav-shadow);
+  }
   .container-narrow { @apply mx-auto w-full max-w-5xl px-5 sm:px-8; }
 
   /* Section rhythm. Every band having identical padding is what makes a page
@@ -237,8 +372,8 @@
   }
 
   .btn-onlight, .btn-outline {
-    @apply border border-ink-900/15 text-ink-900 px-7 py-3.5 text-[0.95rem]
-           hover:border-ink-900/40 hover:bg-ink-900/[0.04]
+    @apply border border-line-firm text-body px-7 py-3.5 text-[0.95rem]
+           hover:border-body-soft hover:bg-surface-2
            hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985];
     transition-duration: 280ms;
   }
@@ -252,12 +387,12 @@
   /* Layered card. `.card` is the legacy alias used by sections not yet
      rewritten. */
   .card-lift, .card {
-    @apply rounded-[var(--radius-card)] border border-ink-900/[0.07] bg-white
+    @apply rounded-[var(--radius-card)] border border-line bg-surface
            transition-all duration-500 ease-out;
     box-shadow: var(--shadow-lift);
   }
   .card-lift:hover, .card:hover {
-    @apply -translate-y-1.5 border-ink-900/[0.12];
+    @apply -translate-y-1.5 border-line-firm;
     box-shadow: var(--shadow-raise);
   }
 
@@ -294,6 +429,17 @@
      referencing the raw var resolves at the element, which is also why the
      accent works. */
   .text-muted { color: rgb(var(--muted-rgb)); }
+
+  /* The red as ink, on the same principle and for the same reason. The brand
+     red is 4.0:1 on white so the deep #C20000 carries it on light grounds; on
+     a dark ground that deep red is the one that fails, at 2.79:1. The accent
+     var already holds the right red for whichever ground it lands on, and —
+     like .text-muted — this has to be a utility rather than an @theme colour
+     so it resolves at the element and keeps working inside .on-dark.
+
+     Only the *ink* duty moves. bg-brand-deep stays the deep red, because it
+     carries white text and the lit red would drop that pairing to 3.4:1. */
+  .text-accent { color: rgb(var(--accent-rgb)); }
 
   .on-dark { color: var(--color-paper); }
   .on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: #fff; }

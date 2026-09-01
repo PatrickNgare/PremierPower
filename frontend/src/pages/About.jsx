@@ -54,7 +54,7 @@ export default function About() {
                 clients, our communities and the natural environment — and in the safety of our
                 employees.
               </p>
-              <p className="font-semibold text-primary">
+              <p className="font-semibold text-body">
                 Our vision is to lead our field of specialisation in electrical and ICT
                 installation, through total quality management, skills, and maintenance that
                 keeps customer satisfaction high long after handover.
@@ -75,7 +75,7 @@ export default function About() {
               ].map(([label, v]) => (
                 <div key={label} className="flex justify-between gap-6 border-b border-neutral-200 py-2.5 last:border-0">
                   <dt className="text-neutral-500">{label}</dt>
-                  <dd className={isPending(v) ? 'text-muted' : 'font-semibold text-primary'}>
+                  <dd className={isPending(v) ? 'text-muted' : 'font-semibold text-body'}>
                     {isPending(v) ? '—' : value(v)}
                   </dd>
                 </div>
@@ -95,7 +95,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="section-tight bg-paper-warm">
+      <section className="section-tight bg-page-warm">
         <div className="container-x">
           <SectionHeader
             eyebrow={s2?.eyebrow || "At a glance"}

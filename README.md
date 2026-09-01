@@ -108,6 +108,22 @@ cd backend
 Covers the lead round trip, validation rejection, the admin auth gate, and the
 rule that unpublished content and unset settings are never served.
 
+### Light and dark
+
+```bash
+cd frontend
+SITE_URL=http://127.0.0.1:8090 npm run test:theme
+```
+
+Asserts that every light-mode role still resolves to the literal it replaced
+(so the switch never restyles light mode), that the switch flips both ways and
+persists, that a stored choice outranks the operating system while an unset one
+follows it, that the theme is applied before first paint, that the control is
+keyboard-operable, and that no page loses contrast in dark mode. The contrast check is
+**differential** on purpose: text over photography cannot be judged from tokens
+alone and already fails in light mode, so only a regression between the two
+themes counts.
+
 ### End to end
 
 Against the Docker stack — one command, nothing else to start:

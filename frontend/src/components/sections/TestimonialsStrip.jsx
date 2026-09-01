@@ -8,13 +8,13 @@ import { testimonials as fallback } from '@/data/testimonials'
 function Card({ t }) {
   return (
     <li className="w-[min(22rem,85vw)] shrink-0">
-      <figure className="flex h-full flex-col rounded-xl border border-neutral-200 bg-white p-6">
+      <figure className="flex h-full flex-col rounded-xl border border-neutral-200 bg-surface p-6">
         <FaQuoteLeft size={17} className="text-secondary-accent" aria-hidden="true" />
         <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-neutral-700">{t.quote}</blockquote>
         <figcaption className="mt-5 flex items-center gap-3 border-t border-neutral-100 pt-4">
           <Avatar name={t.name} size={40} />
           <div>
-            <p className="font-heading text-sm font-semibold text-primary">{t.name}</p>
+            <p className="font-heading text-sm font-semibold text-body">{t.name}</p>
             <p className="text-xs text-neutral-500">{t.location || t.job}</p>
           </div>
           <StarRating className="ml-auto" />

@@ -44,7 +44,7 @@ export default function Solutions() {
             // gain; the rest appear from sm up.
             className={`group relative overflow-hidden rounded-[var(--radius-card)] ${span} ${
               i > 3 ? 'hidden sm:block' : ''
-            } ${s.image ? 'border border-white/10' : 'border border-ink-900/10 bg-white'}`}
+            } ${s.image ? 'border border-white/10' : 'border border-line bg-surface'}`}
           >
             {s.image ? (
               <>
@@ -71,10 +71,10 @@ export default function Solutions() {
                 gradient. Text-only cards centre instead, so the copy is not
                 stranded at the foot of an empty box. */}
             <div className={`relative flex h-full flex-col p-7 ${s.image ? 'justify-end' : 'justify-center'}`}>
-              <h3 className={`font-display font-bold ${s.image ? 'text-white' : 'text-ink-900'} ${wide ? 'text-2xl lg:text-3xl' : 'text-lg'}`}>
+              <h3 className={`font-display font-bold ${s.image ? 'text-white' : 'text-body'} ${wide ? 'text-2xl lg:text-3xl' : 'text-lg'}`}>
                 {s.title}
               </h3>
-              <p className={`mt-2 max-w-md text-sm leading-relaxed ${s.image ? 'text-ink-300' : 'text-ink-600'}`}>
+              <p className={`mt-2 max-w-md text-sm leading-relaxed ${s.image ? 'text-ink-300' : 'text-body-soft'}`}>
                 {s.line}
               </p>
               <Link

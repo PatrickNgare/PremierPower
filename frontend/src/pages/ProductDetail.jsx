@@ -66,7 +66,7 @@ export default function ProductDetail() {
       <div className="container-x pt-28 sm:pt-32">
         <Link
           to="/products"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-ink-600 transition-colors hover:text-brand-deep"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-body-soft transition-colors hover:text-accent"
         >
           <ArrowLeft size={15} aria-hidden="true" />
           All lighting &amp; fittings
@@ -81,19 +81,19 @@ export default function ProductDetail() {
                 type="button"
                 onClick={() => setOpen(0)}
                 aria-label={`View ${product.name} larger`}
-                className="group relative block w-full overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-paper-warm"
+                className="group relative block w-full overflow-hidden rounded-[var(--radius-card)] border border-line bg-page-warm"
               >
                 <img onError={fallbackToLocal}
                   src={product.image_url}
                   alt={product.image_alt || product.name}
                   className="mx-auto max-h-[34rem] w-full object-contain p-6 transition-transform duration-[1.2s] ease-out group-hover:scale-[1.03]"
                 />
-                <span className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink-700 opacity-0 shadow-lift transition-opacity duration-300 group-hover:opacity-100">
+                <span className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-ink-800 opacity-0 shadow-lift transition-opacity duration-300 group-hover:opacity-100">
                   <Expand size={16} aria-hidden="true" />
                 </span>
               </button>
             ) : (
-              <div className="grid h-80 place-items-center rounded-[var(--radius-card)] border border-dashed border-ink-900/15 bg-paper-warm text-sm text-muted">
+              <div className="grid h-80 place-items-center rounded-[var(--radius-card)] border border-dashed border-line bg-page-warm text-sm text-muted">
                 Photograph required
               </div>
             )}
@@ -101,26 +101,26 @@ export default function ProductDetail() {
 
           <motion.div variants={fadeUp} {...inView}>
             {category && <p className="eyebrow">{category.name}</p>}
-            <h1 className="mt-4 font-display text-[clamp(1.9rem,3.4vw,2.9rem)] font-extrabold leading-[1.08] text-ink-900">
+            <h1 className="mt-4 font-display text-[clamp(1.9rem,3.4vw,2.9rem)] font-extrabold leading-[1.08] text-body">
               {product.name}
             </h1>
             {product.summary && (
-              <p className="mt-5 text-lg leading-relaxed text-ink-600">{product.summary}</p>
+              <p className="mt-5 text-lg leading-relaxed text-body-soft">{product.summary}</p>
             )}
             {product.body && (
-              <p className="mt-4 whitespace-pre-line text-base leading-relaxed text-ink-600">
+              <p className="mt-4 whitespace-pre-line text-base leading-relaxed text-body-soft">
                 {product.body}
               </p>
             )}
 
             {product.brand && (
               <p className="mt-6 text-sm text-muted">
-                Brand <span className="font-semibold text-ink-700">{product.brand}</span>
+                Brand <span className="font-semibold text-body-mid">{product.brand}</span>
               </p>
             )}
 
             {product.specs?.length > 0 && (
-              <dl className="mt-8 divide-y divide-ink-900/8 border-y border-ink-900/8">
+              <dl className="mt-8 divide-y divide-ink-900/8 border-y border-line">
                 {product.specs.map((line) => {
                   // Stored as "Label: value" per line; a line without a colon
                   // is shown whole rather than split into a blank label.
@@ -131,7 +131,7 @@ export default function ProductDetail() {
                   return (
                     <div key={line} className="flex gap-6 py-3 text-sm">
                       {label && <dt className="w-40 shrink-0 text-muted">{label}</dt>}
-                      <dd className="font-medium text-ink-800">{value}</dd>
+                      <dd className="font-medium text-body-strong">{value}</dd>
                     </div>
                   )
                 })}
@@ -139,7 +139,7 @@ export default function ProductDetail() {
             )}
 
             {product.price_note && (
-              <p className="mt-6 text-sm font-semibold text-ink-800">{product.price_note}</p>
+              <p className="mt-6 text-sm font-semibold text-body-strong">{product.price_note}</p>
             )}
 
             <div className="mt-9 flex flex-wrap gap-3">
@@ -151,9 +151,9 @@ export default function ProductDetail() {
       </section>
 
       {related.length > 0 && (
-        <section className="section-tight bg-paper-warm">
+        <section className="section-tight bg-page-warm">
           <div className="container-x">
-            <h2 className="font-display text-xl font-bold text-ink-900">
+            <h2 className="font-display text-xl font-bold text-body">
               More {category ? category.name.toLowerCase() : 'fittings'}
             </h2>
             <ul className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -161,15 +161,15 @@ export default function ProductDetail() {
                 <li key={p.id}>
                   <Link
                     to={`/products/${p.slug}`}
-                    className="group block overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white transition-shadow duration-300 hover:shadow-lift"
+                    className="group block overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-shadow duration-300 hover:shadow-lift"
                   >
-                    <div className="aspect-[4/5] overflow-hidden bg-paper-warm p-3">
+                    <div className="aspect-[4/5] overflow-hidden bg-page-warm p-3">
                       <img onError={fallbackToLocal}
                         src={p.image_url} alt={p.image_alt || p.name} loading="lazy"
                         className="h-full w-full object-contain transition-transform duration-[1.2s] ease-out group-hover:scale-[1.04]"
                       />
                     </div>
-                    <p className="p-4 font-display font-bold text-ink-900">{p.name}</p>
+                    <p className="p-4 font-display font-bold text-body">{p.name}</p>
                   </Link>
                 </li>
               ))}

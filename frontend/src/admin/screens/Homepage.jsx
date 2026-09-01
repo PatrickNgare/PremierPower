@@ -117,13 +117,13 @@ export default function Homepage() {
   const patch = (id, key, value) =>
     setRows((rs) => rs.map((r) => (r.id === id ? { ...r, [key]: value } : r)))
 
-  const input = 'w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
+  const input = 'w-full rounded-xl border border-neutral-200 bg-surface px-3.5 py-2.5 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
 
   if (loading) return <Spinner label="Loading the home page" />
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-extrabold text-ink-900">{pageName}</h1>
+      <h1 className="font-display text-2xl font-extrabold text-body">{pageName}</h1>
       <p className="mt-1 text-sm text-muted">
         {page === '/'
           ? 'Drag to reorder. Hide a block to take it off the page without deleting anything.'
@@ -164,7 +164,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
   return (
     <Reorder.Item
       value={row} as="li" dragListener={false} dragControls={controls}
-      className={`rounded-xl border bg-white transition-colors ${
+      className={`rounded-xl border bg-surface transition-colors ${
         row.enabled ? 'border-neutral-200' : 'border-dashed border-neutral-300 bg-neutral-50/60'
       }`}
     >
@@ -172,7 +172,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
         {editable && (
           <button
             type="button" onPointerDown={(e) => controls.start(e)} aria-label="Drag to reorder"
-            className="cursor-grab touch-none rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-ink-700 active:cursor-grabbing"
+            className="cursor-grab touch-none rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-body-mid active:cursor-grabbing"
           >
             <GripVertical size={15} />
           </button>
@@ -185,7 +185,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
             className={`shrink-0 text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           />
           <span className="min-w-0">
-            <span className={`block truncate font-semibold ${row.enabled ? 'text-ink-900' : 'text-muted'}`}>
+            <span className={`block truncate font-semibold ${row.enabled ? 'text-body' : 'text-muted'}`}>
               {row.title ? splitTitle(row.title) : row.eyebrow || SECTION_NAMES[row.key] || row.key}
             </span>
             <span className="mt-0.5 block truncate text-xs text-muted">
@@ -197,7 +197,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
         <button
           type="button" onClick={onToggle} disabled={!editable}
           aria-label={row.enabled ? 'Hide this block' : 'Show this block'}
-          className="shrink-0 rounded-lg p-2 text-muted transition-colors hover:bg-neutral-100 hover:text-ink-900 disabled:pointer-events-none"
+          className="shrink-0 rounded-lg p-2 text-muted transition-colors hover:bg-neutral-100 hover:text-body disabled:pointer-events-none"
         >
           {row.enabled ? <Eye size={16} /> : <EyeOff size={16} />}
         </button>
@@ -206,33 +206,33 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
       {open && (
         <div className="space-y-3 border-t border-neutral-200 p-4">
           {SECTION_NOTES[row.key] && (
-            <p className="rounded-xl bg-neutral-50 p-3 text-xs leading-relaxed text-ink-600">
+            <p className="rounded-xl bg-neutral-50 p-3 text-xs leading-relaxed text-body-soft">
               {SECTION_NOTES[row.key]}
             </p>
           )}
           <div>
-            <label className="text-sm font-semibold text-ink-800">Small label</label>
+            <label className="text-sm font-semibold text-body-strong">Small label</label>
             <input className={`${input} mt-1.5`} value={row.eyebrow ?? ''}
               onChange={(e) => onPatch('eyebrow', e.target.value)} disabled={!editable} />
           </div>
           <div>
-            <label className="text-sm font-semibold text-ink-800">Heading</label>
+            <label className="text-sm font-semibold text-body-strong">Heading</label>
             <input className={`${input} mt-1.5`} value={row.title ?? ''}
               onChange={(e) => onPatch('title', e.target.value)} disabled={!editable} />
           </div>
           <div>
-            <label className="text-sm font-semibold text-ink-800">Supporting paragraph</label>
+            <label className="text-sm font-semibold text-body-strong">Supporting paragraph</label>
             <textarea rows={3} className={`${input} mt-1.5`} value={row.subtitle ?? ''}
               onChange={(e) => onPatch('subtitle', e.target.value)} disabled={!editable} />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="text-sm font-semibold text-ink-800">Link text</label>
+              <label className="text-sm font-semibold text-body-strong">Link text</label>
               <input className={`${input} mt-1.5`} value={row.cta_label ?? ''}
                 onChange={(e) => onPatch('cta_label', e.target.value)} disabled={!editable} />
             </div>
             <div>
-              <label className="text-sm font-semibold text-ink-800">Link address</label>
+              <label className="text-sm font-semibold text-body-strong">Link address</label>
               <input className={`${input} mt-1.5`} value={row.cta_href ?? ''}
                 onChange={(e) => onPatch('cta_href', e.target.value)} disabled={!editable} />
             </div>
@@ -314,7 +314,7 @@ function SectionItems({ section, label, editable }) {
     }
   }
 
-  const input = 'w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
+  const input = 'w-full rounded-lg border border-neutral-200 bg-surface px-3 py-2 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
 
   if (loading) return <p className="pt-2 text-sm text-muted">Loading {label.toLowerCase()}…</p>
 
@@ -338,7 +338,7 @@ function SectionItems({ section, label, editable }) {
               {editable && (
                 <button
                   type="button" onClick={() => remove(row)} aria-label="Remove"
-                  className="shrink-0 rounded-lg p-2 text-muted transition-colors hover:bg-brand-deep/10 hover:text-brand-deep"
+                  className="shrink-0 rounded-lg p-2 text-muted transition-colors hover:bg-brand-deep/10 hover:text-accent"
                 >
                   <Trash2 size={14} />
                 </button>

@@ -175,7 +175,7 @@ export default function Collection() {
     <div>
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold text-ink-900">{def.title}</h1>
+          <h1 className="font-display text-2xl font-extrabold text-body">{def.title}</h1>
           {def.blurb && <p className="mt-1 text-sm text-muted">{def.blurb}</p>}
         </div>
         {editable && (
@@ -192,18 +192,18 @@ export default function Collection() {
             value={q} onChange={(e) => setQ(e.target.value)}
             placeholder={`Search ${def.title.toLowerCase()}`}
             aria-label={`Search ${def.title}`}
-            className="w-full rounded-xl border border-neutral-200 bg-white py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
+            className="w-full rounded-xl border border-neutral-200 bg-surface py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
           />
         </div>
         {status?.toggleable && (
-        <div className="flex rounded-xl border border-neutral-200 bg-white p-1">
+        <div className="flex rounded-xl border border-neutral-200 bg-surface p-1">
           {/* Plural here: these filter a list. The pill on a row names one
               record's state and stays singular. */}
           {[['', 'All'], ['true', `${status.on}`], ['false', `${status.off}s`]].map(([v, label]) => (
             <button
               key={label} type="button" onClick={() => setFilter(v)}
               className={`rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-colors ${
-                filter === v ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-neutral-100'
+                filter === v ? 'bg-ink-900 text-white' : 'text-body-soft hover:bg-neutral-100'
               }`}
             >
               {label}
@@ -275,7 +275,7 @@ function Row({ row, def, index, count, primary, editable, status, draggable, onE
   return (
     <Reorder.Item
       value={row} as="li" dragListener={false} dragControls={controls}
-      className="group flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3 transition-colors hover:border-neutral-300"
+      className="group flex items-center gap-3 rounded-xl border border-neutral-200 bg-surface p-3 transition-colors hover:border-neutral-300"
     >
       {draggable && (
         <div className="flex shrink-0 items-center">
@@ -283,7 +283,7 @@ function Row({ row, def, index, count, primary, editable, status, draggable, onE
             type="button"
             onPointerDown={(e) => controls.start(e)}
             aria-label="Drag to reorder"
-            className="cursor-grab touch-none rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-ink-700 active:cursor-grabbing"
+            className="cursor-grab touch-none rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-body-mid active:cursor-grabbing"
           >
             <GripVertical size={15} />
           </button>
@@ -293,12 +293,12 @@ function Row({ row, def, index, count, primary, editable, status, draggable, onE
             <button
               type="button" onClick={() => onMove(-1)} disabled={index === 0}
               aria-label="Move up"
-              className="rounded p-0.5 text-muted transition-colors hover:text-ink-900 disabled:opacity-25"
+              className="rounded p-0.5 text-muted transition-colors hover:text-body disabled:opacity-25"
             ><ChevronUp size={13} /></button>
             <button
               type="button" onClick={() => onMove(1)} disabled={index === count - 1}
               aria-label="Move down"
-              className="rounded p-0.5 text-muted transition-colors hover:text-ink-900 disabled:opacity-25"
+              className="rounded p-0.5 text-muted transition-colors hover:text-body disabled:opacity-25"
             ><ChevronDown size={13} /></button>
           </div>
         </div>
@@ -316,7 +316,7 @@ function Row({ row, def, index, count, primary, editable, status, draggable, onE
         type="button" onClick={onEdit}
         className="min-w-0 flex-1 text-left focus:outline-none focus-visible:underline"
       >
-        <span className="block truncate font-semibold text-ink-900">{row[primary] || 'Untitled'}</span>
+        <span className="block truncate font-semibold text-body">{row[primary] || 'Untitled'}</span>
         <span className="mt-0.5 block truncate text-xs text-muted">
           {def.columns
             .filter((c) => !c.primary && c.type !== 'thumb' && c.type !== 'status')
@@ -345,7 +345,7 @@ function Row({ row, def, index, count, primary, editable, status, draggable, onE
       {editable && (
         <button
           type="button" onClick={onDelete} aria-label="Delete"
-          className="shrink-0 rounded-lg p-2 text-muted opacity-0 transition-all hover:bg-brand-deep/10 hover:text-brand-deep focus:opacity-100 group-hover:opacity-100"
+          className="shrink-0 rounded-lg p-2 text-muted opacity-0 transition-all hover:bg-brand-deep/10 hover:text-accent focus:opacity-100 group-hover:opacity-100"
         >
           <Trash2 size={15} />
         </button>
@@ -378,12 +378,12 @@ function Editor({ def, row, saving, onChange, onSave, onClose }) {
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 320, damping: 36 }}
             onSubmit={(e) => { e.preventDefault(); onSave() }}
-            className="flex h-full w-full max-w-xl flex-col bg-paper shadow-raise"
+            className="flex h-full w-full max-w-xl flex-col bg-page shadow-raise"
             role="dialog" aria-modal="true"
             aria-label={`${row.id ? 'Edit' : 'New'} ${def.singular}`}
           >
-            <header className="flex items-center justify-between border-b border-neutral-200 bg-white px-6 py-4">
-              <h2 className="font-display text-lg font-bold text-ink-900">
+            <header className="flex items-center justify-between border-b border-neutral-200 bg-surface px-6 py-4">
+              <h2 className="font-display text-lg font-bold text-body">
                 {row.id ? `Edit ${def.singular}` : `New ${def.singular}`}
               </h2>
               <Button type="button" variant="ghost" onClick={onClose} aria-label="Close">
@@ -404,7 +404,7 @@ function Editor({ def, row, saving, onChange, onSave, onClose }) {
               ))}
             </div>
 
-            <footer className="flex items-center justify-end gap-3 border-t border-neutral-200 bg-white px-6 py-4">
+            <footer className="flex items-center justify-end gap-3 border-t border-neutral-200 bg-surface px-6 py-4">
               <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
               <Button type="submit" variant="primary" busy={saving}>Save</Button>
             </footer>
@@ -444,12 +444,12 @@ function DocumentUpload({ row, onChange }) {
   }
 
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4">
-      <p className="text-sm font-semibold text-ink-800">PDF file</p>
+    <div className="rounded-xl border border-neutral-200 bg-surface p-4">
+      <p className="text-sm font-semibold text-body-strong">PDF file</p>
       {row.filename
         ? <p className="mt-1 truncate text-xs text-muted">{row.filename} · {Math.round((row.bytes ?? 0) / 1024)} KB</p>
         : <p className="mt-1 text-xs text-muted">No file attached yet.</p>}
-      <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-neutral-100 px-4 py-2.5 text-sm font-semibold text-ink-800 transition-colors hover:bg-neutral-200">
+      <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-neutral-100 px-4 py-2.5 text-sm font-semibold text-body-strong transition-colors hover:bg-neutral-200">
         <Upload size={15} aria-hidden="true" />
         {busy ? 'Uploading…' : row.filename ? 'Replace file' : 'Choose PDF'}
         <input

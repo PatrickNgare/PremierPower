@@ -13,7 +13,7 @@ export default function SectionHeader({ eyebrow, title, lede, align = 'left', to
       <TextReveal
         as="h2"
         text={title}
-        className={`mt-3 block text-3xl font-bold leading-[1.15] sm:text-4xl ${tone === 'dark' ? 'text-white' : 'text-ink-900'}`}
+        className={`mt-3 block text-3xl font-bold leading-[1.15] sm:text-4xl ${tone === 'dark' ? 'text-white' : 'text-body'}`}
       />
       {lede && (
         <p className={`mt-4 text-base leading-relaxed sm:text-lg ${tone === 'dark' ? 'text-white/70' : 'text-neutral-600'}`}>

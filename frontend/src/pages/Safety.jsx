@@ -50,12 +50,12 @@ export default function Safety() {
             />
             <motion.dl variants={stagger(0.06)} {...inView} className="mt-10 space-y-4">
               {tests.map(([name, why]) => (
-                <motion.div key={name} variants={fadeUp} className="flex gap-4 rounded-xl border border-neutral-200 bg-white p-5">
+                <motion.div key={name} variants={fadeUp} className="flex gap-4 rounded-xl border border-neutral-200 bg-surface p-5">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-earth-ink/10">
                     <FiCheck size={15} className="text-earth-ink" aria-hidden="true" />
                   </span>
                   <div>
-                    <dt className="font-heading font-semibold text-primary">{name}</dt>
+                    <dt className="font-heading font-semibold text-body">{name}</dt>
                     <dd className="mt-1 text-sm leading-relaxed text-neutral-600">{why}</dd>
                   </div>
                 </motion.div>
@@ -65,7 +65,7 @@ export default function Safety() {
 
           <aside className="lg:pt-4">
             <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-7">
-              <h2 className="font-heading text-lg font-semibold text-primary">Our registration</h2>
+              <h2 className="font-heading text-lg font-semibold text-body">Our registration</h2>
               <LicenseBadge className="mt-4 w-full" />
               <dl className="mt-6 space-y-3 text-sm">
                 {[['EPRA licence', site.epraNumber], ['EPRA class', site.epraClass],
@@ -73,14 +73,14 @@ export default function Safety() {
                   ['Insured by', site.insured]].map(([l, v]) => (
                   <div key={l} className="flex justify-between gap-4 border-b border-neutral-200 pb-3">
                     <dt className="text-neutral-500">{l}</dt>
-                    <dd className={isPending(v) ? 'text-muted' : 'font-semibold text-primary'}>
+                    <dd className={isPending(v) ? 'text-muted' : 'font-semibold text-body'}>
                       {isPending(v) ? '—' : value(v)}
                     </dd>
                   </div>
                 ))}
               </dl>
 
-              <h2 className="mt-8 font-heading text-lg font-semibold text-primary">Warranty, plainly</h2>
+              <h2 className="mt-8 font-heading text-lg font-semibold text-body">Warranty, plainly</h2>
               <p className="mt-3 text-sm leading-relaxed text-neutral-600">
                 {isPending(site.warranty) ? (
                   <span className="text-muted">

@@ -29,11 +29,11 @@ export default function SafetyBar() {
           const { title, body } = item
           return (
           <motion.li key={title} variants={fadeUp} className="flex gap-4">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-neutral-200">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-surface shadow-sm ring-1 ring-neutral-200">
               <Icon size={19} className="text-secondary-accent" aria-hidden="true" />
             </span>
             <div>
-              <h3 className="font-heading text-sm font-semibold text-primary">{title}</h3>
+              <h3 className="font-heading text-sm font-semibold text-body">{title}</h3>
               <p className="mt-1 text-sm leading-snug text-neutral-600">{body}</p>
             </div>
           </motion.li>

@@ -37,6 +37,76 @@ grounds and to the brand `#FF0000` inside any `.on-dark` container, so
 `text-secondary-accent` stays legible on both without hand-picking a colour per
 call site. Marking a dark section `.on-dark` fixes every accent inside it.
 
+## Light and dark
+
+The site ships both, switched from a control in the header — and in the admin
+bar and on its sign-in screen — and remembered per visitor.
+
+Two states, and only two. There is no "system" option in the UI, but with
+nothing stored yet the switch has to start somewhere, and the operating
+system's setting is a better opening position than a guess. Once someone
+touches the control their choice is written down and outranks the OS from then
+on.
+
+The icon shows the theme you will *get*, not the one you are in, and the
+accessible label says so out loud — an icon alone is ambiguous, and every
+visitor reads it the other way round at least once.
+
+### Roles, not pigments
+
+Two kinds of colour token now exist, and the distinction is the whole design:
+
+- **Pigments** — `ink-*`, `brand-*`, `lumen-*`, `white`, `earth`. Named for
+  what they *are*. These do not move between themes. A section that is
+  deliberately near-black stays near-black; `text-white` stays white.
+- **Roles** — `surface`, `surface-2/3`, `page`, `page-warm`, `line`,
+  `line-soft`, `line-firm`, `body`, `body-strong`, `body-mid`, `body-soft`.
+  Named for the *duty* they perform. These are the only colours that flip.
+
+Only roles are redefined under `:root[data-theme="dark"]`, which is why one
+attribute retheme the whole site. Every light role value is byte-identical to
+the literal it replaced, so light mode renders exactly as it always did —
+`frontend/e2e/theme.mjs` asserts each one.
+
+**A token cannot do both duties.** `--color-primary` was briefly repointed at
+the body role and `bg-primary` promptly rendered a light band with white text
+on it, because that token is a dark *ground* in two places and dark *ink* in
+fourteen. If a colour is used as both, it stays a pigment and the text usages
+move to a role.
+
+### Why `data-theme` works where `.on-dark` did not
+
+Tailwind resolves an `@theme` value once, against `:root`. That is why
+`--color-muted` failed as a theme colour and had to become the `.text-muted`
+utility. `data-theme` sits on `<html>`, which *is* `:root`, so overriding roles
+there works. `.on-dark` is a descendant and still cannot.
+
+The two mechanisms compose: `.on-dark` continues to mark a section as sitting
+on the dark showroom ground in *either* theme, and `--accent-rgb` /
+`--muted-rgb` / `.text-accent` still resolve per element.
+
+### The elevation ladder inverts
+
+In light mode a card is lighter than the page. In dark mode it must be too, or
+every panel becomes a hole: `page #0D0E11` < `surface #16181D` <
+`surface-2 #1B1E24`. The always-dark sections drop to `ink-950 #08080A` so they
+stay distinct from a page ground that is now itself dark.
+
+The warm family inverts with everything else — `lumen-100` becomes a warm dark
+surface and `lumen-700` the warm light ink on it — otherwise the mission card
+and every "in progress" badge render light text on cream.
+
+### No flash
+
+An inline, synchronous script in `index.html` sets `data-theme` before first
+paint. Anything deferred — a module, an effect — runs after the browser has
+already painted the light ground, so a visitor who chose dark sees a white
+flash on every navigation.
+
+The theme is one shared external store (`useSyncExternalStore`), not per
+component state. Three components read it, and private copies meant clicking
+the toggle left the navbar rendering the black-on-black lockup.
+
 ## Type
 
 Two faces, self-hosted via fontsource. Nothing else ships.

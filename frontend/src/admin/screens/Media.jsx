@@ -95,7 +95,7 @@ export default function Media() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold text-ink-900">Photographs</h1>
+          <h1 className="font-display text-2xl font-extrabold text-body">Photographs</h1>
           <p className="mt-1 text-sm text-muted">
             Every image used across the site. Describe each one — it is read aloud to visitors
             using a screen reader, and shown if the image fails to load.
@@ -122,7 +122,7 @@ export default function Media() {
         <input
           value={q} onChange={(e) => setQ(e.target.value)}
           placeholder="Search by name or description" aria-label="Search photographs"
-          className="w-full rounded-xl border border-neutral-200 bg-white py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
+          className="w-full rounded-xl border border-neutral-200 bg-surface py-2.5 pl-9 pr-3 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
         />
       </div>
 
@@ -141,7 +141,7 @@ export default function Media() {
                   key={a.id}
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: Math.min(i, 12) * 0.03, duration: 0.35 }}
-                  className="overflow-hidden rounded-2xl border border-neutral-200 bg-white"
+                  className="overflow-hidden rounded-2xl border border-neutral-200 bg-surface"
                 >
                   <div className="relative">
                     <img src={a.url} alt={a.alt || a.filename} loading="lazy"
@@ -150,7 +150,7 @@ export default function Media() {
                       <button
                         type="button" onClick={() => setConfirming(a)}
                         aria-label={`Delete ${a.filename || 'photograph'}`}
-                        className="absolute right-2 top-2 rounded-lg bg-white/90 p-2 text-ink-500 shadow-lift transition-colors hover:text-brand-deep"
+                        className="absolute right-2 top-2 rounded-lg bg-white/90 p-2 text-ink-600 shadow-lift transition-colors hover:text-brand-deep"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -164,7 +164,7 @@ export default function Media() {
                       onBlur={() => saveAlt(a)}
                       placeholder="Describe this photograph"
                       aria-label={`Description for ${a.filename}`}
-                      className="w-full rounded-lg border border-neutral-200 bg-white px-2.5 py-2 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10 disabled:bg-neutral-50"
+                      className="w-full rounded-lg border border-neutral-200 bg-surface px-2.5 py-2 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10 disabled:bg-neutral-50"
                     />
                     <p className="mt-1.5 truncate text-xs text-muted">
                       {a.filename || a.url} · {Math.round((a.bytes ?? 0) / 1024)} KB
@@ -194,20 +194,20 @@ function StorageBadge({ storage }) {
   const Icon = onCloud ? Cloud : HardDrive
   return (
     <div className={`mt-5 flex items-start gap-3 rounded-2xl border p-4 ${
-      onCloud ? 'border-earth-ink/25 bg-earth-ink/[0.04]' : 'border-neutral-200 bg-white'
+      onCloud ? 'border-earth-ink/25 bg-earth-ink/[0.04]' : 'border-neutral-200 bg-surface'
     }`}>
       <Icon size={17} aria-hidden="true" className={`mt-0.5 shrink-0 ${onCloud ? 'text-earth-ink' : 'text-muted'}`} />
       <div className="text-sm leading-relaxed">
         {onCloud ? (
-          <p className="text-ink-700">
-            <span className="font-semibold text-ink-900">Stored on Cloudinary</span>
+          <p className="text-body-mid">
+            <span className="font-semibold text-body">Stored on Cloudinary</span>
             {storage.cloud_name && <span className="text-muted"> · {storage.cloud_name}</span>}
             {' — '}served from their CDN and converted to the best format each browser
             supports.
           </p>
         ) : (
-          <p className="text-ink-700">
-            <span className="font-semibold text-ink-900">Stored on this server</span>
+          <p className="text-body-mid">
+            <span className="font-semibold text-body">Stored on this server</span>
             {' — '}photographs live on the container volume.
             {storage.missing?.length > 0 && (
               <> To use Cloudinary instead, set{' '}

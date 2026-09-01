@@ -66,7 +66,7 @@ export default function Settings() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold text-ink-900">Company details</h1>
+          <h1 className="font-display text-2xl font-extrabold text-body">Company details</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted">
             These appear across the whole site. Anything left blank is hidden rather than
             guessed at — the site will not invent a licence number or a phone line.
@@ -83,7 +83,7 @@ export default function Settings() {
       {blanks.length > 0 && (
         <div className="mt-5 flex items-start gap-3 rounded-2xl border border-lumen-700/25 bg-lumen-100 p-4">
           <AlertTriangle size={17} className="mt-0.5 shrink-0 text-lumen-700" aria-hidden="true" />
-          <p className="text-sm leading-relaxed text-ink-700">
+          <p className="text-sm leading-relaxed text-body-mid">
             <span className="font-semibold">{blanks.length} still blank.</span>{' '}
             Each blank one is simply left off the site until you fill it in.
           </p>
@@ -95,8 +95,8 @@ export default function Settings() {
           const value = valueOf(row)
           const empty = !String(value).trim()
           return (
-            <li key={row.id} className={`rounded-xl border bg-white p-4 ${empty ? 'border-lumen-700/30' : 'border-neutral-200'}`}>
-              <label htmlFor={`s-${row.key}`} className="block text-sm font-semibold text-ink-800">
+            <li key={row.id} className={`rounded-xl border bg-surface p-4 ${empty ? 'border-lumen-700/30' : 'border-neutral-200'}`}>
+              <label htmlFor={`s-${row.key}`} className="block text-sm font-semibold text-body-strong">
                 {row.key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase())}
               </label>
               {row.note && <p className="mt-1 text-xs leading-relaxed text-muted">{row.note}</p>}
@@ -104,7 +104,7 @@ export default function Settings() {
                 id={`s-${row.key}`} value={value} disabled={!editable}
                 onChange={(e) => setDirty((d) => ({ ...d, [row.key]: e.target.value }))}
                 placeholder="Not supplied yet"
-                className="mt-2 w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10 disabled:bg-neutral-50"
+                className="mt-2 w-full rounded-xl border border-neutral-200 bg-surface px-3.5 py-2.5 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10 disabled:bg-neutral-50"
               />
             </li>
           )

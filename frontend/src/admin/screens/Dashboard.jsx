@@ -6,7 +6,7 @@ import { api } from '../api'
 import { useAuth } from '../auth'
 import { Spinner, StatusPill } from '../components/ui'
 
-const card = 'rounded-2xl border border-white/70 bg-white/80 p-5 shadow-lift backdrop-blur-xl'
+const card = 'rounded-2xl border border-line bg-surface/80 p-5 shadow-lift backdrop-blur-xl'
 
 export default function Dashboard() {
   const { admin } = useAuth()
@@ -43,7 +43,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-extrabold text-ink-900">
+      <h1 className="font-display text-2xl font-extrabold text-body">
         {admin?.name ? `Hello, ${admin.name.split(' ')[0]}` : 'Hello'}
       </h1>
       <p className="mt-1 text-sm text-muted">Here is what is waiting for you.</p>
@@ -60,7 +60,7 @@ export default function Dashboard() {
                 <p className="text-sm font-medium text-muted">{s.label}</p>
                 <s.icon size={16} className="text-muted" aria-hidden="true" />
               </div>
-              <p className="tabular mt-2 font-display text-3xl font-extrabold text-ink-900">{s.value}</p>
+              <p className="tabular mt-2 font-display text-3xl font-extrabold text-body">{s.value}</p>
             </Link>
           </motion.div>
         ))}
@@ -69,8 +69,8 @@ export default function Dashboard() {
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
         <section className={card}>
           <div className="flex items-center justify-between">
-            <h2 className="font-display font-bold text-ink-900">Latest enquiries</h2>
-            <Link to="/admin/inbox" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-deep hover:underline">
+            <h2 className="font-display font-bold text-body">Latest enquiries</h2>
+            <Link to="/admin/inbox" className="inline-flex items-center gap-1 text-sm font-semibold text-accent hover:underline">
               All <ArrowRight size={13} aria-hidden="true" />
             </Link>
           </div>
@@ -82,7 +82,7 @@ export default function Dashboard() {
                   <li key={l.id}>
                     <Link to="/admin/inbox" className="flex items-center gap-3 rounded-xl border border-neutral-200 p-3 transition-colors hover:border-neutral-300">
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-ink-900">{l.name}</p>
+                        <p className="truncate text-sm font-semibold text-body">{l.name}</p>
                         <p className="truncate text-xs text-muted">
                           {[l.company, l.project_type, l.phone].filter(Boolean).join(' · ')}
                         </p>
@@ -96,14 +96,14 @@ export default function Dashboard() {
         </section>
 
         <section className={card}>
-          <h2 className="font-display font-bold text-ink-900">Recent activity</h2>
+          <h2 className="font-display font-bold text-body">Recent activity</h2>
           {notes.length === 0
             ? <p className="mt-4 text-sm text-muted">Nothing to report.</p>
             : (
               <ul className="mt-4 space-y-2.5">
                 {notes.map((n) => (
                   <li key={n.id} className="rounded-xl border border-neutral-200 p-3">
-                    <p className="text-sm font-semibold text-ink-900">{n.title}</p>
+                    <p className="text-sm font-semibold text-body">{n.title}</p>
                     {n.body && <p className="mt-0.5 line-clamp-2 text-xs text-muted">{n.body}</p>}
                   </li>
                 ))}
@@ -115,12 +115,12 @@ export default function Dashboard() {
       {email && !email.configured && (
         <section className="mt-4 rounded-2xl border border-brand-deep/25 bg-brand-deep/[0.04] p-5">
           <div className="flex items-start gap-3">
-            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-brand-deep" aria-hidden="true" />
+            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-accent" aria-hidden="true" />
             <div>
-              <h2 className="font-display font-bold text-ink-900">
+              <h2 className="font-display font-bold text-body">
                 Nobody is being emailed about enquiries
               </h2>
-              <p className="mt-1 text-sm leading-relaxed text-ink-600">
+              <p className="mt-1 text-sm leading-relaxed text-body-soft">
                 {email.unsent > 0
                   ? `${email.unsent} ${email.unsent === 1 ? 'enquiry has' : 'enquiries have'} arrived and
                      been saved, but no email was sent for any of them.`
@@ -138,16 +138,16 @@ export default function Dashboard() {
           <div className="flex items-start gap-3">
             <AlertTriangle size={18} className="mt-0.5 shrink-0 text-lumen-700" aria-hidden="true" />
             <div>
-              <h2 className="font-display font-bold text-ink-900">
+              <h2 className="font-display font-bold text-body">
                 {blanks.length} company {blanks.length === 1 ? 'detail is' : 'details are'} still blank
               </h2>
-              <p className="mt-1 text-sm leading-relaxed text-ink-600">
+              <p className="mt-1 text-sm leading-relaxed text-body-soft">
                 The site hides anything you have not supplied rather than inventing it. Fill these
                 in and they appear everywhere at once:{' '}
                 <span className="font-medium">{blanks.slice(0, 4).map((b) => b.key).join(', ')}</span>
                 {blanks.length > 4 && ` and ${blanks.length - 4} more`}.
               </p>
-              <Link to="/admin/settings" className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-deep hover:underline">
+              <Link to="/admin/settings" className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-accent hover:underline">
                 Fill them in <ArrowRight size={13} aria-hidden="true" />
               </Link>
             </div>

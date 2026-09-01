@@ -40,10 +40,10 @@ export function ToastProvider({ children }) {
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
               className={`pointer-events-auto flex items-start gap-3 rounded-xl border p-3.5 pr-2.5 shadow-raise backdrop-blur-xl ${
                 t.tone === 'error'
-                  ? 'border-brand-deep/25 bg-white/95 text-brand-deep'
+                  ? 'border-brand-deep/25 bg-surface/95 text-accent'
                   : t.tone === 'info'
-                    ? 'border-neutral-200 bg-white/95 text-ink-700'
-                    : 'border-earth-ink/25 bg-white/95 text-earth-ink'
+                    ? 'border-neutral-200 bg-surface/95 text-body-mid'
+                    : 'border-earth-ink/25 bg-surface/95 text-earth-ink'
               }`}
               role={t.tone === 'error' ? 'alert' : 'status'}
             >
@@ -54,7 +54,7 @@ export function ToastProvider({ children }) {
               <p className="flex-1 text-sm font-medium leading-snug">{t.message}</p>
               <button
                 type="button" onClick={() => dismiss(t.id)} aria-label="Dismiss"
-                className="rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-ink-700"
+                className="rounded-lg p-1.5 text-muted transition-colors hover:bg-neutral-100 hover:text-body-mid"
               >
                 <X size={14} />
               </button>
@@ -76,9 +76,9 @@ export function useToast() {
 
 const VARIANTS = {
   primary: 'bg-brand-fill text-white hover:bg-brand-deep shadow-lift',
-  soft: 'bg-neutral-100 text-ink-800 hover:bg-neutral-200',
-  ghost: 'text-ink-600 hover:bg-neutral-100 hover:text-ink-900',
-  danger: 'bg-white text-brand-deep border border-brand-deep/30 hover:bg-brand-deep hover:text-white',
+  soft: 'bg-neutral-100 text-body-strong hover:bg-neutral-200',
+  ghost: 'text-body-soft hover:bg-neutral-100 hover:text-body',
+  danger: 'bg-surface text-accent border border-brand-deep/30 hover:bg-brand-deep hover:text-white',
 }
 
 export function Button({ variant = 'soft', busy, className = '', children, ...rest }) {
@@ -122,7 +122,7 @@ export function EmptyState({ icon: Icon, title, body, action }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-neutral-50/60 px-6 py-16 text-center">
       {Icon && <Icon size={26} className="mb-4 text-muted" aria-hidden="true" />}
-      <p className="font-display text-lg font-bold text-ink-900">{title}</p>
+      <p className="font-display text-lg font-bold text-body">{title}</p>
       {body && <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-muted">{body}</p>}
       {action && <div className="mt-6">{action}</div>}
     </div>
@@ -161,10 +161,10 @@ export function Confirm({ open, title, body, confirmLabel = 'Delete', onConfirm,
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.97, y: 6 }}
             transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-            className="w-full max-w-md rounded-2xl border border-white/60 bg-white p-6 shadow-raise outline-none"
+            className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-raise outline-none"
           >
-            <h2 className="font-display text-lg font-bold text-ink-900">{title}</h2>
-            {body && <p className="mt-2 text-sm leading-relaxed text-ink-600">{body}</p>}
+            <h2 className="font-display text-lg font-bold text-body">{title}</h2>
+            {body && <p className="mt-2 text-sm leading-relaxed text-body-soft">{body}</p>}
             <div className="mt-7 flex justify-end gap-2.5">
               <Button variant="ghost" onClick={onCancel}>Cancel</Button>
               <Button variant="danger" onClick={onConfirm} busy={busy}>{confirmLabel}</Button>

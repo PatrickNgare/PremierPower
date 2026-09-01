@@ -36,7 +36,7 @@ export default function App() {
     // against "/" instead of "/admin" — every path misses and the catch-all
     // redirects in a loop, rendering an empty page.
     return (
-      <Suspense fallback={<div className="grid min-h-screen place-items-center bg-paper-warm" />}>
+      <Suspense fallback={<div className="grid min-h-screen place-items-center bg-page-warm" />}>
         <Routes>
           <Route path="/admin/*" element={<AdminApp />} />
         </Routes>

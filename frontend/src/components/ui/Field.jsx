@@ -16,9 +16,9 @@ export function Field({
     id, name, required, autoComplete,
     onChange: (e) => setFilled(Boolean(e.target.value)),
     className:
-      'peer w-full rounded-xl border border-ink-900/12 bg-white px-4 pb-2.5 pt-6 text-[0.95rem] ' +
-      'text-ink-900 outline-none transition-all duration-300 ' +
-      'hover:border-ink-900/25 focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10',
+      'peer w-full rounded-xl border border-line bg-surface px-4 pb-2.5 pt-6 text-[0.95rem] ' +
+      'text-body outline-none transition-all duration-300 ' +
+      'hover:border-line focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10',
     ...rest,
   }
 
@@ -39,9 +39,9 @@ export function Field({
         htmlFor={id}
         className={`pointer-events-none absolute left-4 origin-left text-muted transition-all duration-200 ${
           filled ? 'top-2 text-[0.68rem] font-semibold uppercase tracking-wider' : 'top-4 text-[0.95rem]'
-        } peer-focus:top-2 peer-focus:text-[0.68rem] peer-focus:font-semibold peer-focus:uppercase peer-focus:tracking-wider peer-focus:text-brand-deep`}
+        } peer-focus:top-2 peer-focus:text-[0.68rem] peer-focus:font-semibold peer-focus:uppercase peer-focus:tracking-wider peer-focus:text-accent`}
       >
-        {label}{required && <span aria-hidden="true" className="text-brand-deep"> *</span>}
+        {label}{required && <span aria-hidden="true" className="text-accent"> *</span>}
       </label>
     </div>
   )

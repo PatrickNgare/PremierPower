@@ -71,8 +71,8 @@ export default function ContactForm() {
             >
               <CheckCircle2 size={26} className="text-earth-ink" aria-hidden="true" />
             </motion.span>
-            <h3 className="relative mt-6 font-display text-2xl font-bold text-ink-900">That reached us.</h3>
-            <p className="relative mx-auto mt-3 max-w-sm text-[0.95rem] leading-relaxed text-ink-600">
+            <h3 className="relative mt-6 font-display text-2xl font-bold text-body">That reached us.</h3>
+            <p className="relative mx-auto mt-3 max-w-sm text-[0.95rem] leading-relaxed text-body-soft">
               We will come back to you with next steps. If it is urgent, call directly rather
               than wait for our reply.
             </p>
@@ -107,9 +107,9 @@ export default function ContactForm() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="mt-5 flex items-start gap-2.5 overflow-hidden rounded-xl bg-brand-fill/[0.06] px-4 py-3 text-sm leading-relaxed text-ink-800"
+                  className="mt-5 flex items-start gap-2.5 overflow-hidden rounded-xl bg-brand-fill/[0.06] px-4 py-3 text-sm leading-relaxed text-body-strong"
                 >
-                  <AlertCircle size={16} className="mt-0.5 shrink-0 text-brand-deep" aria-hidden="true" />
+                  <AlertCircle size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden="true" />
                   <span>
                     {error}{' '}
                     {wa && (

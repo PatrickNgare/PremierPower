@@ -27,7 +27,7 @@ export default function FloatingActions() {
 
       {!onContact && (
         <>
-          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-white/97 backdrop-blur-sm lg:hidden">
+          <div className="fixed inset-x-0 bottom-0 z-30 border-t border-neutral-200 bg-surface/97 backdrop-blur-sm lg:hidden">
             <div className="grid grid-cols-3 divide-x divide-neutral-200">
               {tel ? (
                 <a href={tel} className="flex flex-col items-center gap-1 py-2.5 text-[0.7rem] font-semibold text-neutral-700">

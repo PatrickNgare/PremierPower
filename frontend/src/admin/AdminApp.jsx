@@ -25,7 +25,7 @@ function OwnerOnly({ children }) {
 function Authenticated() {
   const { admin, ready } = useAuth()
 
-  if (!ready) return <div className="grid min-h-screen place-items-center bg-paper-warm"><Spinner label="Signing you in" /></div>
+  if (!ready) return <div className="grid min-h-screen place-items-center bg-page-warm"><Spinner label="Signing you in" /></div>
   if (!admin) return <Login />
 
   return (

@@ -11,16 +11,16 @@ export const slugify = (s) =>
     .replace(/[^\w\s-]/g, '').trim().replace(/[\s_]+/g, '-').replace(/-+/g, '-')
 
 const inputClass =
-  'w-full rounded-xl border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-ink-900 ' +
+  'w-full rounded-xl border border-neutral-200 bg-surface px-3.5 py-2.5 text-sm text-body ' +
   'outline-none transition-all duration-200 placeholder:text-muted ' +
   'focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10 ' +
   'disabled:bg-neutral-50 disabled:text-muted'
 
 function Label({ htmlFor, children, required }) {
   return (
-    <label htmlFor={htmlFor} className="block text-sm font-semibold text-ink-800">
+    <label htmlFor={htmlFor} className="block text-sm font-semibold text-body-strong">
       {children}
-      {required && <span aria-hidden="true" className="ml-1 text-brand-deep">*</span>}
+      {required && <span aria-hidden="true" className="ml-1 text-accent">*</span>}
     </label>
   )
 }
@@ -37,7 +37,7 @@ function Switch({ id, checked, onChange, disabled }) {
     >
       <span
         aria-hidden="true"
-        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+        className={`absolute top-0.5 h-5 w-5 rounded-full bg-surface shadow transition-transform duration-200 ${
           checked ? 'translate-x-[1.375rem]' : 'translate-x-0.5'
         }`}
       />

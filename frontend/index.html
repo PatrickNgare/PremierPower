@@ -3,7 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="theme-color" content="#FCFCFB" />
+
+    <!--
+      Theme, resolved before first paint.
+
+      This has to be inline and synchronous. Anything deferred — a module, a
+      React effect — runs after the browser has already painted the default
+      light ground, so a visitor who chose dark sees a white flash on every
+      single navigation. Kept deliberately tiny and wrapped in try/catch:
+      localStorage throws in some privacy modes, and a colour scheme is never
+      worth breaking the page over.
+    -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('pp-theme')
+          if (t !== 'light' && t !== 'dark') {
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          }
+          document.documentElement.setAttribute('data-theme', t)
+          var m = document.querySelector('meta[name="theme-color"]')
+          if (m) m.setAttribute('content', t === 'dark' ? '#0D0E11' : '#FCFCFB')
+        } catch (e) {}
+      })()
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Premier Power Limited — Electrical engineering &amp; installation contractor, Kenya</title>
 

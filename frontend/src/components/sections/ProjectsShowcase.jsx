@@ -67,7 +67,7 @@ export default function ProjectsShowcase({ limit }) {
         <motion.li
           key={p.title}
           variants={fadeUp}
-          className={`group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-ink-900 ${spans[i] ?? ''} ${
+          className={`group relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-ink-900 ${spans[i] ?? ''} ${
             i > 2 ? 'hidden sm:block' : ''
           }`}
         >

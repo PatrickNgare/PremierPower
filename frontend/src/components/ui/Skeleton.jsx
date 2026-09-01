@@ -7,7 +7,7 @@ export function Skeleton({ className = '' }) {
   return (
     <span
       aria-hidden="true"
-      className={`block rounded-lg bg-ink-900/[0.06] motion-safe:animate-shimmer ${className}`}
+      className={`block rounded-lg bg-surface-2 motion-safe:animate-shimmer ${className}`}
       style={{
         backgroundImage:
           'linear-gradient(90deg, transparent 0%, rgb(8 8 10 / 0.05) 45%, rgb(245 201 123 / 0.14) 50%, rgb(8 8 10 / 0.05) 55%, transparent 100%)',
@@ -20,7 +20,7 @@ export function Skeleton({ className = '' }) {
 /** A card-shaped skeleton, for grids waiting on the API. */
 export function SkeletonCard({ className = '' }) {
   return (
-    <div className={`rounded-[var(--radius-card)] border border-ink-900/[0.07] bg-white p-6 ${className}`}>
+    <div className={`rounded-[var(--radius-card)] border border-line bg-surface p-6 ${className}`}>
       <Skeleton className="h-40 w-full rounded-xl" />
       <Skeleton className="mt-5 h-3.5 w-2/3" />
       <Skeleton className="mt-2.5 h-3 w-full" />

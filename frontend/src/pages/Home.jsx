@@ -94,7 +94,7 @@ const BLOCKS = {
   ),
 
   solutions: (s) => (
-    <section className="section bg-paper-warm">
+    <section className="section bg-page-warm">
       <div className="container-x">
         <SectionHeader align={s.config?.align ?? 'center'} eyebrow={s.eyebrow} title={s.title} lede={s.subtitle} />
         <Solutions />
@@ -146,7 +146,7 @@ const BLOCKS = {
   ),
 
   process: (s) => (
-    <section className="section-tight bg-paper-warm">
+    <section className="section-tight bg-page-warm">
       <div className="container-x">
         <SectionHeader align={s.config?.align ?? 'center'} eyebrow={s.eyebrow} title={s.title} lede={s.subtitle} />
         <ProcessSteps />

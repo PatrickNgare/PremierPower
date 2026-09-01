@@ -90,7 +90,7 @@ export function MediaPicker({ open, onPick, onClose }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 8 }}
             transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-            className="flex max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-white/60 bg-white shadow-raise outline-none"
+            className="flex max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-raise outline-none"
           >
             <header className="flex items-center gap-3 border-b border-neutral-200 p-4">
               <div className="relative flex-1">
@@ -99,7 +99,7 @@ export function MediaPicker({ open, onPick, onClose }) {
                   value={q} onChange={(e) => setQ(e.target.value)}
                   placeholder="Search photographs"
                   aria-label="Search photographs"
-                  className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2.5 pl-9 pr-3 text-sm outline-none transition-colors focus:border-brand-fill focus:bg-white"
+                  className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2.5 pl-9 pr-3 text-sm outline-none transition-colors focus:border-brand-fill focus:bg-surface"
                 />
               </div>
               <input
@@ -133,14 +133,14 @@ export function MediaPicker({ open, onPick, onClose }) {
                             src={a.url} alt={a.alt || a.filename}
                             loading="lazy" className="h-28 w-full object-cover"
                           />
-                          <span className="block truncate px-2.5 py-2 text-xs text-ink-600">
+                          <span className="block truncate px-2.5 py-2 text-xs text-body-soft">
                             {a.alt || a.filename || 'Untitled'}
                           </span>
                         </button>
                         <button
                           type="button" onClick={() => remove(a)}
                           aria-label={`Delete ${a.filename || 'photograph'}`}
-                          className="absolute right-1.5 top-1.5 rounded-lg bg-white/90 p-1.5 text-muted opacity-0 shadow-lift transition-all hover:text-brand-deep focus:opacity-100 group-hover:opacity-100"
+                          className="absolute right-1.5 top-1.5 rounded-lg bg-white/90 p-1.5 text-ink-600 opacity-0 shadow-lift transition-all hover:text-brand-deep focus:opacity-100 group-hover:opacity-100"
                         >
                           <Trash2 size={13} />
                         </button>

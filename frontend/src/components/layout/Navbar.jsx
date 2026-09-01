@@ -6,11 +6,14 @@ import { useMenu } from '@/hooks/useMenu'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
 import Magnetic from '@/components/ui/Magnetic'
+import ThemeToggle from '@/components/ui/ThemeToggle'
 import { telLink } from '@/config/site'
 import { useSite } from '@/hooks/useSite'
+import { useTheme } from '@/hooks/useTheme'
 
 export default function Navbar() {
   const site = useSite()
+  const { isDark } = useTheme()
   const navLinks = useMenu('header')
   const [open, setOpen] = useState(false)
   const [condensed, setCondensed] = useState(false)
@@ -26,14 +29,9 @@ export default function Navbar() {
 
   return (
     <>
-      <motion.header
-        initial={false}
-        animate={{
-          backgroundColor: condensed ? 'rgba(252,252,251,0.86)' : 'rgba(252,252,251,1)',
-          boxShadow: condensed ? '0 1px 0 rgba(8,8,10,0.07), 0 10px 30px -18px rgba(8,8,10,0.4)' : '0 0 0 rgba(0,0,0,0)',
-        }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="sticky top-0 z-40 backdrop-blur-md"
+      <header
+        data-condensed={condensed}
+        className="navbar-surface sticky top-0 z-40 backdrop-blur-md"
       >
         <nav className="container-x flex items-center gap-6" aria-label="Main">
           <motion.div
@@ -51,7 +49,7 @@ export default function Navbar() {
             <div className="flex flex-1 items-center gap-6">
               <Link to="/" aria-label="Premier Power Limited — home" className="shrink-0">
                 <motion.div initial={false} animate={{ scale: condensed ? 0.86 : 1 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="origin-left">
-                  <Logo className="h-9 sm:h-11" />
+                  <Logo tone={isDark ? 'dark' : 'light'} className="h-9 sm:h-11" />
                 </motion.div>
               </Link>
 
@@ -75,7 +73,7 @@ export default function Navbar() {
                       // any length. "Lighting & fittings" wrapped onto three
                       // lines and pushed the header to twice its height.
                       `relative whitespace-nowrap rounded-full px-2.5 py-2 text-[0.83rem] font-medium xl:px-3 xl:text-sm transition-colors duration-300 ${
-                        isActive ? 'text-ink-900' : 'text-ink-600 hover:text-ink-900'
+                        isActive ? 'text-body' : 'text-body-soft hover:text-body'
                       }`
                     }
                   >
@@ -85,7 +83,7 @@ export default function Navbar() {
                           <motion.span
                             layoutId="nav-active"
                             transition={{ type: 'spring', stiffness: 380, damping: 32 }}
-                            className="absolute inset-0 -z-10 rounded-full bg-ink-900/[0.06]"
+                            className="absolute inset-0 -z-10 rounded-full bg-surface-2"
                             aria-hidden="true"
                           />
                         )}
@@ -102,12 +100,14 @@ export default function Navbar() {
                   attention. As a quiet icon control it stays one tap away
                   without reading as a tenth menu item; the number itself is on
                   the contact page, in the CTA band and in the footer. */}
+              <ThemeToggle className="hidden lg:flex" />
+
               {tel && (
                 <a
                   href={tel}
                   title={`Call ${String(site.phone)}`}
                   aria-label={`Call Premier Power on ${String(site.phone)}`}
-                  className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-ink-900/12 text-ink-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-rgb))] hover:text-[rgb(var(--accent-rgb))] lg:flex"
+                  className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-body-mid transition-all duration-300 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-rgb))] hover:text-[rgb(var(--accent-rgb))] lg:flex"
                 >
                   <Phone size={16} aria-hidden="true" />
                 </a>
@@ -126,12 +126,14 @@ export default function Navbar() {
                 </Magnetic>
               </div>
 
+              <ThemeToggle className="lg:hidden" />
+
               <button
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-label="Open menu"
                 aria-expanded={open}
-                className="flex h-11 w-11 items-center justify-center rounded-full text-ink-900 transition-colors hover:bg-ink-900/[0.06] lg:hidden"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-body transition-colors hover:bg-surface-2 lg:hidden"
               >
                 <Menu size={22} aria-hidden="true" />
               </button>
@@ -141,7 +143,7 @@ export default function Navbar() {
 
         {/* Scroll progress — a thin filament of light across the bar. */}
         <ScrollFilament />
-      </motion.header>
+      </header>
 
       <MobileMenu open={open} onClose={() => setOpen(false)} key={pathname} />
     </>

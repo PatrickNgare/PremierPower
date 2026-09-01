@@ -9,8 +9,10 @@ import Button from '@/components/ui/Button'
 import LicenseBadge from '@/components/ui/LicenseBadge'
 import { whatsappLink } from '@/config/site'
 import { useSite } from '@/hooks/useSite'
+import { useTheme } from '@/hooks/useTheme'
 
 export default function MobileMenu({ open, onClose }) {
+  const { isDark } = useTheme()
   const site = useSite()
   const navLinks = useMenu('header')
   const panelRef = useRef(null)
@@ -39,14 +41,14 @@ export default function MobileMenu({ open, onClose }) {
           <div className="absolute inset-0 bg-primary-dark/55" onClick={onClose} />
           <motion.div
             ref={panelRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Menu"
-            className="absolute inset-y-0 right-0 flex w-[min(23rem,88vw)] flex-col bg-white p-6 outline-none"
+            className="absolute inset-y-0 right-0 flex w-[min(23rem,88vw)] flex-col bg-surface p-6 outline-none"
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'tween', ease: [0.22, 1, 0.36, 1], duration: 0.35 }}
           >
             <div className="flex items-center justify-between">
-              <Logo className="h-9" />
+              <Logo tone={isDark ? 'dark' : 'light'} className="h-9" />
               <button type="button" onClick={onClose} aria-label="Close menu"
-                className="rounded-lg p-2 text-primary transition-colors hover:bg-neutral-100">
+                className="rounded-lg p-2 text-body transition-colors hover:bg-neutral-100">
                 <FiX size={22} aria-hidden="true" />
               </button>
             </div>
@@ -55,7 +57,7 @@ export default function MobileMenu({ open, onClose }) {
               {navLinks.map((l) => (
                 <li key={l.to} className="border-b border-neutral-100">
                   <Link to={l.to} onClick={onClose}
-                    className="block py-3.5 font-heading text-lg font-medium text-primary hover:text-secondary-accent">
+                    className="block py-3.5 font-heading text-lg font-medium text-body hover:text-secondary-accent">
                     {l.label}
                   </Link>
                 </li>

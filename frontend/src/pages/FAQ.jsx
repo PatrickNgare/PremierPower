@@ -25,7 +25,7 @@ function Item({ q, a, open, onToggle, id }) {
     <motion.div
       variants={fadeUp}
       className={`overflow-hidden rounded-[var(--radius-card)] border transition-colors duration-300 ${
-        open ? 'border-lumen-700/35 bg-lumen-100' : 'border-ink-900/10 bg-white hover:border-ink-900/20'
+        open ? 'border-lumen-700/35 bg-lumen-100' : 'border-line bg-surface hover:border-line'
       }`}
     >
       <h3>
@@ -34,7 +34,7 @@ function Item({ q, a, open, onToggle, id }) {
           className="flex w-full items-center justify-between gap-6 px-5 py-5 text-left sm:px-6"
         >
           <span className={`font-display text-base font-bold leading-snug sm:text-lg ${
-            open ? 'text-ink-900' : 'text-ink-800'
+            open ? 'text-body' : 'text-body-strong'
           }`}>
             {q}
           </span>
@@ -43,7 +43,7 @@ function Item({ q, a, open, onToggle, id }) {
             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-all duration-300 ${
               open
                 ? 'bg-[rgb(var(--accent-rgb))] text-white'
-                : 'bg-paper-warm text-[rgb(var(--accent-rgb))]'
+                : 'bg-page-warm text-[rgb(var(--accent-rgb))]'
             }`}
           >
             {open ? <Minus size={16} /> : <Plus size={16} />}
@@ -60,7 +60,7 @@ function Item({ q, a, open, onToggle, id }) {
             transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <p className="px-5 pb-6 text-[0.95rem] leading-relaxed text-ink-600 sm:px-6 sm:pr-16">
+            <p className="px-5 pb-6 text-[0.95rem] leading-relaxed text-body-soft sm:px-6 sm:pr-16">
               {a}
             </p>
           </motion.div>
@@ -126,9 +126,9 @@ export default function FAQ() {
 
             <motion.div
               variants={fadeUp}
-              className="mt-8 rounded-[var(--radius-card)] border border-ink-900/10 bg-paper-warm p-6"
+              className="mt-8 rounded-[var(--radius-card)] border border-line bg-page-warm p-6"
             >
-              <p className="font-display text-base font-bold text-ink-900">Still not answered?</p>
+              <p className="font-display text-base font-bold text-body">Still not answered?</p>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 Send drawings or a short description and we will come back with scope and next
                 steps. Site visits are free.

@@ -69,7 +69,7 @@ export default function Services() {
         return (
           <motion.article
             key={s.slug} variants={fadeUp} {...inView}
-            className="group relative overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white p-6 transition-all duration-500 hover:-translate-y-1 sm:p-7"
+            className="group relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-all duration-500 hover:-translate-y-1 sm:p-7"
           >
             <span
               aria-hidden="true"
@@ -77,8 +77,8 @@ export default function Services() {
               style={{ background: 'radial-gradient(18rem 12rem at 70% 0%, rgb(245 201 123 / 0.20), transparent 70%)' }}
             />
             <Icon size={20} strokeWidth={1.6} className="relative text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
-            <h3 className="relative mt-4 font-display text-lg font-bold text-ink-900">{s.title}</h3>
-            <p className="relative mt-2 text-sm leading-relaxed text-ink-600">{s.lede}</p>
+            <h3 className="relative mt-4 font-display text-lg font-bold text-body">{s.title}</h3>
+            <p className="relative mt-2 text-sm leading-relaxed text-body-soft">{s.lede}</p>
           </motion.article>
         )
       })}
@@ -86,16 +86,16 @@ export default function Services() {
       {/* The remainder as a ruled list — dense, scannable, not five more cards. */}
       <motion.ul
         variants={stagger(0.05)} {...inView}
-        className="divide-y divide-ink-900/10 overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white lg:col-span-3"
+        className="divide-y divide-ink-900/10 overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface lg:col-span-3"
       >
         {list.map((s) => {
           const Icon = icons[s.slug] ?? Zap
           return (
             <motion.li key={s.slug} variants={fadeUp}>
-              <div className="group flex flex-wrap items-center gap-x-6 gap-y-1.5 px-6 py-4 transition-colors duration-300 hover:bg-paper-warm sm:px-7 sm:py-5">
+              <div className="group flex flex-wrap items-center gap-x-6 gap-y-1.5 px-6 py-4 transition-colors duration-300 hover:bg-page-warm sm:px-7 sm:py-5">
                 <Icon size={18} strokeWidth={1.6} className="shrink-0 text-[rgb(var(--accent-rgb))] transition-transform duration-300 group-hover:-translate-y-0.5" aria-hidden="true" />
-                <h3 className="w-full font-display text-base font-bold text-ink-900 sm:w-[15.5rem] sm:shrink-0">{s.title}</h3>
-                <p className="min-w-0 flex-1 text-sm leading-relaxed text-ink-600 sm:border-l sm:border-ink-900/8 sm:pl-6">{s.lede}</p>
+                <h3 className="w-full font-display text-base font-bold text-body sm:w-[15.5rem] sm:shrink-0">{s.title}</h3>
+                <p className="min-w-0 flex-1 text-sm leading-relaxed text-body-soft sm:border-l sm:border-line sm:pl-6">{s.lede}</p>
               </div>
             </motion.li>
           )

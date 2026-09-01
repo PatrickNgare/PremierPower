@@ -84,7 +84,7 @@ export default function Menus() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold text-ink-900">Navigation</h1>
+          <h1 className="font-display text-2xl font-extrabold text-body">Navigation</h1>
           <p className="mt-1 text-sm text-muted">The links across the top of the site and in the footer.</p>
         </div>
         {editable && (
@@ -92,12 +92,12 @@ export default function Menus() {
         )}
       </div>
 
-      <div className="mt-6 flex rounded-xl border border-neutral-200 bg-white p-1">
+      <div className="mt-6 flex rounded-xl border border-neutral-200 bg-surface p-1">
         {MENUS.map(([v, label]) => (
           <button
             key={v} type="button" onClick={() => setMenu(v)}
             className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-              menu === v ? 'bg-ink-900 text-white' : 'text-ink-600 hover:bg-neutral-100'
+              menu === v ? 'bg-ink-900 text-white' : 'text-body-soft hover:bg-neutral-100'
             }`}
           >{label}</button>
         ))}
@@ -132,12 +132,12 @@ export default function Menus() {
 
 function LinkRow({ row, editable, onPatch, onSave, onDelete }) {
   const controls = useDragControls()
-  const input = 'rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
+  const input = 'rounded-lg border border-neutral-200 bg-surface px-3 py-2 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
 
   return (
     <Reorder.Item
       value={row} as="li" dragListener={false} dragControls={controls}
-      className="flex flex-wrap items-center gap-2 rounded-xl border border-neutral-200 bg-white p-3"
+      className="flex flex-wrap items-center gap-2 rounded-xl border border-neutral-200 bg-surface p-3"
     >
       {editable && (
         <button
@@ -172,7 +172,7 @@ function LinkRow({ row, editable, onPatch, onSave, onDelete }) {
       {editable && (
         <button
           type="button" onClick={onDelete} aria-label="Remove link"
-          className="rounded-lg p-2 text-muted transition-colors hover:bg-brand-deep/10 hover:text-brand-deep"
+          className="rounded-lg p-2 text-muted transition-colors hover:bg-brand-deep/10 hover:text-accent"
         >
           <Trash2 size={15} />
         </button>

@@ -33,7 +33,7 @@ export default function Services() {
         </div>
       </section>
 
-      <section className="section-tight bg-paper-warm">
+      <section className="section-tight bg-page-warm">
         <div className="container-x">
           <SectionHeader
             eyebrow={s1?.eyebrow || "How it works"}

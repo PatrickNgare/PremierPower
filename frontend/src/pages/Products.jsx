@@ -94,13 +94,13 @@ export default function Products() {
                 <motion.li key={p.id} variants={fadeUp}>
                   <Link
                     to={`/products/${p.slug}`}
-                    className="group block h-full overflow-hidden rounded-[var(--radius-card)] border border-ink-900/10 bg-white transition-shadow duration-300 hover:shadow-raise"
+                    className="group block h-full overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-shadow duration-300 hover:shadow-raise"
                   >
                     {/* contain, not cover, on a uniform portrait tile. These
                         are catalogue shots of a single object, most of them
                         portrait: cropping to fill lops the top off a
                         chandelier, which is the part someone is looking at. */}
-                    <div className="aspect-[4/5] overflow-hidden bg-paper-warm p-4">
+                    <div className="aspect-[4/5] overflow-hidden bg-page-warm p-4">
                       {p.image_url ? (
                         <img onError={fallbackToLocal}
                           src={p.image_url}
@@ -120,16 +120,16 @@ export default function Products() {
                         {p.category_id && (
                           <p className="eyebrow !mb-1.5">{nameOf(p.category_id)}</p>
                         )}
-                        <h2 className="font-display text-lg font-bold text-ink-900">{p.name}</h2>
+                        <h2 className="font-display text-lg font-bold text-body">{p.name}</h2>
                         {p.summary && (
-                          <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ink-600">
+                          <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-body-soft">
                             {p.summary}
                           </p>
                         )}
                       </div>
                       <ArrowUpRight
                         size={17} aria-hidden="true"
-                        className="mt-1 shrink-0 text-muted transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand-deep"
+                        className="mt-1 shrink-0 text-muted transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
                       />
                     </div>
                   </Link>
@@ -141,7 +141,7 @@ export default function Products() {
       </section>
 
       {reel && clips.length > 0 && (
-        <section className="section-tight bg-paper-warm">
+        <section className="section-tight bg-page-warm">
           <div className="container-x">
             <SectionHeader
               eyebrow={reel.eyebrow || 'In the showroom'}
@@ -183,7 +183,7 @@ function FilterChip({ on, onClick, children }) {
       onClick={onClick}
       aria-pressed={on}
       className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
-        on ? 'bg-ink-900 text-white' : 'bg-paper-warm text-ink-600 hover:bg-paper-edge hover:text-ink-900'
+        on ? 'bg-ink-900 text-white' : 'bg-page-warm text-body-soft hover:bg-surface-3 hover:text-body'
       }`}
     >
       {children}
