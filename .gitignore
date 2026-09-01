@@ -19,3 +19,12 @@ PREMIER.pdf
 # Runtime uploads. In production these live on a Docker volume, not in git —
 # committing them would put client photography into the repository by accident.
 backend/uploads/
+
+# Supplier catalogue media for the lighting & fittings page — 25MB of stock
+# JPEGs and showroom videos, several carrying another brand's watermark. The
+# stills already live on Cloudinary (folder `fittings`) and the site loads them
+# from there, so these local originals are a staging area, not a dependency:
+# nothing in the build reads this folder. Ignored because it is otherwise one
+# stray `git add -A` away from being in history permanently, which has happened
+# once already. Import with backend/app/scripts/import_fittings.py.
+frontend/public/Photo/
