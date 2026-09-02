@@ -1,5 +1,6 @@
 import PageHero from '@/components/ui/PageHero'
 import ProjectsShowcase from '@/components/sections/ProjectsShowcase'
+import ProjectsList from '@/components/sections/ProjectsList'
 import CTABanner from '@/components/sections/CTABanner'
 import { photo } from '@/utils/photo'
 import Seo from '@/components/Seo'
@@ -29,6 +30,8 @@ export default function Portfolio() {
           <ProjectsShowcase />
         </div>
       </section>
+
+      <ProjectsList />
 
       <CTABanner />
     </>

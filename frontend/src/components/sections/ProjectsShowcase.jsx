@@ -95,17 +95,23 @@ export default function ProjectsShowcase({ limit }) {
               <MapPin size={12} className="text-lumen-500" aria-hidden="true" />
               {p.location}
             </p>
-            {/* Always visible on touch; slides in on pointer devices. */}
-            <p className="mt-3 max-w-sm text-sm leading-snug text-ink-300 transition-all duration-500 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100">
-              {p.summary}
-            </p>
+            {/* Always visible. This was hover-only on pointer devices, which
+                made the one line describing the job invisible at a glance and
+                unreachable without a mouse. It lifts slightly on hover
+                instead, so the tile still responds without hiding content. */}
+            {p.summary && (
+              <p className="mt-3 max-w-sm text-sm leading-snug text-ink-300 transition-transform duration-500 md:group-hover:-translate-y-0.5">
+                {p.summary}
+              </p>
+            )}
           </div>
 
           <span
             aria-hidden="true"
-            className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white backdrop-blur-sm transition-all duration-500 group-hover:border-lumen-500 group-hover:bg-lumen-500 group-hover:text-ink-950"
+            className="absolute right-5 top-5 flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white backdrop-blur-sm transition-all duration-500 group-hover:border-lumen-500 group-hover:bg-lumen-500 group-hover:text-ink-950"
           >
-            <Expand size={15} className="transition-transform duration-500 group-hover:scale-110" />
+            <Expand size={13} className="transition-transform duration-500 group-hover:scale-110" />
+            View
           </span>
 
           {(() => {
