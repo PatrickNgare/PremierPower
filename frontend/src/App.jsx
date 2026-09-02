@@ -20,9 +20,6 @@ const Contact = lazy(() => import('@/pages/Contact'))
 const Products = lazy(() => import('@/pages/Products'))
 const ProductDetail = lazy(() => import('@/pages/ProductDetail'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
-// Temporary: hero variants for review on a real device. Lazy, so it costs the
-// main bundle nothing. Remove with the variant it decides.
-const HeroPreview = lazy(() => import('@/pages/HeroPreview'))
 
 // The CMS. Lazy so none of it is downloaded by a visitor who only ever sees
 // the public site — it is a separate chunk that loads on /admin and nowhere
@@ -82,9 +79,6 @@ export default function App() {
             <Route path="/testimonials" element={<PageTransition><Testimonials /></PageTransition>} />
             <Route path="/faq" element={<PageTransition><FAQ /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-            {/* Temporary — see HeroPreview.jsx. Unlinked from the nav and the
-                sitemap on purpose: it is for review, not for visitors. */}
-            <Route path="/preview/hero" element={<HeroPreview />} />
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
             </Routes>
           </AnimatePresence>

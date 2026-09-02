@@ -58,19 +58,7 @@ const fromBanner = (b) => ({
   card: { label: b.card_label, title: b.card_title, line: b.card_line },
 })
 
-/**
- * `variant` exists only so /preview/hero can show alternatives side by side on
- * a real phone. It defaults to 'current', so the live site is unaffected while
- * a variant is being judged. Once one is chosen it becomes the only path and
- * this prop goes away — see the plan file.
- *
- *   current — as shipped
- *   depth   — parallax that also works on touch, which the pointer-gated
- *             effects never have
- *   swipe   — depth, plus drag-to-change-slide and the photograph moved up
- *             beside its own controls on small screens
- */
-export default function Hero({ section, variant = 'current' }) {
+export default function Hero({ section }) {
   const site = useSite()
   // The hero's own words. The slides are separate — they are the banners table.
   const [line1, line2] = splitTitle(section?.title || 'Powering spaces.|Illuminating possibilities.')
@@ -139,15 +127,10 @@ export default function Hero({ section, variant = 'current' }) {
   const scrollCardScale = useTransform(sp, [0, 1], [1, 0.965])
 
   // Pointer depth stays the richer treatment where a pointer exists; scroll
-  // depth fills in where one does not.
+  // depth fills in where one does not, so neither kind of visitor gets a flat
+  // hero and neither pays for the other's version.
   const pointerDepth = fine && !reduce
-  const scrollDepth = variant !== 'current' && !fine && !reduce
-  // Swipe replaces the need to sit the image next to its buttons: you change
-  // the slide on the photograph itself, so the distance to the controls below
-  // stops mattering. Reordering the stack was the other way to fix that, and it
-  // meant splitting the copy column and re-anchoring the desktop grid rows —
-  // much more risk, for an association that direct manipulation already solves.
-  const canSwipe = variant === 'swipe' && !fine
+  const scrollDepth = !fine && !reduce
 
   useEffect(() => {
     // Cursor lighting is a pointer affordance; it has no meaning on touch.
@@ -368,27 +351,15 @@ export default function Hero({ section, variant = 'current' }) {
           }
           className="relative mx-auto w-full max-w-md lg:mt-11 lg:self-start xl:max-w-lg"
         >
+          {/* Drag-to-change-slide was built and reviewed alongside this, and
+              deliberately not kept: the carousel already advances itself every
+              6.5s, so navigating it is optional, and a horizontal-drag region
+              over a full-height hero risks stealing the vertical scroll that
+              every visitor uses constantly. A nicer way to operate a control
+              most people never touch was not worth that. */}
           <motion.div
             style={pointerDepth ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 1200 } : undefined}
-            // Drag only where there is no pointer: on a mouse the card already
-            // tilts, and making it draggable there fights text selection.
-            drag={canSwipe ? 'x' : false}
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.16}
-            dragMomentum={false}
-            onDragStart={() => setPaused(true)}
-            onDragEnd={(_, info) => {
-              setPaused(false)
-              // Either a decisive flick or a deliberate drag past a third of the
-              // card. Velocity alone fires on scroll jitter; distance alone
-              // makes a quick flick feel ignored.
-              const far = Math.abs(info.offset.x) > 90
-              const fast = Math.abs(info.velocity.x) > 380
-              if (far || fast) go(info.offset.x < 0 ? 1 : -1)
-            }}
-            className={`relative overflow-hidden rounded-[28px] border border-white/20 bg-white/[0.07] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.75)] backdrop-blur-2xl ${
-              canSwipe ? 'cursor-grab touch-pan-y active:cursor-grabbing' : ''
-            }`}
+            className="relative overflow-hidden rounded-[28px] border border-white/20 bg-white/[0.07] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.75)] backdrop-blur-2xl"
           >
             {/* Light catching the top edge, the way glass does. */}
             <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
