@@ -162,7 +162,12 @@ const BLOCKS = {
 
 function TestimonialsBand({ section }) {
   const { data, loading } = useApi('/testimonials', [])
-  if (!loading && !data.length) return null
+  // Nothing until we know. Rendering the heading while the request is in
+  // flight made "What clients say" appear and then vanish once the answer came
+  // back empty, which is a visible flash and a jump in everything below it. A
+  // band that arrives a moment late is much easier to live with than one that
+  // disappears while being read.
+  if (loading || !data.length) return null
   return (
     <section className="section-tight">
       <div className="container-x">
