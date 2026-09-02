@@ -38,16 +38,12 @@ services:
         condition: service_healthy
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD:-premierpower}
+      POSTGRES_USER: ${POSTGRES_USER:-premierpower}
+      POSTGRES_DB: ${POSTGRES_DB:-premierpower}
     volumes:
       - ./deploy/backups:/backups
-    entrypoint: >
-      sh -c 'while true; do
-        pg_dump -h db -U "${POSTGRES_USER:-premierpower}" -d "${POSTGRES_DB:-premierpower}"
-          | gzip > "/backups/$$(date +%Y-%m-%d).sql.gz" 2>/dev/null
-          && echo "backed up $$(date -I)";
-        find /backups -name "*.sql.gz" -mtime +7 -delete;
-        sleep 86400;
-      done'
+      - ./deploy/backup.sh:/usr/local/bin/backup.sh:ro
+    entrypoint: ["/usr/local/bin/backup.sh"]
 
 volumes:
   caddy_data:
