@@ -317,7 +317,7 @@ export default function Hero({ section }) {
         <motion.div
           variants={rise}
           style={fine && !reduce ? { x: cardX, y: cardY } : undefined}
-          className="relative mx-auto hidden w-full max-w-md lg:mt-11 lg:block lg:self-start xl:max-w-lg"
+          className="relative mx-auto w-full max-w-md lg:mt-11 lg:self-start xl:max-w-lg"
         >
           <motion.div
             style={fine && !reduce ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 1200 } : undefined}
@@ -339,9 +339,9 @@ export default function Hero({ section }) {
                   alt={slide.alt}
                   loading="eager"
                   decoding="async"
-                  className="h-64 w-full object-cover xl:h-80"
+                  className="h-52 w-full object-cover sm:h-64 xl:h-80"
                 />
-                <div className="relative bg-ink-950/45 p-7 backdrop-blur-sm">
+                <div className="relative bg-ink-950/45 p-5 backdrop-blur-sm sm:p-7">
                   <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-lumen-500">
                     {slide.card.label}
                   </p>
@@ -355,7 +355,7 @@ export default function Hero({ section }) {
               </motion.div>
             </AnimatePresence>
           </motion.div>
-          <div aria-hidden="true" className="absolute -inset-10 -z-10 rounded-full bg-lumen-500/20 blur-3xl" />
+          <div aria-hidden="true" className="absolute -inset-4 -z-10 rounded-full bg-lumen-500/20 blur-3xl sm:-inset-10" />
         </motion.div>
       </motion.div>
 
