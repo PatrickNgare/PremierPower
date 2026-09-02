@@ -28,3 +28,12 @@ backend/uploads/
 # stray `git add -A` away from being in history permanently, which has happened
 # once already. Import with backend/app/scripts/import_fittings.py.
 frontend/public/Photo/
+
+# AWS CLI installer, unpacked next to the project — 146MB of vendor payload.
+# The CLI belongs on the machine, not in the repository.
+aws/
+awscliv2.zip
+
+# Playwright MCP scratch output: page snapshots, console logs and screenshots
+# written into the working directory as a side effect of driving the browser.
+.playwright-mcp/

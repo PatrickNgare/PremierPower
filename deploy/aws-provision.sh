@@ -117,6 +117,7 @@ if [ "$IID" = "None" ] || [ -z "$IID" ]; then
         --metadata-options "HttpTokens=required" \
         --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=$NAME}]" \
         --query 'Instances[0].InstanceId' --output text)
+  aws_ ec2 create-tags --resources "$IID" --tags "Key=Name,Value=$NAME" >/dev/null 2>&1 || true
   say "Waiting for $IID to run"
   aws_ ec2 wait instance-running --instance-ids "$IID"
 else
@@ -135,9 +136,11 @@ EIP=$(aws_ ec2 describe-addresses --filters "Name=tag:Name,Values=$NAME" \
       --query 'Addresses[0].PublicIp' --output text 2>/dev/null || echo None)
 if [ "$EIP" = "None" ] || [ -z "$EIP" ]; then
   say "Allocating an Elastic IP"
-  ALLOC=$(aws_ ec2 allocate-address --domain vpc \
-          --tag-specifications "ResourceType=elastic-ip,Tags=[{Key=Name,Value=$NAME}]" \
-          --query AllocationId --output text)
+  # Tag in a second call rather than with --tag-specifications: that flag was
+  # only added to allocate-address in later CLI builds, and this has to work on
+  # whatever version the operator happens to have.
+  ALLOC=$(aws_ ec2 allocate-address --domain vpc --query AllocationId --output text)
+  aws_ ec2 create-tags --resources "$ALLOC" --tags "Key=Name,Value=$NAME" >/dev/null 2>&1 || true
   EIP=$(aws_ ec2 describe-addresses --allocation-ids "$ALLOC" --query 'Addresses[0].PublicIp' --output text)
 else
   ALLOC=$(aws_ ec2 describe-addresses --filters "Name=tag:Name,Values=$NAME" --query 'Addresses[0].AllocationId' --output text)
