@@ -4,6 +4,10 @@
 #   aws configure                 # once — your keys never leave your machine
 #   ./deploy/aws-provision.sh
 #
+# Uses the default credentials profile. To use a named one:
+#
+#   PROFILE=myprofile ./deploy/aws-provision.sh
+#
 # Creates: a key pair, a security group, an Elastic IP and one EC2 instance,
 # then installs Docker and this repository on it. Idempotent — re-running finds
 # what already exists instead of making a second one.
@@ -13,7 +17,8 @@
 set -euo pipefail
 
 NAME="${NAME:-premierpower}"
-REGION="${REGION:-$(aws configure get region 2>/dev/null || echo eu-west-1)}"
+PROFILE="${PROFILE:-${AWS_PROFILE:-}}"
+REGION="${REGION:-$(aws ${PROFILE:+--profile "$PROFILE"} configure get region 2>/dev/null || echo eu-west-1)}"
 TYPE="${TYPE:-t3.micro}"
 DISK="${DISK:-20}"
 KEY_FILE="${KEY_FILE:-$HOME/.ssh/${NAME}.pem}"
@@ -22,12 +27,21 @@ REPO="${REPO:-https://github.com/PatrickNgare/PremierPower.git}"
 say()  { printf '\n\033[1;32m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m !! \033[0m%s\n' "$*"; }
 die()  { printf '\033[1;31m !! \033[0m%s\n' "$*" >&2; exit 1; }
-aws_() { aws --region "$REGION" "$@"; }
+aws_() { aws ${PROFILE:+--profile "$PROFILE"} --region "$REGION" "$@"; }
 
 command -v aws >/dev/null || die "AWS CLI not installed. See DEPLOY.md."
-aws sts get-caller-identity >/dev/null 2>&1 || die "AWS CLI has no working credentials. Run: aws configure"
+if ! aws_ sts get-caller-identity >/dev/null 2>&1; then
+  echo "AWS CLI has no working credentials for profile '"'"'${PROFILE:-default}'"'"'." >&2
+  echo >&2
+  echo "Profiles this machine knows about:" >&2
+  aws configure list-profiles 2>/dev/null | sed '"'"'s/^/  /'"'"' >&2 || true
+  echo >&2
+  echo "Either run:  aws configure" >&2
+  echo "or pick one: PROFILE=<name> $0" >&2
+  exit 1
+fi
 
-ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+ACCOUNT=$(aws_ sts get-caller-identity --query Account --output text)
 MYIP=$(curl -fsS --max-time 10 https://checkip.amazonaws.com | tr -d '\n')
 [ -n "$MYIP" ] || die "Could not determine your public IP for the SSH rule."
 

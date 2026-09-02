@@ -11,15 +11,16 @@
 set -euo pipefail
 
 NAME="${NAME:-premierpower}"
-REGION="${REGION:-$(aws configure get region 2>/dev/null || echo eu-west-1)}"
+PROFILE="${PROFILE:-${AWS_PROFILE:-}}"
+REGION="${REGION:-$(aws ${PROFILE:+--profile "$PROFILE"} configure get region 2>/dev/null || echo eu-west-1)}"
 KEY_FILE="${KEY_FILE:-$HOME/.ssh/${NAME}.pem}"
 
 say() { printf '\n\033[1;32m==>\033[0m %s\n' "$*"; }
 die() { printf '\033[1;31m !! \033[0m%s\n' "$*" >&2; exit 1; }
-aws_() { aws --region "$REGION" "$@"; }
+aws_() { aws ${PROFILE:+--profile "$PROFILE"} --region "$REGION" "$@"; }
 
 command -v aws >/dev/null || die "AWS CLI not installed."
-aws sts get-caller-identity >/dev/null 2>&1 || die "AWS CLI has no working credentials."
+aws_ sts get-caller-identity >/dev/null 2>&1 || die "AWS CLI has no working credentials for profile ${PROFILE:-default}."
 
 IID=$(aws_ ec2 describe-instances \
       --filters "Name=tag:Name,Values=$NAME" "Name=instance-state-name,Values=pending,running,stopped,stopping" \
