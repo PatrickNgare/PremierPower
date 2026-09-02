@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { ArrowRight, PhoneCall, ShieldCheck, MapPin, Zap, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { telLink } from '@/config/site'
@@ -58,7 +58,19 @@ const fromBanner = (b) => ({
   card: { label: b.card_label, title: b.card_title, line: b.card_line },
 })
 
-export default function Hero({ section }) {
+/**
+ * `variant` exists only so /preview/hero can show alternatives side by side on
+ * a real phone. It defaults to 'current', so the live site is unaffected while
+ * a variant is being judged. Once one is chosen it becomes the only path and
+ * this prop goes away — see the plan file.
+ *
+ *   current — as shipped
+ *   depth   — parallax that also works on touch, which the pointer-gated
+ *             effects never have
+ *   swipe   — depth, plus drag-to-change-slide and the photograph moved up
+ *             beside its own controls on small screens
+ */
+export default function Hero({ section, variant = 'current' }) {
   const site = useSite()
   // The hero's own words. The slides are separate — they are the banners table.
   const [line1, line2] = splitTitle(section?.title || 'Powering spaces.|Illuminating possibilities.')
@@ -108,6 +120,35 @@ export default function Hero({ section }) {
   const tiltY = useTransform(sx, (v) => v * 14)
   const tiltX = useTransform(sy, (v) => v * -10)
 
+  /**
+   * Depth for touch.
+   *
+   * Everything above is driven by cursor position, so on a phone the hero has
+   * no depth at all — the parallax, the drifting light and the tilt are all
+   * gated behind (pointer: fine). Scroll progress is the equivalent input a
+   * touch device does have, and it costs nothing extra: these feed the same
+   * kind of transform, and the browser composites them off the main thread.
+   */
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  })
+  const sp = useSpring(scrollYProgress, { stiffness: 60, damping: 22, mass: 0.6 })
+  const scrollBgY = useTransform(sp, [0, 1], [0, -56])
+  const scrollCardY = useTransform(sp, [0, 1], [0, -26])
+  const scrollCardScale = useTransform(sp, [0, 1], [1, 0.965])
+
+  // Pointer depth stays the richer treatment where a pointer exists; scroll
+  // depth fills in where one does not.
+  const pointerDepth = fine && !reduce
+  const scrollDepth = variant !== 'current' && !fine && !reduce
+  // Swipe replaces the need to sit the image next to its buttons: you change
+  // the slide on the photograph itself, so the distance to the controls below
+  // stops mattering. Reordering the stack was the other way to fix that, and it
+  // meant splitting the copy column and re-anchoring the desktop grid rows —
+  // much more risk, for an association that direct manipulation already solves.
+  const canSwipe = variant === 'swipe' && !fine
+
   useEffect(() => {
     // Cursor lighting is a pointer affordance; it has no meaning on touch.
     const mq = window.matchMedia('(pointer: fine)')
@@ -150,7 +191,11 @@ export default function Hero({ section }) {
     >
       {/* ── Layer 1: the room ─────────────────────────────────── */}
       <motion.div
-        style={fine && !reduce ? { x: imgX, y: imgY } : undefined}
+        style={
+          pointerDepth ? { x: imgX, y: imgY }
+            : scrollDepth ? { y: scrollBgY }
+            : undefined
+        }
         className="absolute -inset-[3%] -z-30"
       >
         <AnimatePresence initial={false}>
@@ -316,12 +361,34 @@ export default function Hero({ section }) {
             card's top edge on the headline's, giving the two columns a shared line. */}
         <motion.div
           variants={rise}
-          style={fine && !reduce ? { x: cardX, y: cardY } : undefined}
+          style={
+            pointerDepth ? { x: cardX, y: cardY }
+              : scrollDepth ? { y: scrollCardY, scale: scrollCardScale }
+              : undefined
+          }
           className="relative mx-auto w-full max-w-md lg:mt-11 lg:self-start xl:max-w-lg"
         >
           <motion.div
-            style={fine && !reduce ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 1200 } : undefined}
-            className="relative overflow-hidden rounded-[28px] border border-white/20 bg-white/[0.07] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.75)] backdrop-blur-2xl"
+            style={pointerDepth ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 1200 } : undefined}
+            // Drag only where there is no pointer: on a mouse the card already
+            // tilts, and making it draggable there fights text selection.
+            drag={canSwipe ? 'x' : false}
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.16}
+            dragMomentum={false}
+            onDragStart={() => setPaused(true)}
+            onDragEnd={(_, info) => {
+              setPaused(false)
+              // Either a decisive flick or a deliberate drag past a third of the
+              // card. Velocity alone fires on scroll jitter; distance alone
+              // makes a quick flick feel ignored.
+              const far = Math.abs(info.offset.x) > 90
+              const fast = Math.abs(info.velocity.x) > 380
+              if (far || fast) go(info.offset.x < 0 ? 1 : -1)
+            }}
+            className={`relative overflow-hidden rounded-[28px] border border-white/20 bg-white/[0.07] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.75)] backdrop-blur-2xl ${
+              canSwipe ? 'cursor-grab touch-pan-y active:cursor-grabbing' : ''
+            }`}
           >
             {/* Light catching the top edge, the way glass does. */}
             <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
