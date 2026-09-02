@@ -154,14 +154,28 @@ const BLOCKS = {
     </section>
   ),
 
-  testimonials: (s) => (
+  // Renders nothing at all while there are no reviews. A heading reading
+  // "What clients say" above an empty box is worse than no band: it draws the
+  // eye to the one thing the site cannot yet show.
+  testimonials: (s) => <TestimonialsBand section={s} />,
+}
+
+function TestimonialsBand({ section }) {
+  const { data, loading } = useApi('/testimonials', [])
+  if (!loading && !data.length) return null
+  return (
     <section className="section-tight">
       <div className="container-x">
-        <SectionHeader align={s.config?.align ?? 'center'} eyebrow={s.eyebrow} title={s.title} lede={s.subtitle} />
-        <TestimonialsStrip />
+        <SectionHeader
+          align={section.config?.align ?? 'center'}
+          eyebrow={section.eyebrow}
+          title={section.title}
+          lede={section.subtitle}
+        />
+        <TestimonialsStrip hideWhenEmpty />
       </div>
     </section>
-  ),
+  )
 }
 
 export default function Home() {

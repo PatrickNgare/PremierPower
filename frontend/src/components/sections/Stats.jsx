@@ -6,6 +6,7 @@ import { isPending, value } from '@/config/site'
 import { DEMO } from '@/config/demo'
 import { useSite } from '@/hooks/useSite'
 import { useSectionItems } from '@/hooks/useSection'
+import { useApi } from '@/hooks/useApi'
 
 /** Icons the CMS may name for a stat. */
 const ICONS = { calendar: CalendarClock, building: Building2, layers: Layers, handshake: HeartHandshake }
@@ -31,6 +32,13 @@ const rows = [
 export default function Stats() {
   const site = useSite()
   const items = useSectionItems('stats', rows)
+  // Projects the client has actually entered. Not a substitute for the figure
+  // they eventually confirm — a company has usually delivered more than it
+  // lists — but it is a true, checkable number, and three em dashes across the
+  // band read as a site nobody finished. The label changes with it so the
+  // number never claims more than it can support.
+  const { data: projects } = useApi('/projects', null)
+  const listed = Array.isArray(projects) ? projects.length : 0
 
   /**
    * A stat's figure comes from the company detail it names, so the number is
@@ -43,8 +51,14 @@ export default function Stats() {
     if (literal) return literal
     const field = FIELD[r.href] ?? FIELD[r.field] ?? r.field
     const v = site[field]
-    return isPending(v) ? null : value(v)
+    if (!isPending(v)) return value(v)
+    if ((r.field === 'projects_completed' || r.href === 'projects_completed') && listed) return String(listed)
+    return null
   }
+  /** True only where the figure is the client's own, not one we counted. */
+  const derived = (r) =>
+    (r.field === 'projects_completed' || r.href === 'projects_completed') &&
+    isPending(site.installsCompleted) && listed > 0
   const anyPending = items.some((r) => resolve(r) === null)
 
   return (
@@ -70,7 +84,9 @@ export default function Stats() {
                   </span>
                 )}
               </p>
-              <p className="mt-3 text-sm text-ink-300">{r.title ?? r.label}</p>
+              <p className="mt-3 text-sm text-ink-300">
+                {derived(r) ? 'Projects listed' : (r.title ?? r.label)}
+              </p>
               <span aria-hidden="true" className="mt-5 block h-px w-12 bg-lumen-500/50 transition-all duration-500 group-hover:w-20" />
             </motion.div>
           )

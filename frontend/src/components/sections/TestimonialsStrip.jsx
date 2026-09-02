@@ -4,6 +4,7 @@ import StarRating from '@/components/ui/StarRating'
 import { useApi } from '@/hooks/useApi'
 import { SkeletonCard, LoadingRegion } from '@/components/ui/Skeleton'
 import { testimonials as fallback } from '@/data/testimonials'
+import { Link } from 'react-router-dom'
 
 function Card({ t }) {
   return (
@@ -25,7 +26,7 @@ function Card({ t }) {
 }
 
 /** Marquee-style strip, wired into the homepage from day one. */
-export default function TestimonialsStrip() {
+export default function TestimonialsStrip({ hideWhenEmpty = false }) {
   const { data, loading } = useApi('/testimonials', fallback)
 
   if (loading) {
@@ -38,14 +39,26 @@ export default function TestimonialsStrip() {
     )
   }
 
+  // Nothing to show yet. The old empty state printed the brief — "three or
+  // more real reviews, favouring the ones that mention safety" — which is a
+  // note to whoever is building the site, not something a visitor should ever
+  // read. `hideWhenEmpty` lets the home page drop the band entirely rather
+  // than carry a heading with an apology under it; the reviews page, whose
+  // whole purpose is reviews, says something a visitor can act on.
   if (!data.length) {
+    if (hideWhenEmpty) return null
     return (
-      <div className="mt-10 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-8 text-center">
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.16em] text-neutral-500">Testimonials required</p>
-        <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-neutral-600">
-          Three or more real reviews, favouring the ones that mention safety and reliability.
-          This section stays empty until they arrive rather than carrying dummy praise.
+      <div className="mt-10 rounded-[var(--radius-card)] border border-line bg-surface-2 p-8 text-center sm:p-10">
+        <p className="font-display text-lg font-bold tracking-tight text-body sm:text-xl">
+          References available on request.
         </p>
+        <p className="mx-auto mt-2.5 max-w-xl text-sm leading-relaxed text-muted">
+          We would rather put you in touch with the contractors and architects we have
+          worked with than publish a wall of quotes. Ask and we will arrange it.
+        </p>
+        <Link to="/contact" className="btn-onlight mt-6 px-6 py-3 text-sm">
+          Request references
+        </Link>
       </div>
     )
   }
