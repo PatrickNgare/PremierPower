@@ -69,13 +69,12 @@ export default function Services() {
         return (
           <motion.article
             key={s.slug} variants={fadeUp} {...inView}
-            className="group relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-all duration-500 hover:-translate-y-1 sm:p-7"
+            // lit-card: was a bespoke hover-only glow span here, visible to a
+            // mouse and invisible to the touch majority — same gap as the
+            // Solutions cards. One shared utility now carries both a hover
+            // glow and a quieter always-on version under (hover: none).
+            className="lit-card group relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-all duration-500 hover:-translate-y-1 sm:p-7"
           >
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              style={{ background: 'radial-gradient(18rem 12rem at 70% 0%, rgb(245 201 123 / 0.20), transparent 70%)' }}
-            />
             <Icon size={20} strokeWidth={1.6} className="relative text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
             <h3 className="relative mt-4 font-display text-lg font-bold text-body">{s.title}</h3>
             <p className="relative mt-2 text-sm leading-relaxed text-body-soft">{s.lede}</p>

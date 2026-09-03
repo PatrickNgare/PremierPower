@@ -61,7 +61,7 @@ export default function CTABanner() {
             <Magnetic>
               <Link to="/contact" className="btn-primary group">
                 Request a quote
-                <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1 group-active:translate-x-1.5 group-active:duration-150" aria-hidden="true" />
               </Link>
             </Magnetic>
             <Magnetic>

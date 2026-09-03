@@ -274,7 +274,7 @@ export default function Hero({ section }) {
           <motion.div variants={rise} className="mt-8 flex flex-wrap items-center gap-3">
             <Link to={section?.cta_href || '/services'} className="btn-primary group">
               {section?.cta_label || 'Explore our solutions'}
-              <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+              <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1 group-active:translate-x-1.5 group-active:duration-150" aria-hidden="true" />
             </Link>
             {tel ? (
               <a href={tel} className="btn-ghost group">

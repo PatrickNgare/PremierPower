@@ -129,7 +129,7 @@ export default function ContactForm() {
                     <><Loader2 size={16} className="animate-spin" aria-hidden="true" /> Sending…</>
                   ) : (
                     <>Send project enquiry
-                      <Send size={15} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
+                      <Send size={15} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-active:translate-x-1 group-active:-translate-y-1 group-active:duration-150" aria-hidden="true" />
                     </>
                   )}
                 </button>

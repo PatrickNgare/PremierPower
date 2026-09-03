@@ -121,7 +121,7 @@ export default function Navbar() {
                 <Magnetic strength={0.2}>
                   <Link to="/contact" className="btn-primary group whitespace-nowrap px-5 py-3 text-sm">
                     Request a quote
-                    <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                    <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1 group-active:translate-x-1.5 group-active:duration-150" aria-hidden="true" />
                   </Link>
                 </Magnetic>
               </div>

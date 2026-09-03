@@ -343,11 +343,36 @@
   }
 
   .btn-primary, .btn-primary-lg {
+    /* active:scale-95, not scale-[0.94]: an arbitrary-value utility only
+       compiles when Tailwind's scanner finds the literal class string in
+       scanned source. Written inside an @apply in a CSS file, it never was —
+       so every button on the site specified a press scale that silently
+       produced nothing. Confirmed by inspecting the actual built CSS rather
+       than trusting the source read: .btn-ghost and .btn-onlight below had
+       carried the identical dead rule since before this file changed hands.
+       Standard tokens like scale-95 are pre-generated and work from @apply. */
     @apply bg-brand-fill text-white px-7 py-3.5 text-[0.95rem]
            hover:bg-brand-deep hover:-translate-y-0.5
-           active:translate-y-0 active:scale-[0.985];
+           active:translate-y-0 active:scale-95;
     box-shadow: 0 8px 28px -10px rgb(230 0 0 / 0.55);
-    transition-duration: 280ms;
+    /* The rest of the button's transitions (colour, shadow) stay at 280ms;
+       transform gets its own pair so a press reads as a switch closing rather
+       than a generic hover. Committing (press) is quick and linear — the
+       button should feel like it responds the instant a thumb lands.
+       Releasing uses a small overshoot, so it springs back rather than
+       merely stopping — the closest a CSS-only transition gets to the spring
+       physics the rest of the site's motion already uses (see Magnetic.jsx). */
+    transition: background-color 280ms ease, box-shadow 280ms ease,
+                transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .btn-primary:active, .btn-primary-lg:active {
+    transition: background-color 280ms ease, box-shadow 280ms ease,
+                transform 110ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary, .btn-primary-lg, .btn-primary:active, .btn-primary-lg:active {
+      transition: background-color 280ms ease, box-shadow 280ms ease;
+    }
   }
 
   /* Light sweeps across the control on hover — the lighting language applied
@@ -371,14 +396,14 @@
   .btn-ghost, .btn-ghost-dark {
     @apply border border-white/25 text-white px-7 py-3.5 text-[0.95rem]
            hover:border-white/60 hover:bg-white/10
-           hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985];
+           hover:-translate-y-0.5 active:translate-y-0 active:scale-95;
     transition-duration: 280ms;
   }
 
   .btn-onlight, .btn-outline {
     @apply border border-line-firm text-body px-7 py-3.5 text-[0.95rem]
            hover:border-body-soft hover:bg-surface-2
-           hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985];
+           hover:-translate-y-0.5 active:translate-y-0 active:scale-95;
     transition-duration: 280ms;
   }
 

@@ -85,7 +85,7 @@ export default function LightingShowcase({ section }) {
             </p>
             <Link to={section?.cta_href || '/portfolio'} className="btn-primary group mt-9">
               {section?.cta_label || 'See lighting projects'}
-              <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+              <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1 group-active:translate-x-1.5 group-active:duration-150" aria-hidden="true" />
             </Link>
           </motion.div>
 
