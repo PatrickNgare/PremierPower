@@ -97,13 +97,18 @@ export default function Footer() {
               {/* space-y-1 with padding on the link, not space-y-3 on the
                   item: the gap was outside the target, so each link was a
                   20px-tall tap area with dead space between. The padding moves
-                  that same gap inside the target and clears the 24px floor. */}
+                  that same gap inside the target.
+
+                  Sizing lives in .link-quiet so the coarse-pointer rule in
+                  index.css reaches it. These were the one set of controls that
+                  rule missed: on a phone every button and inline link grew to
+                  44px while the footer stayed at 28. */}
               <ul className="mt-4 space-y-1">
                 {col.links.map((l) => (
                   <li key={l.label}>
                     <Link
                       to={l.to}
-                      className="group inline-flex min-h-[28px] items-center gap-1 py-1 text-sm text-muted transition-colors hover:text-white"
+                      className="group link-quiet text-muted hover:text-white"
                     >
                       {l.label}
                       <ArrowUpRight

@@ -403,11 +403,21 @@
     @apply relative inline-flex items-center gap-1.5 font-semibold
            text-[rgb(var(--accent-rgb))];
   }
+  /* A quiet list link — the footer's navigation columns. 28px clears WCAG
+     2.2's 24px floor on a mouse, where a cursor is precise; a thumb is not,
+     which is what the coarse rule below is for. */
+  .link-quiet {
+    @apply inline-flex min-h-[28px] items-center gap-1 py-1 text-sm transition-colors;
+  }
+
   @media (pointer: coarse) {
     /* 44px minimum target on touch. Padding grows the hit area; the
        underline still hugs the text. */
     .link-underline, .link-arrow { @apply min-h-11 py-2.5; }
     .btn, .btn-primary, .btn-ghost, .btn-onlight { @apply min-h-11; }
+    /* The footer's links were the one set of controls this rule missed, so on
+       a phone they stayed at 28px while every other control grew to 44px. */
+    .link-quiet { @apply min-h-11 py-2.5; }
   }
   .link-arrow { @apply text-sm; }
   .link-underline::after, .link-arrow::after {
