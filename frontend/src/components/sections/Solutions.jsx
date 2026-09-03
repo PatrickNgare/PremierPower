@@ -42,9 +42,13 @@ export default function Solutions() {
             variants={fadeUp}
             // Seven stacked cards is a long scroll on a phone for little
             // gain; the rest appear from sm up.
-            className={`group relative overflow-hidden rounded-[var(--radius-card)] ${span} ${
+            // lit-card only on the text cards: the image cards already carry a
+            // hover glow layer, and a second one fights the photo's stacking.
+            // The text cards had no touch response at all — this is where the
+            // majority were getting a flat card.
+            className={`group relative overflow-hidden rounded-[var(--radius-card)] transition-transform duration-500 ease-out will-change-transform hover:-translate-y-1 ${span} ${
               i > 3 ? 'hidden sm:block' : ''
-            } ${s.image ? 'border border-white/10' : 'border border-line bg-surface'}`}
+            } ${s.image ? 'border border-white/10' : 'lit-card border border-line bg-surface'}`}
           >
             {s.image ? (
               <>

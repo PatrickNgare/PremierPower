@@ -14,6 +14,7 @@ import ProcessSteps from '@/components/sections/ProcessSteps'
 import TestimonialsStrip from '@/components/sections/TestimonialsStrip'
 import CTABanner from '@/components/sections/CTABanner'
 import SectionHeader from '@/components/ui/SectionHeader'
+import PowerOnRule from '@/components/ui/PowerOnRule'
 import Button from '@/components/ui/Button'
 import { inView } from '@/utils/motion'
 import { useApi } from '@/hooks/useApi'
@@ -122,6 +123,10 @@ const BLOCKS = {
   why: (s) => (
     <section className="on-dark bg-primary">
       <div className="container-x section">
+        {/* The signature, on the one dark band where light reads as current:
+            a conductor closes across the section as it arrives. One place on
+            the site — restraint is what keeps it from reading as a toy. */}
+        <PowerOnRule className="mb-12 w-full" />
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           <SectionHeader tone="dark" eyebrow={s.eyebrow} title={s.title} lede={s.subtitle} />
           <motion.div {...inView} className="space-y-5 text-base leading-relaxed text-white/70 lg:pt-16">
