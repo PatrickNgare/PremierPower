@@ -18,6 +18,45 @@ export const photo = (path) => mediaMap[path] ?? path
 /** The reverse map: CDN URL back to the file that still ships in the build. */
 const LOCAL_FOR = Object.fromEntries(Object.entries(mediaMap).map(([local, cdn]) => [cdn, local]))
 
+const UPLOAD = '/image/upload/'
+
+export const isCdn = (u) => typeof u === 'string' && u.includes('res.cloudinary.com')
+
+/**
+ * Replace the transformation segment of a Cloudinary delivery URL.
+ *
+ * The path is .../image/upload/<transform>/v1/<public id>, and the transform
+ * is optional — so this drops an existing one only when the segment actually
+ * looks like a transform, rather than eating the version or the id.
+ */
+function withTransform(url, transform) {
+  const at = url.indexOf(UPLOAD)
+  if (at === -1) return url
+  const head = url.slice(0, at + UPLOAD.length)
+  const parts = url.slice(at + UPLOAD.length).split('/')
+  if (/^[a-z]{1,3}_/.test(parts[0])) parts.shift()
+  return `${head}${transform}/${parts.join('/')}`
+}
+
+/**
+ * The same image at a given width.
+ *
+ * c_limit, not c_scale: it caps the width and never enlarges a photograph past
+ * its own resolution, so a small original is delivered as-is rather than
+ * upscaled into mush.
+ */
+export const cdnWidth = (url, w) =>
+  isCdn(url) ? withTransform(url, `f_auto,q_auto,c_limit,w_${w}`) : url
+
+/** A srcset across the widths a layout can actually ask for. */
+export function cdnSrcSet(url, widths) {
+  if (!isCdn(url)) return undefined
+  return widths.map((w) => `${cdnWidth(url, w)} ${w}w`).join(', ')
+}
+
+/** Strip any transform back to the form the media map is keyed on. */
+export const cdnBase = (url) => (isCdn(url) ? withTransform(url, 'f_auto,q_auto') : url)
+
 /**
  * Fall back to the bundled copy when a CDN image fails.
  *
@@ -35,8 +74,15 @@ const LOCAL_FOR = Object.fromEntries(Object.entries(mediaMap).map(([local, cdn])
 export function fallbackToLocal(event) {
   const img = event.currentTarget
   if (img.dataset.fellBack) return
-  const local = LOCAL_FOR[img.getAttribute('src')]
+  // Keyed on the untransformed URL: once a width is baked into the delivery
+  // path the src no longer matches the map, and the fallback would silently
+  // stop working for exactly the images most likely to be resized.
+  const local = LOCAL_FOR[cdnBase(img.getAttribute('src'))]
   if (!local) return
   img.dataset.fellBack = '1'
+  // srcset outranks src, so leaving it in place means the browser goes on
+  // trying the CDN candidates and the local copy is never used.
+  img.removeAttribute('srcset')
+  img.removeAttribute('sizes')
   img.src = local
 }

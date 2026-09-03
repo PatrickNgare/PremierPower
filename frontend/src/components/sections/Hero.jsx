@@ -8,7 +8,7 @@ import { useApi } from '@/hooks/useApi'
 import { splitTitle } from '@/hooks/useSection'
 import { DUR, EASE_OUT, EASE_EXIT } from '@/utils/motion'
 import { useSite } from '@/hooks/useSite'
-import { fallbackToLocal } from '@/utils/photo'
+import { cdnSrcSet, fallbackToLocal } from '@/utils/photo'
 
 const AUTOPLAY_MS = 6500
 
@@ -185,6 +185,11 @@ export default function Hero({ section }) {
           <motion.img onError={fallbackToLocal}
             key={slide.image}
             src={slide.image}
+            // The backdrop is full-bleed, so it really is 100vw — but a phone
+            // was being sent the same file as a desktop, which is most of why
+            // the hero was the slowest thing on the site.
+            srcSet={cdnSrcSet(slide.image, [640, 960, 1280, 1600, 1920, 2560])}
+            sizes="100vw"
             alt=""
             aria-hidden="true"
             fetchPriority="high"
@@ -375,6 +380,11 @@ export default function Hero({ section }) {
                 <img onError={fallbackToLocal}
                   src={slide.image}
                   alt={slide.alt}
+                  // The card is 339px on a phone and 510px at its widest, so
+                  // even at 2x it never needs more than about a thousand
+                  // pixels. It was being sent the full-size original.
+                  srcSet={cdnSrcSet(slide.image, [360, 540, 720, 1024])}
+                  sizes="(max-width: 1024px) 90vw, 32rem"
                   loading="eager"
                   decoding="async"
                   className="h-52 w-full object-cover sm:h-64 xl:h-80"

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { DEMO } from '@/config/demo'
-import { fallbackToLocal } from '@/utils/photo'
+import { cdnSrcSet, fallbackToLocal } from '@/utils/photo'
 
 /**
  * Real installation photography is the hero asset. Until the client supplies
@@ -9,6 +9,13 @@ import { fallbackToLocal } from '@/utils/photo'
  *
  * `fill` makes it cover its positioned parent, for full-bleed hero use.
  */
+/**
+ * The widths a layout on this site can actually ask for, from a phone card up
+ * to a full-bleed hero on a 2x display. Cloudinary resizes on request, so the
+ * only cost of a wider list is a longer attribute.
+ */
+const WIDTHS = [320, 480, 640, 960, 1280, 1600, 1920]
+
 export default function Photo({
   src, demoSrc, alt, brief, ratio = '4 / 3', priority = false,
   className = '', sizes, kenBurns = false, fill = false, tone = 'light',
@@ -38,11 +45,17 @@ export default function Photo({
     )
   }
 
+  // Without sizes the browser assumes the image fills the viewport and picks
+  // the widest candidate, which would undo the point of the srcset. A
+  // full-bleed photograph really is 100vw; anything else is a card in a grid.
+  const resolvedSizes = sizes ?? (fill ? '100vw' : '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw')
+
   return (
     <img
       src={resolved}
       alt={alt}
-      sizes={sizes}
+      srcSet={cdnSrcSet(resolved, WIDTHS)}
+      sizes={resolvedSizes}
       // Try the copy that still ships in the build before giving up. Only
       // if that fails too does the honest "photograph required" gap appear —
       // a labelled gap is right when we have no picture, wrong when we have
