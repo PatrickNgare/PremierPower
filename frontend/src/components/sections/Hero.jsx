@@ -32,8 +32,11 @@ const cardSwap = {
     transition: { type: 'spring', stiffness: 260, damping: 26, mass: 0.9 },
   },
   exit: (d) => ({
+    // Kept short on purpose: mode="wait" holds the next card until this
+    // one has gone, so every millisecond here is a millisecond of empty
+    // card. Long enough to read as a swap, short enough not to blink.
     opacity: 0, x: d >= 0 ? -48 : 48, scale: 0.96, rotate: d >= 0 ? -2 : 2,
-    transition: { duration: 0.24, ease: EASE_EXIT },
+    transition: { duration: 0.14, ease: EASE_EXIT },
   }),
 }
 
@@ -195,7 +198,7 @@ export default function Hero({ section }) {
             fetchPriority="high"
             decoding="async"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.55 }}
+            animate={{ opacity: 0.72 }}
             exit={{ opacity: 0 }}
             transition={{ duration: DUR.cinematic, ease: EASE_OUT }}
             className="absolute inset-0 h-full w-full object-cover object-center"
@@ -204,7 +207,11 @@ export default function Hero({ section }) {
       </motion.div>
 
       {/* ── Layer 2: architectural shadow, so text always reads ── */}
-      <div aria-hidden="true" className="absolute inset-0 -z-20 bg-gradient-to-r from-ink-950 via-ink-950/85 to-ink-950/35" />
+      {/* The scrim exists so the headline reads, and it was set as though the
+          headline sat across the whole width — fully opaque black on the left,
+          85% through the middle. The text occupies about the left half, so the
+          shadow only needs to be that wide, and the photography can be seen. */}
+      <div aria-hidden="true" className="absolute inset-0 -z-20 bg-gradient-to-r from-ink-950 via-ink-950/70 to-ink-950/20" />
       <div aria-hidden="true" className="absolute inset-0 -z-20 bg-gradient-to-t from-ink-950 via-transparent to-ink-950/70" />
 
       {/* ── Layer 3: the light itself, following the pointer ───── */}
@@ -246,7 +253,13 @@ export default function Hero({ section }) {
           >
             {line1}
             {line2 && (
-              <span className="mt-1 block bg-gradient-to-r from-lumen-300 via-lumen-500 to-lumen-700 bg-clip-text text-transparent">
+              // A warm white, not a gold. The saturated gradient made this line
+              // outrank the one above it, so "Illuminating possibilities" read
+              // as the business and "Powering spaces" as the subtitle — which
+              // is backwards for a contractor pitching every sector. The two
+              // lines now carry equal weight and the warmth is a tint, not a
+              // second brand colour competing with the red.
+              <span className="mt-1 block bg-gradient-to-r from-lumen-100 via-lumen-300 to-lumen-500 bg-clip-text text-transparent">
                 {line2}
               </span>
             )}
