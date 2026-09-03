@@ -27,6 +27,10 @@ export default function Portfolio() {
 
       <section className="section-loose">
         <div className="container-x">
+          {/* Same as /services: the tiles are h3s and the page hero is the h1,
+              so the level jumped. Screen-reader only — the hero already names
+              the page, and a second visible heading would just repeat it. */}
+          <h2 className="sr-only">Photographed installations</h2>
           <ProjectsShowcase />
         </div>
       </section>

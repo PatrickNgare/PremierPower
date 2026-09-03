@@ -29,6 +29,12 @@ export default function Services() {
 
       <section className="section-tight">
         <div className="container-x">
+          {/* The service cards are h3s, so without this the document jumped
+              straight from the page h1 to h3 and anyone navigating by heading
+              level landed in a list with nothing naming it. Not shown: the
+              page title above already says this out loud, and repeating it on
+              screen would be noise. */}
+          <h2 className="sr-only">Service lines</h2>
           <ServicesSection />
         </div>
       </section>
