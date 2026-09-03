@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import { Field } from '@/components/ui/Field'
 import Magnetic from '@/components/ui/Magnetic'
@@ -20,6 +20,7 @@ const PROJECT_TYPES = [
 ]
 
 export default function ContactForm() {
+  const reduce = useReducedMotion()
   const site = useSite()
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
@@ -69,6 +70,20 @@ export default function ContactForm() {
               transition={{ delay: 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="relative mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-earth-ink/10"
             >
+              {/* One ring of current confirming the connection, once — the
+                  same "acknowledged" language as the rest of the site's
+                  power motifs, scaled down to a single quiet pulse rather
+                  than the hero's filament. Decorative, so it skips entirely
+                  under reduced motion rather than just going instant. */}
+              {!reduce && (
+                <motion.span
+                  aria-hidden="true"
+                  initial={{ scale: 0.8, opacity: 0.55 }}
+                  animate={{ scale: 2.1, opacity: 0 }}
+                  transition={{ delay: 0.3, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                  className="pointer-events-none absolute inset-0 rounded-full border border-earth-ink/50"
+                />
+              )}
               <CheckCircle2 size={26} className="text-earth-ink" aria-hidden="true" />
             </motion.span>
             <h3 className="relative mt-6 font-display text-2xl font-bold text-body">That reached us.</h3>

@@ -5,11 +5,18 @@ import { useInView, useReducedMotion } from 'framer-motion'
  * Counts up once when the number enters the viewport. Under reduced motion it
  * simply renders the final value — a number ticking is decoration, not
  * information.
+ *
+ * Glows once as it settles on its final value — confirmation that the ramp is
+ * done, the same "acknowledged" language as the rest of the site's power
+ * motifs (see PowerOnRule.jsx, the form's success pulse). Skipped under
+ * reduced motion along with the count itself, since there is no settle to
+ * mark when the value simply appears.
  */
 export default function Counter({ value, duration = 1600, className = '' }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, amount: 0.6 })
   const reduce = useReducedMotion()
+  const [settled, setSettled] = useState(false)
 
   // Split "500+" into the number and whatever decorates it.
   const match = String(value).match(/^(\D*)([\d.,]+)(.*)$/)
@@ -30,6 +37,7 @@ export default function Counter({ value, duration = 1600, className = '' }) {
       // Ease-out cubic: fast first, settles gently.
       setN(Math.round(target * (1 - Math.pow(1 - t, 3))))
       if (t < 1) raf = requestAnimationFrame(tick)
+      else setSettled(true)
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
@@ -38,7 +46,11 @@ export default function Counter({ value, duration = 1600, className = '' }) {
   if (target === null) return <span ref={ref} className={className}>{value}</span>
 
   return (
-    <span ref={ref} className={`tabular ${className}`}>
+    <span
+      ref={ref}
+      className={`tabular ${className}`}
+      style={settled ? { animation: 'numberSettle 900ms ease-out' } : undefined}
+    >
       {prefix}{n.toLocaleString()}{suffix}
     </span>
   )

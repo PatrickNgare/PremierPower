@@ -132,6 +132,22 @@
    the way current does when a circuit is closed. The signature "power-on"
    moment is built from this. */
 @keyframes filament { 0% { transform: translateX(-8%); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateX(108%); opacity: 0; } }
+/* A star settling into its rating: a brief warm glow rises and fades once,
+   rather than sitting lit forever — confirmation, not decoration. Same gold
+   as text-glow and the power-rule signature. */
+@keyframes starSettle {
+  0%   { filter: drop-shadow(0 0 0 rgb(245 201 123 / 0)); }
+  40%  { filter: drop-shadow(0 0 5px rgb(245 201 123 / 0.75)); }
+  100% { filter: drop-shadow(0 0 0 rgb(245 201 123 / 0)); }
+}
+/* Same idea, for a Counter that has just finished ramping up: the figure
+   glows once as it settles on its final value, text-shadow rather than
+   filter since this decorates a number, not an icon. */
+@keyframes numberSettle {
+  0%   { text-shadow: 0 0 0 rgb(245 201 123 / 0); }
+  35%  { text-shadow: 0 0 18px rgb(245 201 123 / 0.55); }
+  100% { text-shadow: 0 0 0 rgb(245 201 123 / 0); }
+}
 
 /* ═══════════════════════════════════════════════════════════════
    BASE
