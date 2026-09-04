@@ -567,6 +567,9 @@
      card grids already did; the point here is `hover: none`, where a touch
      device shows a gentle steady version instead of nothing — so the
      majority of visitors get a lit card rather than a flat one. */
+  .lit-card {
+    transition: box-shadow 500ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+  }
   .lit-card::before {
     content: '';
     position: absolute;
@@ -578,13 +581,45 @@
     transition: opacity 600ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
   }
   @media (hover: hover) {
-    .group:hover .lit-card::before { opacity: 1; }
+    /* .lit-card and .group are the same element in every usage today, so
+       this has to be a compound selector: "X Y" asks for Y as a DESCENDANT
+       of X, which never matches when X and Y are one node. That is what
+       ".group:hover .lit-card::before" was — a hover glow that had never
+       once fired on a pointer device, on both grids that carry it. Only the
+       touch branch below was ever separately verified, which is why this
+       went unnoticed. Both forms are kept so a future descendant usage
+       (lit-card on a child of .group) still works too. */
+    .group:hover.lit-card::before, .group:hover .lit-card::before { opacity: 1; }
+    .group:hover.lit-card, .group:hover .lit-card { box-shadow: var(--shadow-glow); }
   }
   @media (hover: none) {
-    /* No hover to reveal it, so touch cards carry a quieter steady glow. */
+    /* No hover to reveal it, so touch cards carry a quieter steady glow —
+       and the drop-shadow with it, since --shadow-glow was sitting in the
+       token file, defined, and used nowhere. */
     .lit-card::before { opacity: 0.5; }
+    .lit-card { box-shadow: var(--shadow-glow); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .lit-card::before { transition: none; }
+    .lit-card::before, .lit-card { transition: none; }
+  }
+
+  /* A near-invisible film-grain on the dark showroom grounds — the
+     "expensive material" feeling glassmorphism is usually reaching for,
+     without the blur cost or the SaaS-panel read. Static — no per-frame
+     cost — and a tiled inline SVG rather than a shipped image, so it adds no
+     network request. Desaturated via feColorMatrix so it reads as texture,
+     not a colour cast; opacity is deliberately low enough that it is felt
+     rather than seen. Opt in per section with a sibling div, the same
+     convention .ambient-warm and .light-beam already use, rather than
+     folding it into .on-dark — .on-dark also marks the lightbox scrim, where
+     grain would compete with the photograph being viewed. */
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch' result='t'/%3E%3CfeColorMatrix in='t' type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    /* 0.035 measured as a real but barely-there 1/255 pixel delta against a
+       grain-off control shot — present, but not quite felt. 0.06 verified the
+       same way before shipping. */
+    opacity: 0.06;
+    mix-blend-mode: overlay;
   }
 }

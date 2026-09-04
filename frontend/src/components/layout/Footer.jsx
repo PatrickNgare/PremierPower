@@ -59,6 +59,7 @@ export default function Footer() {
   return (
     <footer className="on-dark relative isolate overflow-hidden bg-ink-950">
       <div aria-hidden="true" className="ambient-warm absolute inset-0 -z-10 opacity-60" />
+      <div aria-hidden="true" className="grain absolute inset-0 -z-10" />
       <div aria-hidden="true" className="rule-fade absolute inset-x-0 top-0 h-px text-white/15" />
 
       <div className="container-x py-16">

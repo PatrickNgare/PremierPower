@@ -9,6 +9,10 @@ import { fallbackToLocal } from '@/utils/photo'
 export default function PageHero({ eyebrow, title, lede, crumb, image, imageAlt = '' }) {
   return (
     <section className="on-dark relative overflow-hidden bg-primary-dark">
+      {/* Sits behind the photograph (DOM order, no z-index) when one exists,
+          and directly against bg-primary-dark when it does not — the one
+          page-hero instance most likely to render with nothing supplied yet. */}
+      <div aria-hidden="true" className="grain absolute inset-0" />
       {image && (
         <>
           <img onError={fallbackToLocal}

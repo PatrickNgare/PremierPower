@@ -109,6 +109,7 @@ export default function AboutBento() {
         className="on-dark relative isolate flex flex-col justify-center overflow-hidden rounded-[var(--radius-card)] bg-ink-950 p-7 sm:col-span-2"
       >
         <div aria-hidden="true" className="ambient-warm absolute inset-0 -z-10" />
+        <div aria-hidden="true" className="grain absolute inset-0 -z-10" />
         <MapPin size={20} className="text-lumen-500" aria-hidden="true" />
         <p className="mt-4 font-display text-base font-bold text-white">Working nationwide</p>
         <ul className="mt-4 flex flex-wrap gap-2">

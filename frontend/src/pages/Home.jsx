@@ -121,7 +121,12 @@ const BLOCKS = {
 
   /* The differentiator, stated as the problem it solves. */
   why: (s) => (
-    <section className="on-dark bg-primary">
+    // relative isolate: every other .on-dark section already carries this;
+    // this was the one exception, which meant an absolutely-positioned
+    // sibling here (the grain texture below) would have escaped to the
+    // nearest positioned ancestor instead of this section.
+    <section className="on-dark relative isolate bg-primary">
+      <div aria-hidden="true" className="grain absolute inset-0 -z-10" />
       <div className="container-x section">
         {/* The signature, on the one dark band where light reads as current:
             a conductor closes across the section as it arrives. One place on

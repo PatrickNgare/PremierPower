@@ -64,6 +64,7 @@ export default function Stats() {
   return (
     <section className="on-dark relative isolate overflow-hidden bg-ink-950">
       <div aria-hidden="true" className="ambient-warm absolute inset-0 -z-10" />
+      <div aria-hidden="true" className="grain absolute inset-0 -z-10" />
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px rule-fade text-white/20" />
 
       <motion.div variants={stagger(0.08)} {...inView} className="container-x grid gap-8 py-14 sm:grid-cols-2 sm:gap-10 sm:py-20 lg:grid-cols-4">

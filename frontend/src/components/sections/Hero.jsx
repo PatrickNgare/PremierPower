@@ -233,6 +233,7 @@ export default function Hero({ section }) {
         }}
       />
       <div aria-hidden="true" className="light-beam animate-beam pointer-events-none absolute inset-0 -z-10 motion-reduce:animate-none" />
+      <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 -z-10" />
 
       {/* ── Content ───────────────────────────────────────────── */}
       <motion.div

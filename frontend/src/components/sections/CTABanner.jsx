@@ -36,6 +36,7 @@ export default function CTABanner() {
         style={{ background: 'radial-gradient(34rem 24rem at 86% 92%, rgb(255 59 47 / 0.18), transparent 64%)' }}
       />
       <div aria-hidden="true" className="light-beam animate-beam absolute inset-0 -z-10 motion-reduce:animate-none" />
+      <div aria-hidden="true" className="grain absolute inset-0 -z-10" />
       <div aria-hidden="true" className="rule-fade absolute inset-x-0 top-0 h-px text-lumen-500/45" />
 
       <div className="container-x section">

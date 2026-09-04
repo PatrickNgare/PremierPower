@@ -53,6 +53,7 @@ export default function LightingShowcase({ section }) {
         <div className="absolute inset-0" style={{ background: 'radial-gradient(52rem 34rem at 22% 12%, rgb(245 201 123 / 0.22), transparent 62%)' }} />
         <div className="absolute inset-0" style={{ background: 'radial-gradient(38rem 26rem at 88% 88%, rgb(255 59 47 / 0.14), transparent 62%)' }} />
       </motion.div>
+      <div aria-hidden="true" className="grain absolute inset-0 -z-10" />
 
       <div className="container-x section">
         <div className="grid gap-16 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
