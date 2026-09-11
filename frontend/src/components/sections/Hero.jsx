@@ -6,7 +6,7 @@ import { telLink } from '@/config/site'
 import { heroSlides } from '@/data/heroSlides'
 import { useApi } from '@/hooks/useApi'
 import { splitTitle } from '@/hooks/useSection'
-import { DUR, EASE_OUT, EASE_EXIT } from '@/utils/motion'
+import { DUR, EASE_OUT } from '@/utils/motion'
 import { useSite } from '@/hooks/useSite'
 import { cdnSrcSet, fallbackToLocal } from '@/utils/photo'
 
@@ -22,23 +22,6 @@ const onEnter = (fn) => (e) => {
 }
 
 const EASE = [0.22, 1, 0.36, 1]
-
-/** Direction-aware swap: springs in from the side, with a little rotation so
- *  it reads as a card being dealt rather than a fade. */
-const cardSwap = {
-  enter: (d) => ({ opacity: 0, x: d >= 0 ? 64 : -64, scale: 0.92, rotate: d >= 0 ? 3 : -3 }),
-  center: {
-    opacity: 1, x: 0, scale: 1, rotate: 0,
-    transition: { type: 'spring', stiffness: 260, damping: 26, mass: 0.9 },
-  },
-  exit: (d) => ({
-    // Kept short on purpose: mode="wait" holds the next card until this
-    // one has gone, so every millisecond here is a millisecond of empty
-    // card. Long enough to read as a swap, short enough not to blink.
-    opacity: 0, x: d >= 0 ? -48 : 48, scale: 0.96, rotate: d >= 0 ? -2 : 2,
-    transition: { duration: 0.14, ease: EASE_EXIT },
-  }),
-}
 
 const rise = {
   hidden: { opacity: 0, y: 26, filter: 'blur(6px)' },
@@ -58,9 +41,22 @@ const fromBanner = (b) => ({
   line: b.body,
   image: b.image_url,
   alt: b.image_alt,
-  card: { label: b.card_label, title: b.card_title, line: b.card_line },
 })
 
+/**
+ * Full-bleed, one photograph at a time — the brief was "a full page hero,
+ * like SpaceInfra's": a single image filling the section rather than a
+ * two-column split with a floating specimen card beside the text. The card
+ * is gone; the photograph itself is now the whole room, the way SpaceInfra's
+ * is, with the headline read directly off it rather than off a panel
+ * floating in front of it.
+ *
+ * `card_label` / `card_title` / `card_line` on the banner record fed that
+ * panel and nothing else — they still exist in the CMS (Company details →
+ * banners) and are safe to leave filled in, but nothing on the public site
+ * reads them any more. Worth knowing before editing one expecting it to
+ * change something visible.
+ */
 export default function Hero({ section }) {
   const site = useSite()
   // The hero's own words. The slides are separate — they are the banners table.
@@ -69,7 +65,6 @@ export default function Hero({ section }) {
   const sectionRef = useRef(null)
   const [fine, setFine] = useState(false)
   const [i, setI] = useState(0)
-  const [dir, setDir] = useState(1)
   const [paused, setPaused] = useState(false)
 
   // Slides come from the CMS. The bundled set is the fallback for a first
@@ -85,13 +80,13 @@ export default function Hero({ section }) {
   // cannot point past the end and blank the hero.
   const slide = slides[Math.min(i, n - 1)]
 
-  const go = useCallback((d) => { setDir(d); setI((p) => (p + d + n) % n) }, [n])
+  const go = useCallback((d) => { setI((p) => (p + d + n) % n) }, [n])
 
   useEffect(() => {
     // An auto-advancing carousel is motion; under a reduced-motion preference
     // it holds still and the controls remain the way through.
     if (paused || reduce || n < 2) return
-    const t = setInterval(() => { setDir(1); setI((p) => (p + 1) % n) }, AUTOPLAY_MS)
+    const t = setInterval(() => setI((p) => (p + 1) % n), AUTOPLAY_MS)
     return () => clearInterval(t)
   }, [paused, reduce, n])
 
@@ -104,30 +99,22 @@ export default function Hero({ section }) {
   // Light and image drift in opposite directions — the room reacts, gently.
   const glowX = useTransform(sx, (v) => `${50 + v * 46}%`)
   const glowY = useTransform(sy, (v) => `${42 + v * 34}%`)
-  const imgX = useTransform(sx, (v) => v * -26)
-  const imgY = useTransform(sy, (v) => v * -18)
-  const cardX = useTransform(sx, (v) => v * 42)
-  const cardY = useTransform(sy, (v) => v * 30)
-  const tiltY = useTransform(sx, (v) => v * 14)
-  const tiltX = useTransform(sy, (v) => v * -10)
+  const imgX = useTransform(sx, (v) => v * -22)
+  const imgY = useTransform(sy, (v) => v * -14)
 
   /**
    * Depth for touch.
    *
-   * Everything above is driven by cursor position, so on a phone the hero has
-   * no depth at all — the parallax, the drifting light and the tilt are all
-   * gated behind (pointer: fine). Scroll progress is the equivalent input a
-   * touch device does have, and it costs nothing extra: these feed the same
-   * kind of transform, and the browser composites them off the main thread.
+   * The pointer transforms above have no meaning on a phone, so scroll
+   * progress is the equivalent input a touch device does have. Costs nothing
+   * extra: the browser composites it off the main thread either way.
    */
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
   })
   const sp = useSpring(scrollYProgress, { stiffness: 60, damping: 22, mass: 0.6 })
-  const scrollBgY = useTransform(sp, [0, 1], [0, -56])
-  const scrollCardY = useTransform(sp, [0, 1], [0, -26])
-  const scrollCardScale = useTransform(sp, [0, 1], [1, 0.965])
+  const scrollBgY = useTransform(sp, [0, 1], [0, -48])
 
   // Pointer depth stays the richer treatment where a pointer exists; scroll
   // depth fills in where one does not, so neither kind of visitor gets a flat
@@ -167,7 +154,7 @@ export default function Hero({ section }) {
   return (
     <section
       ref={sectionRef}
-      className="on-dark relative isolate flex min-h-[min(100svh,46rem)] items-center overflow-hidden bg-ink-950"
+      className="on-dark relative isolate flex min-h-[min(100svh,46rem)] flex-col overflow-hidden bg-ink-950"
       aria-label="Premier Power — electrical engineering and lighting"
       aria-roledescription="carousel"
       onMouseEnter={() => setPaused(true)}
@@ -175,7 +162,11 @@ export default function Hero({ section }) {
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
     >
-      {/* ── Layer 1: the room ─────────────────────────────────── */}
+      {/* ── Layer 1: the room, full-bleed ────────────────────────
+          Close to full brightness now that nothing else is competing for
+          attention — the scrim below does the legibility work, the way
+          PageHero already does for every interior page, rather than the
+          photograph itself being dimmed as a backdrop. */}
       <motion.div
         style={
           pointerDepth ? { x: imgX, y: imgY }
@@ -188,9 +179,6 @@ export default function Hero({ section }) {
           <motion.img onError={fallbackToLocal}
             key={slide.image}
             src={slide.image}
-            // The backdrop is full-bleed, so it really is 100vw — but a phone
-            // was being sent the same file as a desktop, which is most of why
-            // the hero was the slowest thing on the site.
             srcSet={cdnSrcSet(slide.image, [640, 960, 1280, 1600, 1920, 2560])}
             sizes="100vw"
             alt=""
@@ -198,7 +186,7 @@ export default function Hero({ section }) {
             fetchPriority="high"
             decoding="async"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.72 }}
+            animate={{ opacity: 0.94 }}
             exit={{ opacity: 0 }}
             transition={{ duration: DUR.cinematic, ease: EASE_OUT }}
             className="absolute inset-0 h-full w-full object-cover object-center"
@@ -206,13 +194,18 @@ export default function Hero({ section }) {
         </AnimatePresence>
       </motion.div>
 
-      {/* ── Layer 2: architectural shadow, so text always reads ── */}
-      {/* The scrim exists so the headline reads, and it was set as though the
-          headline sat across the whole width — fully opaque black on the left,
-          85% through the middle. The text occupies about the left half, so the
-          shadow only needs to be that wide, and the photography can be seen. */}
-      <div aria-hidden="true" className="absolute inset-0 -z-20 bg-gradient-to-r from-ink-950 via-ink-950/70 to-ink-950/20" />
-      <div aria-hidden="true" className="absolute inset-0 -z-20 bg-gradient-to-t from-ink-950 via-transparent to-ink-950/70" />
+      {/* ── Layer 2: architectural shadow, so text always reads ──
+          Written as literal rgb() stops, not Tailwind's from-/via-/to-
+          utilities: Tailwind v4 interpolates those in OKLab by default
+          (--tw-gradient-position: to right in oklab), which front-loads the
+          darkening — measured at 10/255 average brightness through a region
+          the same stops predict roughly 195/255 for under plain linear alpha
+          blending, on a photograph that is 109/255 unfiltered. A plain
+          CSS linear-gradient() interpolates in sRGB, which is what the rest
+          of this file's own gradients (the ambient glow below) already rely
+          on for a predictable result. */}
+      <div aria-hidden="true" className="absolute inset-0 -z-20" style={{ background: 'linear-gradient(90deg, rgb(8 8 10 / 0.94) 0%, rgb(8 8 10 / 0.55) 42%, rgb(8 8 10 / 0.08) 78%)' }} />
+      <div aria-hidden="true" className="absolute inset-0 -z-20" style={{ background: 'linear-gradient(0deg, rgb(8 8 10 / 0.6) 0%, rgb(8 8 10 / 0.04) 32%, rgb(8 8 10 / 0.28) 100%)' }} />
 
       {/* ── Layer 3: the light itself, following the pointer ───── */}
       <motion.div
@@ -221,11 +214,11 @@ export default function Hero({ section }) {
         style={{
           background: fine && !reduce
             ? undefined
-            : 'radial-gradient(38rem 30rem at 62% 38%, rgb(245 201 123 / 0.22), transparent 62%)',
+            : 'radial-gradient(38rem 30rem at 62% 38%, rgb(245 201 123 / 0.2), transparent 62%)',
           ...(fine && !reduce
             ? {
                 backgroundImage:
-                  'radial-gradient(38rem 30rem at var(--gx) var(--gy), rgb(245 201 123 / 0.26), transparent 62%)',
+                  'radial-gradient(38rem 30rem at var(--gx) var(--gy), rgb(245 201 123 / 0.24), transparent 62%)',
                 '--gx': glowX,
                 '--gy': glowY,
               }
@@ -235,12 +228,12 @@ export default function Hero({ section }) {
       <div aria-hidden="true" className="light-beam animate-beam pointer-events-none absolute inset-0 -z-10 motion-reduce:animate-none" />
       <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 -z-10" />
 
-      {/* ── Content ───────────────────────────────────────────── */}
+      {/* ── Content — one column, read directly off the photograph ── */}
       <motion.div
         initial="hidden"
         animate="show"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.09, delayChildren: 0.12 } } }}
-        className="container-x relative grid w-full items-center gap-10 py-16 lg:grid-cols-[1.08fr_0.92fr] lg:gap-14 lg:py-20"
+        className="container-x relative flex flex-1 flex-col justify-center py-16 lg:py-20"
       >
         <div className="max-w-2xl">
           <motion.p variants={rise} className="eyebrow">
@@ -250,7 +243,7 @@ export default function Hero({ section }) {
 
           <motion.h1
             variants={rise}
-            className="mt-5 text-[clamp(2.25rem,4.6vw,3.9rem)] font-extrabold text-white"
+            className="mt-5 text-[clamp(2.5rem,5.4vw,4.6rem)] font-extrabold text-white"
           >
             {line1}
             {line2 && (
@@ -287,29 +280,51 @@ export default function Hero({ section }) {
             )}
           </motion.div>
 
-          {/* Caption for the current slide. Fixed min-height so the controls
-              below do not shift as captions of different lengths cycle. */}
-          <motion.div variants={rise} className="mt-8 min-h-[3.25rem]">
+          <motion.ul variants={rise} className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3">
+            {trust.map(({ icon: Icon, label }) => (
+              <li key={label} className="flex items-center gap-2.5 text-sm text-ink-300">
+                <Icon size={16} className="text-lumen-500" aria-hidden="true" />
+                {label}
+              </li>
+            ))}
+          </motion.ul>
+        </div>
+      </motion.div>
+
+      {/* ── The current slide, and the controls for it — its own row,
+             anchored to the foot of the photograph rather than stacked under
+             the headline. This is the one thing a full-bleed hero still
+             needs that a static banner does not: a way to know there is more
+             than one room, and to move between them. ── */}
+      <motion.div
+        variants={rise} initial="hidden" animate="show"
+        transition={{ delay: 0.3 }}
+        className="container-x relative border-t border-white/10 py-5 sm:py-6"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-5">
+          {/* Fixed min-height so the controls do not shift as captions of
+              different lengths cycle. */}
+          <div className="min-h-[2.75rem]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={slide.caption}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
+                exit={{ opacity: 0, y: -6 }}
                 transition={{ duration: DUR.control, ease: EASE_OUT }}
               >
-                <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-lumen-500">
+                <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-lumen-500">
                   {slide.eyebrow}
                 </p>
-                <p className="mt-1.5 text-sm text-ink-300">
+                <p className="mt-1 text-sm text-ink-300">
                   <span className="font-semibold text-white">{slide.caption}</span>
-                  {' \u2014 '}{slide.line}
+                  {slide.line && <>{' — '}{slide.line}</>}
                 </p>
               </motion.div>
             </AnimatePresence>
-          </motion.div>
+          </div>
 
-          <motion.div variants={rise} className="mt-7 flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-3">
             <button
               type="button" onClick={() => go(-1)} onKeyDown={onEnter(() => go(-1))}
               aria-label="Previous slide"
@@ -330,8 +345,8 @@ export default function Hero({ section }) {
                   <button
                     type="button" role="tab" aria-selected={idx === i}
                     aria-label={`Slide ${idx + 1}: ${sl.caption}`}
-                    onClick={() => { setDir(idx > i ? 1 : -1); setI(idx) }}
-                    onKeyDown={onEnter(() => { setDir(idx > i ? 1 : -1); setI(idx) })}
+                    onClick={() => setI(idx)}
+                    onKeyDown={onEnter(() => setI(idx))}
                     className={`h-1.5 rounded-full transition-all duration-500 ${
                       idx === i
                         ? 'w-9 bg-lumen-500 shadow-[0_0_14px_rgba(245,201,123,0.9)]'
@@ -344,96 +359,8 @@ export default function Hero({ section }) {
             <span className="ml-1 tabular text-xs font-semibold text-muted">
               {String(i + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}
             </span>
-          </motion.div>
-
-          <motion.ul variants={rise} className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-3">
-            {trust.map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-2.5 text-sm text-ink-300">
-                <Icon size={16} className="text-lumen-500" aria-hidden="true" />
-                {label}
-              </li>
-            ))}
-          </motion.ul>
+          </div>
         </div>
-
-        {/* Floating specimen card — a fixture lit by the room behind it.
-            The row centres its children, but the text column is far taller, so a
-            centred card floats ~100px low and its top edge cuts across the middle
-            of the headline. self-start plus the eyebrow's height (mt-11) lands the
-            card's top edge on the headline's, giving the two columns a shared line. */}
-        <motion.div
-          variants={rise}
-          style={
-            pointerDepth ? { x: cardX, y: cardY }
-              : scrollDepth ? { y: scrollCardY, scale: scrollCardScale }
-              : undefined
-          }
-          className="relative mx-auto w-full max-w-md lg:mt-11 lg:self-start xl:max-w-lg"
-        >
-          {/* Drag-to-change-slide was built and reviewed alongside this, and
-              deliberately not kept: the carousel already advances itself every
-              6.5s, so navigating it is optional, and a horizontal-drag region
-              over a full-height hero risks stealing the vertical scroll that
-              every visitor uses constantly. A nicer way to operate a control
-              most people never touch was not worth that. */}
-          <motion.div
-            style={pointerDepth ? { rotateX: tiltX, rotateY: tiltY, transformPerspective: 1200 } : undefined}
-            className="relative overflow-hidden rounded-[28px] border border-white/20 bg-white/[0.07] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.75)] backdrop-blur-2xl"
-          >
-            {/* Light catching the top edge, the way glass does. */}
-            <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-            <AnimatePresence mode="wait" custom={dir}>
-              <motion.div
-                key={slide.image}
-                custom={dir}
-                variants={cardSwap}
-                initial="enter"
-                animate="center"
-                exit="exit"
-              >
-                <img onError={fallbackToLocal}
-                  src={slide.image}
-                  alt={slide.alt}
-                  // The card is 339px on a phone and 510px at its widest, so
-                  // even at 2x it never needs more than about a thousand
-                  // pixels. It was being sent the full-size original.
-                  srcSet={cdnSrcSet(slide.image, [360, 540, 720, 1024])}
-                  sizes="(max-width: 1024px) 90vw, 32rem"
-                  loading="eager"
-                  decoding="async"
-                  className="h-52 w-full object-cover sm:h-64 xl:h-80"
-                />
-                <div className="relative bg-ink-950/45 p-5 backdrop-blur-sm sm:p-7">
-                  <p className="text-[0.7rem] font-bold uppercase tracking-[0.18em] text-lumen-500">
-                    {slide.card.label}
-                  </p>
-                  <p className="mt-2 font-display text-xl font-bold text-white">
-                    {slide.card.title}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-white/75">
-                    {slide.card.line}
-                  </p>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </motion.div>
-          <div aria-hidden="true" className="absolute -inset-4 -z-10 rounded-full bg-lumen-500/20 blur-3xl sm:-inset-10" />
-        </motion.div>
-      </motion.div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4, duration: 0.8 }}
-        className="pointer-events-none absolute inset-x-0 bottom-5 hidden justify-center lg:flex"
-        aria-hidden="true"
-      >
-        <span className="flex h-11 w-7 items-start justify-center rounded-full border border-white/25 p-1.5">
-          <motion.span
-            animate={reduce ? {} : { y: [0, 12, 0], opacity: [1, 0.2, 1] }}
-            transition={{ duration: 2.1, repeat: Infinity, ease: 'easeInOut' }}
-            className="block h-1.5 w-1.5 rounded-full bg-lumen-500"
-          />
-        </span>
       </motion.div>
     </section>
   )
