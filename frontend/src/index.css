@@ -140,6 +140,13 @@
   40%  { filter: drop-shadow(0 0 5px rgb(245 201 123 / 0.75)); }
   100% { filter: drop-shadow(0 0 0 rgb(245 201 123 / 0)); }
 }
+/* The hero's active slide marker filling across the autoplay interval, so the
+   carousel shows how long the current photograph has left rather than just
+   jumping. scaleX on a compositor-friendly transform, and driven as a plain
+   CSS animation specifically so hovering the hero can freeze it with
+   animation-play-state — a JS-driven width could not pause mid-flight
+   without tracking elapsed time by hand. */
+@keyframes heroProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 /* Same idea, for a Counter that has just finished ramping up: the figure
    glows once as it settles on its final value, text-shadow rather than
    filter since this decorates a number, not an icon. */
