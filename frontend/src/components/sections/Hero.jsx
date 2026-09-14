@@ -12,6 +12,15 @@ import { cdnSrcSet, fallbackToLocal } from '@/utils/photo'
 
 const AUTOPLAY_MS = 6500
 
+/*
+ * The wipe between photographs: SpaceInfra's timing and curve, measured off its
+ * live hero (1% across at 120ms, 7% at 300ms, half at 525ms, 93% at 750ms).
+ * A slow start, a fast middle and a soft landing is what makes the edge feel
+ * like a curtain being drawn rather than a slide sliding.
+ */
+const WIPE = { duration: 1.05, ease: [0.76, 0, 0.24, 1] }
+// hero-wipe-* and hero-edge-* in index.css run on these same numbers.
+
 /**
  * Framer's tap gesture swallows Enter on a motion.button — Space activates,
  * Enter does not. Enter is the key most people reach for, so it is handled
@@ -226,6 +235,8 @@ export default function Hero({ section }) {
   const [paused, setPaused] = useState(false)
   // True while the headline's words are moving and need their masks.
   const [masked, setMasked] = useState(true)
+  // Counts slide changes. Keys the lit wipe edge, and keeps it off first paint.
+  const [changes, setChanges] = useState(0)
 
   // Slides come from the CMS. The bundled set is the fallback for a first
   // paint or an unreachable API — it is the same content, not a placeholder.
@@ -247,11 +258,11 @@ export default function Hero({ section }) {
   // sitting below its line on top of the lede.
   const go = useCallback((d) => {
     if (n < 2) return
-    setMasked(true); setDir(d); setI((p) => (p + d + n) % n)
+    setMasked(true); setChanges((c) => c + 1); setDir(d); setI((p) => (p + d + n) % n)
   }, [n])
   const jump = useCallback((idx) => {
     if (idx === i) return
-    setMasked(true); setDir(idx > i ? 1 : -1); setI(idx)
+    setMasked(true); setChanges((c) => c + 1); setDir(idx > i ? 1 : -1); setI(idx)
   }, [i])
 
   /*
@@ -402,39 +413,36 @@ export default function Hero({ section }) {
   }, [fine, reduce, px, py])
 
   /**
-   * How a photograph arrives and leaves.
-   *
-   * It enters from the side it was asked for and keeps settling for as long
-   * as it is shown — the scale runs the full slide, not just the handover, so
-   * the room is always drifting very slightly closer rather than freezing the
-   * moment the crossfade ends. The -inset-[3%] on the wrapper is the margin
-   * that lets it translate without exposing an edge.
+   * How a photograph arrives: a curtain wiped in from the side it was asked
+   * for, the way SpaceInfra's hero does it. One deliberate difference: its old
+   * photograph fades out in 120ms, so the edge sweeps across a blank page for
+   * most of the second. Here the outgoing photograph stays underneath until
+   * the wipe has crossed, so one room is drawn over another. The incoming
+   * layer takes the higher z-index outright instead of trusting DOM order.
    */
-  const frames = useMemo(
+  const wipeFrames = useMemo(
     () =>
       reduce
         ? {
-            enter: { opacity: 0 },
-            settled: { opacity: 0.94, transition: { duration: DUR.control } },
-            leave: { opacity: 0, transition: { duration: DUR.control } },
+            enter: { opacity: 0, zIndex: 1 },
+            settled: { opacity: 1, zIndex: 1, transition: { duration: DUR.control } },
+            leave: { opacity: 0, zIndex: 0, transition: { duration: DUR.control } },
           }
         : {
-            enter: (d) => ({ opacity: 0, x: d > 0 ? '5%' : '-5%', scale: 1.07 }),
-            settled: {
-              opacity: 0.94, x: '0%', scale: 1,
-              transition: {
-                opacity: { duration: DUR.cinematic, ease: EASE_OUT },
-                x: { duration: DUR.cinematic, ease: EASE_OUT },
-                scale: { duration: AUTOPLAY_MS / 1000, ease: 'linear' },
-              },
-            },
-            leave: (d) => ({
-              opacity: 0, x: d > 0 ? '-4%' : '4%',
-              transition: { duration: DUR.cinematic * 0.9, ease: EASE_OUT },
-            }),
+            // The curtain itself is a CSS animation on the layer (hero-wipe-*),
+            // not a variant; see the note above the photograph layer.
+            enter: { zIndex: 1 },
+            settled: { zIndex: 1 },
+            leave: { zIndex: 0, opacity: 0, transition: { opacity: { delay: WIPE.duration, duration: 0.2 } } },
           },
     [reduce],
   )
+
+  // One depth transform for the photograph and for the edge of light riding
+  // its wipe, so the two stay aligned whatever the pointer or finger is doing.
+  const depthStyle = pointerDepth ? { x: imgX, y: imgY }
+    : scrollDepth ? { x: dragX, y: scrollBgY }
+    : undefined
 
   /** The caption travels with the photograph it belongs to. */
   const captionFrames = useMemo(
@@ -512,31 +520,37 @@ export default function Hero({ section }) {
           attention — the scrim below does the legibility work, the way
           PageHero already does for every interior page, rather than the
           photograph itself being dimmed as a backdrop. */}
-      <motion.div
-        style={
-          pointerDepth ? { x: imgX, y: imgY }
-            : scrollDepth ? { x: dragX, y: scrollBgY }
-            : undefined
-        }
-        className="absolute -inset-[3%] -z-30"
-      >
+      {/* The curtain is a CSS animation started by the incoming layer
+          mounting, in the same render as the lit edge, so the browser gives
+          both the same start time and they stay locked at any frame rate.
+          Driven by Framer, it started a frame or more after the edge whenever
+          the main thread was busy, and at a few frames a second the two came
+          apart across the width of the screen. Never on first paint. */}
+      <motion.div style={depthStyle} className="absolute -inset-[3%] -z-30">
         <AnimatePresence initial={false} custom={dir}>
-          <motion.img onError={fallbackToLocal}
+          <motion.div
             key={slide.image}
             custom={dir}
-            src={slide.image}
-            srcSet={cdnSrcSet(slide.image, [640, 960, 1280, 1600, 1920, 2560])}
-            sizes="100vw"
-            alt=""
-            aria-hidden="true"
-            fetchPriority="high"
-            decoding="async"
-            variants={frames}
+            variants={wipeFrames}
             initial="enter"
             animate="settled"
             exit="leave"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
+            className={`absolute inset-0 overflow-hidden ${!reduce && changes > 0 ? (dir > 0 ? 'hero-wipe-next' : 'hero-wipe-prev') : ''}`}
+          >
+            {/* The room drifts closer for as long as it is shown and starts
+                again with each photograph (hero-drift in index.css), so it is
+                never a still frame between changes. */}
+            <img onError={fallbackToLocal}
+              src={slide.image}
+              srcSet={cdnSrcSet(slide.image, [640, 960, 1280, 1600, 1920, 2560])}
+              sizes="100vw"
+              alt=""
+              aria-hidden="true"
+              fetchPriority="high"
+              decoding="async"
+              className="hero-drift h-full w-full object-cover object-center opacity-[0.94]"
+            />
+          </motion.div>
         </AnimatePresence>
       </motion.div>
 
@@ -552,6 +566,22 @@ export default function Hero({ section }) {
           on for a predictable result. */}
       <div aria-hidden="true" className="absolute inset-0 -z-20" style={{ background: 'linear-gradient(90deg, rgb(8 8 10 / 0.94) 0%, rgb(8 8 10 / 0.55) 42%, rgb(8 8 10 / 0.08) 78%)' }} />
       <div aria-hidden="true" className="absolute inset-0 -z-20" style={{ background: 'linear-gradient(0deg, rgb(8 8 10 / 0.6) 0%, rgb(8 8 10 / 0.04) 32%, rgb(8 8 10 / 0.28) 100%)' }} />
+
+      {/* ── The edge of the wipe, lit ──
+          A filament of warm light rides the curtain's edge across the room,
+          the one part of the change that says electrical rather than
+          slideshow. Above the scrims so it still reads over the dark side;
+          in the photograph's own box and depth transform so it stays on the
+          edge; same duration and curve as the wipe, and on the same clock
+          (hero-edge-* in index.css, not a JS tween, which fell behind the
+          curtain whenever the main thread was busy); only on a change. */}
+      {!reduce && changes > 0 && (
+        <motion.div aria-hidden="true" style={depthStyle} className="pointer-events-none absolute -inset-[3%] -z-10">
+          <div key={`edge-${changes}`} className={`absolute inset-0 ${dir > 0 ? 'hero-edge-next' : 'hero-edge-prev'}`}>
+            <span className="hero-edge-line absolute inset-y-0 left-0 w-[2px] -translate-x-1/2 bg-[#FFE6B8] shadow-[0_0_16px_3px_rgba(245,201,123,0.8),0_0_56px_14px_rgba(245,201,123,0.32)]" />
+          </div>
+        </motion.div>
+      )}
 
       {/* ── Layer 3: the light itself, following the pointer ───── */}
       <motion.div

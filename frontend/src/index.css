@@ -147,6 +147,33 @@
    animation-play-state — a JS-driven width could not pause mid-flight
    without tracking elapsed time by hand. */
 @keyframes heroProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+/* The hero photograph drifting closer for as long as it is shown, restarting
+   with each slide: SpaceInfra's Ken Burns, scale and drift measured off its
+   live hero. It zooms in rather than settling out, so the room keeps moving
+   toward the visitor between changes instead of freezing. */
+@keyframes heroDrift { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.1) translate(-1.5%, -1%); } }
+.hero-drift { animation: heroDrift 8s ease-out forwards; will-change: transform; }
+@media (prefers-reduced-motion: reduce) { .hero-drift { animation: none; } }
+/* The lit edge of the hero wipe. A CSS animation on the document timeline,
+   like the wipe's own clip-path animation, so the two stay locked together
+   even while the main thread is busy decoding the next photograph: a JS
+   tween measured 140-256px behind the curtain under load. The duration and
+   curve are WIPE in Hero.jsx. */
+@keyframes heroEdgeNext { from { transform: translateX(100%); } to { transform: translateX(0%); } }
+@keyframes heroEdgePrev { from { transform: translateX(0%); } to { transform: translateX(100%); } }
+@keyframes heroEdgeFade { 0%, 78% { opacity: 1; } 100% { opacity: 0; } }
+.hero-edge-next { animation: heroEdgeNext 1050ms cubic-bezier(0.76, 0, 0.24, 1) both; }
+.hero-edge-prev { animation: heroEdgePrev 1050ms cubic-bezier(0.76, 0, 0.24, 1) both; }
+.hero-edge-line { animation: heroEdgeFade 1350ms linear both; }
+@media (prefers-reduced-motion: reduce) { .hero-edge-next, .hero-edge-prev, .hero-edge-line { animation: none; display: none; } }
+/* The curtain itself. A CSS animation for the same reason as the edge: both
+   start when their elements mount in the same render, so they share a start
+   time and cannot drift apart however slowly frames are produced. */
+@keyframes heroWipeNext { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes heroWipePrev { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.hero-wipe-next { animation: heroWipeNext 1050ms cubic-bezier(0.76, 0, 0.24, 1) both; }
+.hero-wipe-prev { animation: heroWipePrev 1050ms cubic-bezier(0.76, 0, 0.24, 1) both; }
+@media (prefers-reduced-motion: reduce) { .hero-wipe-next, .hero-wipe-prev { animation: none; } }
 /* Same idea, for a Counter that has just finished ramping up: the figure
    glows once as it settles on its final value, text-shadow rather than
    filter since this decorates a number, not an icon. */
