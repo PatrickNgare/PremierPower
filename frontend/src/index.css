@@ -152,7 +152,9 @@
    live hero. It zooms in rather than settling out, so the room keeps moving
    toward the visitor between changes instead of freezing. */
 @keyframes heroDrift { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.1) translate(-1.5%, -1%); } }
-.hero-drift { animation: heroDrift 8s ease-out forwards; will-change: transform; }
+/* 13s against a 12s slide plus the wipe, so the photograph is still moving
+   when the next one arrives: at 8s it stopped and sat still for four. */
+.hero-drift { animation: heroDrift 13s ease-out forwards; will-change: transform; }
 @media (prefers-reduced-motion: reduce) { .hero-drift { animation: none; } }
 /* The lit edge of the hero wipe. A CSS animation on the document timeline,
    like the wipe's own clip-path animation, so the two stay locked together

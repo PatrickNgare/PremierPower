@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Minus, Plus, MessageCircle, PhoneCall } from 'lucide-react'
+import { MessageCircle, PhoneCall } from 'lucide-react'
 import PageHero from '@/components/ui/PageHero'
 import SectionHeader from '@/components/ui/SectionHeader'
 import CTABanner from '@/components/sections/CTABanner'
@@ -46,7 +46,17 @@ function Item({ q, a, open, onToggle, id }) {
                 : 'bg-page-warm text-[rgb(var(--accent-rgb))]'
             }`}
           >
-            {open ? <Minus size={16} /> : <Plus size={16} />}
+            {/* One plus sign whose upright folds away as the answer opens,
+                rather than two icons swapped in a frame: the mark changes in
+                step with the panel it describes. */}
+            <span className="relative block h-2.5 w-2.5">
+              <span className="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 rounded-full bg-current" />
+              <span
+                className={`absolute inset-y-0 left-1/2 w-[2px] -translate-x-1/2 rounded-full bg-current transition-transform duration-200 ease-out motion-reduce:transition-none ${
+                  open ? 'scale-y-0' : 'scale-y-100'
+                }`}
+              />
+            </span>
           </span>
         </button>
       </h3>

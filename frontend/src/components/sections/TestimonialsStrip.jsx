@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import { FaQuoteLeft } from 'react-icons/fa'
 import Avatar from '@/components/ui/Avatar'
 import StarRating from '@/components/ui/StarRating'
@@ -5,6 +6,11 @@ import { useApi } from '@/hooks/useApi'
 import { SkeletonCard, LoadingRegion } from '@/components/ui/Skeleton'
 import { testimonials as fallback } from '@/data/testimonials'
 import { Link } from 'react-router-dom'
+import { EASE_OUT } from '@/utils/motion'
+
+// What arrives after the skeleton fades in over it instead of replacing it in
+// one frame. Opacity only, so the marquee's own transform is left alone.
+const settle = { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.25, ease: EASE_OUT } }
 
 function Card({ t }) {
   return (
@@ -48,7 +54,7 @@ export default function TestimonialsStrip({ hideWhenEmpty = false }) {
   if (!data.length) {
     if (hideWhenEmpty) return null
     return (
-      <div className="mt-10 rounded-[var(--radius-card)] border border-line bg-surface-2 p-8 text-center sm:p-10">
+      <motion.div {...settle} className="mt-10 rounded-[var(--radius-card)] border border-line bg-surface-2 p-8 text-center sm:p-10">
         <p className="font-display text-lg font-bold tracking-tight text-body sm:text-xl">
           References available on request.
         </p>
@@ -59,18 +65,18 @@ export default function TestimonialsStrip({ hideWhenEmpty = false }) {
         <Link to="/contact" className="btn-onlight mt-6 px-6 py-3 text-sm">
           Request references
         </Link>
-      </div>
+      </motion.div>
     )
   }
 
   const loop = [...data, ...data]
   return (
-    <div className="group relative mt-10 overflow-hidden" aria-label="Customer reviews">
+    <motion.div {...settle} className="group relative mt-10 overflow-hidden" aria-label="Customer reviews">
       <ul className="flex w-max gap-6 animate-marquee group-hover:[animation-play-state:paused] motion-reduce:animate-none motion-reduce:flex-wrap motion-reduce:w-full">
         {loop.map((t, i) => <Card key={`${t.name}-${i}`} t={t} />)}
       </ul>
       <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent" />
-    </div>
+    </motion.div>
   )
 }

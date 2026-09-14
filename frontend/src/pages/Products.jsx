@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpRight } from 'lucide-react'
 import PageHero from '@/components/ui/PageHero'
 import CTABanner from '@/components/sections/CTABanner'
@@ -11,7 +11,7 @@ import { useApi } from '@/hooks/useApi'
 import { usePageSections } from '@/hooks/usePage'
 import { useSectionItems } from '@/hooks/useSection'
 import { photo, fallbackToLocal } from '@/utils/photo'
-import { fadeUp, stagger, inView } from '@/utils/motion'
+import { EASE_EXIT, EASE_OUT, fadeUp, stagger, inView } from '@/utils/motion'
 
 /**
  * The fittings showcase.
@@ -34,6 +34,7 @@ export default function Products() {
   const { data: products, loading } = useApi('/products', [])
   const { data: categories } = useApi('/product-categories', [])
   const [active, setActive] = useState('')
+  const reduce = useReducedMotion()
 
   const shown = useMemo(
     () => (active ? products.filter((p) => p.category_id === active) : products),
@@ -90,8 +91,23 @@ export default function Products() {
               {...inView}
               className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3"
             >
+              {/* Filtering used to rebuild the grid in one frame: tiles that no
+                  longer matched vanished and the rest jumped to new cells.
+                  Leaving tiles now fade out where they stood (popLayout takes
+                  them out of the flow at once, so nothing waits on them) while
+                  the remaining ones glide to their new cells. The first reveal
+                  is untouched: the stagger above still drives it. */}
+              <AnimatePresence mode="popLayout">
               {shown.map((p, i) => (
-                <motion.li key={p.id} variants={fadeUp}>
+                <motion.li
+                  key={p.id}
+                  variants={fadeUp}
+                  layout={!reduce}
+                  exit={reduce
+                    ? { opacity: 0, transition: { duration: 0.12 } }
+                    : { opacity: 0, scale: 0.97, transition: { duration: 0.15, ease: EASE_EXIT } }}
+                  transition={{ layout: { duration: 0.3, ease: EASE_OUT } }}
+                >
                   <Link
                     to={`/products/${p.slug}`}
                     className="group block h-full overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface transition-shadow duration-300 hover:shadow-raise"
@@ -135,6 +151,7 @@ export default function Products() {
                   </Link>
                 </motion.li>
               ))}
+              </AnimatePresence>
             </motion.ul>
           )}
         </div>
@@ -177,15 +194,27 @@ export default function Products() {
 }
 
 function FilterChip({ on, onClick, children }) {
+  const reduce = useReducedMotion()
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={on}
-      className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
-        on ? 'bg-ink-900 text-white' : 'bg-page-warm text-body-soft hover:bg-surface-3 hover:text-body'
+      className={`relative isolate rounded-full bg-page-warm px-4 py-2 text-sm font-semibold transition-colors duration-200 ${
+        on ? 'text-white' : 'text-body-soft hover:bg-surface-3 hover:text-body'
       }`}
     >
+      {/* The selection slides from chip to chip instead of jumping, on the
+          navbar pill's spring, so the two read as one system. The chip keeps
+          its own ground underneath so nothing flashes bare mid-slide. */}
+      {on && (
+        <motion.span
+          layoutId="product-filter"
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 rounded-full bg-ink-900"
+          transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 380, damping: 32 }}
+        />
+      )}
       {children}
     </button>
   )

@@ -10,7 +10,10 @@ import { DUR, EASE_EXIT, EASE_OUT } from '@/utils/motion'
 import { useSite } from '@/hooks/useSite'
 import { cdnSrcSet, fallbackToLocal } from '@/utils/photo'
 
-const AUTOPLAY_MS = 6500
+// Twelve seconds a photograph, at the client's request: long enough to read the
+// headline and look at the room, short enough that a visitor still sees
+// several rooms. The slide marker's fill runs on this same value.
+const AUTOPLAY_MS = 12000
 
 /*
  * The wipe between photographs: SpaceInfra's timing and curve, measured off its
