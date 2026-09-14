@@ -1,8 +1,9 @@
 import { photo } from '@/utils/photo'
 /**
  * Hero slides. Each pairs a caption with one of the client's own project
- * photographs; the headline and calls to action stay fixed so the hero reads
- * as one composition rather than four different pages.
+ * photographs. The calls to action and "Powering spaces." stay fixed so the
+ * hero reads as one composition; the last word of the headline changes with
+ * the slide, picked by `eyebrow` (see ACCENTS in components/sections/Hero).
  */
 export const heroSlides = [
   {

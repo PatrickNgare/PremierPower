@@ -6,7 +6,7 @@ import { telLink } from '@/config/site'
 import { heroSlides } from '@/data/heroSlides'
 import { useApi } from '@/hooks/useApi'
 import { splitTitle } from '@/hooks/useSection'
-import { DUR, EASE_OUT } from '@/utils/motion'
+import { DUR, EASE_EXIT, EASE_OUT } from '@/utils/motion'
 import { useSite } from '@/hooks/useSite'
 import { cdnSrcSet, fallbackToLocal } from '@/utils/photo'
 
@@ -111,6 +111,76 @@ const trust = [
   { icon: Zap, label: 'Electrical · Lighting · Solar' },
 ]
 
+/**
+ * The word that completes "Illuminating …" for each slide.
+ *
+ * Keyed by the slide's category, not its position, so a reordered or edited
+ * CMS list still pairs each photograph with its own word. A category with no
+ * entry falls back to the CMS headline's own last word ("possibilities."), so
+ * a new slide never shows a blank or a word meant for another photograph.
+ */
+const ACCENTS = {
+  hospitality: 'lodges.',
+  'commercial interiors': 'interiors.',
+  installation: 'every circuit.',
+  residential: 'homes.',
+}
+const accentFor = (slide) => ACCENTS[String(slide?.eyebrow || '').trim().toLowerCase()]
+
+/*
+ * The warm gradient ink, with a band of light parked off to the left of it.
+ * Animating the first layer's position runs the band across the words once.
+ * no-repeat is load-bearing: without it a 250%-wide layer tiles the band back
+ * into view while it is supposed to be resting.
+ */
+const INK = {
+  backgroundImage:
+    'linear-gradient(100deg, transparent 42%, rgb(255 255 255 / 0.95) 50%, transparent 58%), linear-gradient(90deg, #FFF8EA 0%, #FFE6B8 50%, #F5C97B 100%)',
+  backgroundSize: '250% 100%, 100% 100%',
+  backgroundPosition: '160% 0, 0 0',
+  backgroundRepeat: 'no-repeat',
+}
+
+/*
+ * One pass of current: the band crosses the line and the words glow as it
+ * does. The glow is what actually reads: over letters that are already a warm
+ * white the band alone lifted them by at most 35/255, so it is carried by two
+ * shadows, a tight warm core and a wide soft halo.
+ */
+const GLOW_OFF = 'drop-shadow(0 0 0 rgb(255 236 200 / 0)) drop-shadow(0 0 0 rgb(245 201 123 / 0))'
+const SWEEP = [
+  { backgroundPosition: '160% 0, 0 0', filter: GLOW_OFF },
+  { filter: 'drop-shadow(0 0 5px rgb(255 236 200 / 0.55)) drop-shadow(0 0 22px rgb(245 201 123 / 0.7))', offset: 0.5 },
+  { backgroundPosition: '-60% 0, 0 0', filter: GLOW_OFF },
+]
+const sweepTiming = (first) => ({
+  duration: 1150,
+  // After the masks come off (see MaskLine): once the lines have risen on
+  // load, and once the new word has landed on a change. Land, then light up.
+  delay: first ? 1500 : 700,
+  easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+})
+
+/**
+ * One line of the headline behind its own mask, so it rises into view rather
+ * than fading. The padding, cancelled by an equal negative margin, is room for
+ * descenders: h1 sits at 1.04 leading, tight enough that the mask would
+ * otherwise shave the tails off the g and p in "Powering spaces".
+ *
+ * `clip` is only on while something is actually moving. A permanent mask also
+ * crops the light pass's glow, which showed as a faint lit rectangle behind
+ * each line with hard edges where the mask cut it off.
+ */
+function MaskLine({ variants, clip = true, className = '', children }) {
+  return (
+    <span className={`-mb-[0.2em] block pb-[0.2em] ${clip ? 'overflow-hidden' : 'overflow-visible'} ${className}`}>
+      <motion.span variants={variants} className="relative block">
+        {children}
+      </motion.span>
+    </span>
+  )
+}
+
 /** The CMS stores a slide flat; the composition wants it nested. */
 const fromBanner = (b) => ({
   eyebrow: b.eyebrow,
@@ -138,6 +208,14 @@ export default function Hero({ section }) {
   const site = useSite()
   // The hero's own words. The slides are separate — they are the banners table.
   const [line1, line2] = splitTitle(section?.title || 'Powering spaces.|Illuminating possibilities.')
+  // "Illuminating possibilities." splits into the lead that stays and the last
+  // word the slides replace. A one-word second line has nothing to rotate and
+  // renders as written.
+  const [lead, resting] = useMemo(() => {
+    const t = (line2 || '').trim()
+    const k = t.lastIndexOf(' ')
+    return k > 0 ? [t.slice(0, k), t.slice(k + 1)] : [t, null]
+  }, [line2])
   const reduce = useReducedMotion()
   const sectionRef = useRef(null)
   const [fine, setFine] = useState(false)
@@ -146,6 +224,8 @@ export default function Hero({ section }) {
   // it was asked for rather than every change looking identical.
   const [dir, setDir] = useState(1)
   const [paused, setPaused] = useState(false)
+  // True while the headline's words are moving and need their masks.
+  const [masked, setMasked] = useState(true)
 
   // Slides come from the CMS. The bundled set is the fallback for a first
   // paint or an unreachable API — it is the same content, not a placeholder.
@@ -159,9 +239,43 @@ export default function Hero({ section }) {
   // The CMS can shorten the list while this is mounted; clamp so the index
   // cannot point past the end and blank the hero.
   const slide = slides[Math.min(i, n - 1)]
+  const word = accentFor(slide) || resting
+  const clip = masked && !reduce
 
-  const go = useCallback((d) => { setDir(d); setI((p) => (p + d + n) % n) }, [n])
-  const jump = useCallback((idx) => { setDir(idx > i ? 1 : -1); setI(idx) }, [i])
+  // The masks go on in the same render as the change. Switching them on from
+  // an effect would leave one painted frame with the incoming word unmasked,
+  // sitting below its line on top of the lede.
+  const go = useCallback((d) => {
+    if (n < 2) return
+    setMasked(true); setDir(d); setI((p) => (p + d + n) % n)
+  }, [n])
+  const jump = useCallback((idx) => {
+    if (idx === i) return
+    setMasked(true); setDir(idx > i ? 1 : -1); setI(idx)
+  }, [i])
+
+  /*
+   * The light pass. The rotating word remounts on every change, so it starts
+   * its pass from a callback ref as it mounts; the lead ("Illuminating") never
+   * remounts, so an effect on the slide index starts its pass in step. Same
+   * timing on both is what makes them read as one band crossing both lines.
+   * Web Animations rather than a CSS class, so re-running it needs no class
+   * toggling and no forced reflow.
+   */
+  const leadRef = useRef(null)
+  const booted = useRef(false)
+  const sweep = useCallback((el) => {
+    if (el && !reduce) el.animate(SWEEP, sweepTiming(!booted.current))
+  }, [reduce])
+  useEffect(() => {
+    const first = !booted.current
+    booted.current = true
+    if (!reduce && leadRef.current) leadRef.current.animate(SWEEP, sweepTiming(first))
+    // Off once the reveal (load) or the word change (0.8s, visibly landed well
+    // before) is done; the pass is timed to start just after.
+    const t = setTimeout(() => setMasked(false), first ? 1500 : 700)
+    return () => clearTimeout(t)
+  }, [i, reduce])
 
   /**
    * Swipe, for the widths where the side arrows cannot fit.
@@ -342,6 +456,36 @@ export default function Hero({ section }) {
     [reduce],
   )
 
+  /**
+   * The rotating word, inside its mask: the new word rises in from the side of
+   * travel while the old one leaves through the other, so "next" reads as the
+   * words scrolling up and "previous" as them scrolling back down.
+   */
+  const wordFrames = useMemo(
+    () =>
+      reduce
+        ? {
+            enter: { opacity: 0 },
+            settled: { opacity: 1, transition: { duration: DUR.control } },
+            leave: { opacity: 0, transition: { duration: DUR.interaction } },
+          }
+        : {
+            enter: (d) => ({ y: d > 0 ? '110%' : '-110%' }),
+            settled: { y: '0%', transition: { duration: 0.8, ease: EASE_OUT } },
+            leave: (d) => ({ y: d > 0 ? '-110%' : '110%', transition: { duration: 0.5, ease: EASE_EXIT } }),
+          },
+    [reduce],
+  )
+
+  /** On load each line of the headline rises from behind its mask, in turn. */
+  const lineReveal = useMemo(
+    () =>
+      reduce
+        ? { hidden: { y: '0%' }, show: { y: '0%' } }
+        : { hidden: { y: '110%' }, show: { y: '0%', transition: { duration: 0.95, ease: EASE_OUT } } },
+    [reduce],
+  )
+
   const tel = telLink(site)
 
   return (
@@ -457,29 +601,56 @@ export default function Hero({ section }) {
           </motion.p>
 
           <motion.h1
-            variants={rise}
+            variants={{ hidden: {}, show: { transition: { staggerChildren: 0.11 } } }}
             className="mt-5 text-[clamp(2.5rem,5.4vw,4.6rem)] font-extrabold text-white"
           >
-            {line1}
-            {line2 && (
-              // A warm white, not a gold. The saturated gradient made this line
-              // outrank the one above it, so "Illuminating possibilities" read
-              // as the business and "Powering spaces" as the subtitle — which
-              // is backwards for a contractor pitching every sector. The two
-              // lines now carry equal weight and the warmth is a tint, not a
-              // second brand colour competing with the red.
-              //
-              // Literal colours, not lumen-* tokens: dark mode remaps lumen-100
-              // to a dark brown for the light-ground tiles, which turned the
-              // start of this line muddy — and this sits on a photograph that
-              // is dark in both themes.
-              <span
-                className="mt-1 block bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(90deg, #FFF8EA 0%, #FFE6B8 50%, #F5C97B 100%)' }}
-              >
-                {line2}
-              </span>
-            )}
+            {/* One stable sentence for search engines and screen readers: the
+                brand line exactly as the CMS holds it. Everything that moves is
+                hidden from assistive technology, so a rotating word is never
+                read out halfway through a sentence. */}
+            <span className="sr-only">{[line1, line2].filter(Boolean).join(' ')}</span>
+            <span aria-hidden="true" className="block">
+              <MaskLine variants={lineReveal} clip={clip}>{line1}</MaskLine>
+              {/* The second line is a warm white, not a gold: a saturated gold
+                  made it outrank "Powering spaces", which is backwards for a
+                  contractor pitching every sector. Literal colours in INK, not
+                  lumen-* tokens, because dark mode remaps lumen-100 to a dark
+                  brown and this sits on a photograph that is dark in both. */}
+              {line2 && (resting ? (
+                <>
+                  <MaskLine variants={lineReveal} clip={clip} className="mt-1">
+                    <span ref={leadRef} className="-mb-[0.2em] block bg-clip-text pb-[0.2em] text-transparent" style={INK}>
+                      {lead}
+                    </span>
+                  </MaskLine>
+                  {/* The word each photograph completes the line with. The
+                      invisible copy holds the line's height, so a short word
+                      and a long one never move the lede underneath. */}
+                  <MaskLine variants={lineReveal} clip={clip}>
+                    <span className="invisible block whitespace-nowrap">{word}</span>
+                    <AnimatePresence initial={false} custom={dir}>
+                      <motion.span
+                        key={word}
+                        ref={sweep}
+                        custom={dir}
+                        variants={wordFrames}
+                        initial="enter"
+                        animate="settled"
+                        exit="leave"
+                        className="absolute inset-x-0 top-0 block whitespace-nowrap bg-clip-text pb-[0.2em] text-transparent"
+                        style={INK}
+                      >
+                        {word}
+                      </motion.span>
+                    </AnimatePresence>
+                  </MaskLine>
+                </>
+              ) : (
+                <MaskLine variants={lineReveal} clip={clip} className="mt-1">
+                  <span className="-mb-[0.2em] block bg-clip-text pb-[0.2em] text-transparent" style={INK}>{line2}</span>
+                </MaskLine>
+              ))}
+            </span>
           </motion.h1>
 
           <motion.p variants={rise} className="mt-5 max-w-xl text-base leading-relaxed text-ink-300 sm:text-lg">
@@ -520,20 +691,42 @@ export default function Hero({ section }) {
               side arrows cannot be shown at a width where the left one would
               land on the headline; swipe is the gesture there. */}
           {n > 1 && (
-            <motion.div variants={rise} className="mt-9">
+            <motion.div variants={rise} className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-2 sm:flex-nowrap">
               <SlideMarkers
                 slides={slides} i={i} n={n} onJump={jump}
                 reduce={reduce} paused={paused} onCycleEnd={() => go(1)}
-                className="flex"
+                className="flex shrink-0"
               />
+              {/* Which project this is, next to the control that moves between
+                  them and in view at every size. Its own line on a phone and
+                  one truncated line from sm up: letting it wrap by length would
+                  make the row change height as names of different lengths
+                  cycle through. */}
+              <div className="min-w-0 basis-full sm:flex-1 sm:basis-auto">
+                <AnimatePresence mode="wait" initial={false} custom={dir}>
+                  <motion.p
+                    key={slide.caption}
+                    custom={dir}
+                    variants={captionFrames}
+                    initial="enter"
+                    animate="settled"
+                    exit="leave"
+                    className="truncate text-sm text-ink-300"
+                  >
+                    <span className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-lumen-500">{slide.eyebrow}</span>
+                    <span aria-hidden="true" className="mx-2.5 text-white/30">·</span>
+                    <span className="font-semibold text-white">{slide.caption}</span>
+                  </motion.p>
+                </AnimatePresence>
+              </div>
             </motion.div>
           )}
         </div>
       </motion.div>
 
-      {/* ── Which room this is. Caption only now: the way between rooms
-             moved out to the sides of the photograph and up into the content
-             column, leaving this row to name what is being looked at. ── */}
+      {/* ── What the photograph shows. The category and project name moved
+             up beside the slide markers, where they are in view at every size;
+             this row keeps the longer description, like a gallery caption. ── */}
       {/* The divider on the full-width wrapper, the content in the container:
           on the container it stopped short of both edges of a full-bleed
           photograph, which drew the box the rest of the page no longer has. */}
@@ -556,13 +749,7 @@ export default function Hero({ section }) {
                   animate="settled"
                   exit="leave"
                 >
-                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-lumen-500">
-                    {slide.eyebrow}
-                  </p>
-                  <p className="mt-1 text-sm text-ink-300">
-                    <span className="font-semibold text-white">{slide.caption}</span>
-                    {slide.line && <>{' — '}{slide.line}</>}
-                  </p>
+                  <p className="text-sm leading-relaxed text-ink-300">{slide.line}</p>
                 </motion.div>
               </AnimatePresence>
             </div>
