@@ -431,13 +431,13 @@ export default function Hero({ section }) {
       <div aria-hidden="true" className="grain pointer-events-none absolute inset-0 -z-10" />
 
       {/* ── The way between rooms, on the sides of the photograph ──
-             Anchored to the same 88rem box the content sits in, not to the
-             viewport, so on a wide screen the arrows stay with the
-             composition instead of drifting off to the far edges of the
-             glass. The content's md:px-20 lane is what they sit in — that
-             padding exists for these. */}
+             Anchored to the same box the content sits in. That box now spans
+             the whole screen on anything short of ultrawide, so the arrows sit
+             out near the edges of the photograph; only past that do they stay
+             with the composition rather than drifting to the far edges of the
+             glass. The content's md: lane is what they sit in. */}
       {n > 1 && (
-        <div className="pointer-events-none absolute inset-0 z-10 mx-auto hidden w-full max-w-[88rem] items-center justify-between px-2 md:flex lg:px-3">
+        <div className="pointer-events-none absolute inset-0 z-10 mx-auto hidden w-full max-w-[120rem] items-center justify-between px-2 md:flex lg:px-3">
           <HeroNav back label="Previous slide" onClick={() => go(-1)} />
           <HeroNav label="Next slide" onClick={() => go(1)} />
         </div>
@@ -448,7 +448,7 @@ export default function Hero({ section }) {
         initial="hidden"
         animate="show"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.09, delayChildren: 0.12 } } }}
-        className="container-x relative flex flex-1 flex-col justify-center py-16 md:px-20 lg:py-20"
+        className="container-x relative flex flex-1 flex-col justify-center py-16 md:px-[max(5rem,4vw)] lg:py-20"
       >
         <div className="max-w-2xl">
           <motion.p variants={rise} className="eyebrow">
@@ -468,7 +468,15 @@ export default function Hero({ section }) {
               // is backwards for a contractor pitching every sector. The two
               // lines now carry equal weight and the warmth is a tint, not a
               // second brand colour competing with the red.
-              <span className="mt-1 block bg-gradient-to-r from-lumen-100 via-lumen-300 to-lumen-500 bg-clip-text text-transparent">
+              //
+              // Literal colours, not lumen-* tokens: dark mode remaps lumen-100
+              // to a dark brown for the light-ground tiles, which turned the
+              // start of this line muddy — and this sits on a photograph that
+              // is dark in both themes.
+              <span
+                className="mt-1 block bg-clip-text text-transparent"
+                style={{ backgroundImage: 'linear-gradient(90deg, #FFF8EA 0%, #FFE6B8 50%, #F5C97B 100%)' }}
+              >
                 {line2}
               </span>
             )}
@@ -526,35 +534,40 @@ export default function Hero({ section }) {
       {/* ── Which room this is. Caption only now: the way between rooms
              moved out to the sides of the photograph and up into the content
              column, leaving this row to name what is being looked at. ── */}
+      {/* The divider on the full-width wrapper, the content in the container:
+          on the container it stopped short of both edges of a full-bleed
+          photograph, which drew the box the rest of the page no longer has. */}
       <motion.div
         variants={rise} initial="hidden" animate="show"
         transition={{ delay: 0.3 }}
-        className="container-x relative border-t border-white/10 py-5 sm:py-6 md:px-20"
+        className="relative border-t border-white/10"
       >
-        <div className="flex flex-wrap items-center justify-between gap-5">
-          {/* Fixed min-height so the row does not resize as captions of
-              different lengths cycle through it. */}
-          <div className="min-h-[2.75rem]">
-            <AnimatePresence mode="wait" custom={dir}>
-              <motion.div
-                key={slide.caption}
-                custom={dir}
-                variants={captionFrames}
-                initial="enter"
-                animate="settled"
-                exit="leave"
-              >
-                <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-lumen-500">
-                  {slide.eyebrow}
-                </p>
-                <p className="mt-1 text-sm text-ink-300">
-                  <span className="font-semibold text-white">{slide.caption}</span>
-                  {slide.line && <>{' — '}{slide.line}</>}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
+        <div className="container-x py-5 sm:py-6 md:px-[max(5rem,4vw)]">
+          <div className="flex flex-wrap items-center justify-between gap-5">
+            {/* Fixed min-height so the row does not resize as captions of
+                different lengths cycle through it. */}
+            <div className="min-h-[2.75rem]">
+              <AnimatePresence mode="wait" custom={dir}>
+                <motion.div
+                  key={slide.caption}
+                  custom={dir}
+                  variants={captionFrames}
+                  initial="enter"
+                  animate="settled"
+                  exit="leave"
+                >
+                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-lumen-500">
+                    {slide.eyebrow}
+                  </p>
+                  <p className="mt-1 text-sm text-ink-300">
+                    <span className="font-semibold text-white">{slide.caption}</span>
+                    {slide.line && <>{' — '}{slide.line}</>}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
+          </div>
         </div>
       </motion.div>
     </section>

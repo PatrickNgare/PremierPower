@@ -163,6 +163,13 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  /* Large displays scale the rem, so type, spacing and controls grow with the
+     screen instead of sitting at laptop size in the middle of a monitor. The
+     breakpoints do not move: a rem inside a media query is the browser's own
+     16px, not this. Percentages, so a visitor's larger default still wins. */
+  @media (min-width: 100rem) { html { font-size: 106.25%; } }
+  @media (min-width: 120rem) { html { font-size: 112.5%; } }
+  @media (min-width: 150rem) { html { font-size: 125%; } }
 
   body {
     font-family: var(--font-sans);
@@ -334,7 +341,18 @@
    COMPONENTS
    ═══════════════════════════════════════════════════════════════ */
 @layer components {
-  .container-x { @apply mx-auto w-full max-w-[88rem] px-5 sm:px-8 lg:px-12; }
+  /* Fluid and wide. At 88rem with fixed gutters a 1920px screen boxed every
+     page into the middle, ~300px empty either side, and 2560 lost a quarter
+     of its width on each side. 4vw keeps the gutter in proportion to the
+     screen: the same 20px on a phone, ~55px on a laptop, ~77px on a monitor.
+     The 120rem ceiling only bites on ultrawide, where some margin stops copy
+     running the width of a desk; text keeps its own max-w either way. */
+  .container-x {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 120rem;
+    padding-inline: clamp(1.25rem, 4vw, 6rem);
+  }
 
   /* Driven by an attribute rather than a JS-animated colour, so the bar
      follows the theme. The transition keeps the condense as smooth as the
