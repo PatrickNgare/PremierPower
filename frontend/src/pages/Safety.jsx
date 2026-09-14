@@ -36,8 +36,8 @@ export default function Safety() {
         eyebrow={hero?.eyebrow || "Compliance"}
         title={hero?.title || "Registered, tested, and documented on every project."}
         lede={hero?.subtitle || "Premier Power Limited is registered with the National Construction Authority as an Electrical Engineering Service Contractor. Every installation is tested and certified before handover, whatever its size."}
-        image={hero?.image_url || photo('/projects/technical.jpg')}
-        imageAlt={hero?.image_alt || "Terminating conductors during installation"}
+        image={hero?.image_url || photo('/projects/testing.jpg')}
+        imageAlt={hero?.image_alt || "Testing a control panel with meter probes"}
       />
 
       <section className="section-tight">

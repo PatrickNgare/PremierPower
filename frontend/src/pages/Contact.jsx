@@ -28,8 +28,8 @@ export default function Contact() {
         eyebrow={hero?.eyebrow || "Project enquiries"}
         title={hero?.title || "Tell us about the project."}
         lede={hero?.subtitle || "Send drawings, a tender document or a short description and we will come back with scope and next steps. Site visits and assessments are free, with no obligation."}
-        image={hero?.image_url || photo('/projects/resort-pool.jpg')}
-        imageAlt={hero?.image_alt || "Completed resort development"}
+        image={hero?.image_url || photo('/projects/technician.jpg')}
+        imageAlt={hero?.image_alt || "Electrician in a hard hat working on a wall-mounted supply"}
       />
 
       <section className="section">

@@ -23,8 +23,8 @@ export default function Services() {
         eyebrow={hero?.eyebrow || "What we do"}
         title={hero?.title || "Eight service lines, one registered contractor."}
         lede={hero?.subtitle || "Our NCA registration covers electrical installation and the specialist systems that sit alongside it \u2014 security, solar, power continuity, vertical transport, transmission and gas. One contractor, coordinated on one programme."}
-        image={hero?.image_url || photo('/projects/stairwell.jpg')}
-        imageAlt={hero?.image_alt || "Feature lighting installation in a completed stairwell"}
+        image={hero?.image_url || photo('/projects/panel-contactors.jpg')}
+        imageAlt={hero?.image_alt || "Contactors and circuit breakers wired in a control panel"}
       />
 
       <section className="section-tight">
