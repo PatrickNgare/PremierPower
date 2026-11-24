@@ -187,8 +187,8 @@ export default function Media() {
   )
 }
 
-/** Where uploads land. Worth stating plainly: the difference between a CDN and
- *  a container volume is invisible until the day the volume is lost. */
+/** Where uploads land. Photographs only ever go to Cloudinary; without it the
+ *  API refuses them, and this says why before anyone tries. */
 function StorageBadge({ storage }) {
   const onCloud = storage.backend === 'cloudinary'
   const Icon = onCloud ? Cloud : HardDrive
@@ -207,10 +207,10 @@ function StorageBadge({ storage }) {
           </p>
         ) : (
           <p className="text-body-mid">
-            <span className="font-semibold text-body">Stored on this server</span>
-            {' — '}photographs live on the container volume.
+            <span className="font-semibold text-body">Uploads are off</span>
+            {' — '}photographs are stored on Cloudinary, which is not set up on this server.
             {storage.missing?.length > 0 && (
-              <> To use Cloudinary instead, set{' '}
+              <> Set{' '}
                 <span className="font-medium">{storage.missing.join(', ')}</span> and restart.</>
             )}
           </p>

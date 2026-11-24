@@ -94,12 +94,11 @@ Costs and limits:
   uploads must go to Cloudinary. For PDFs, enable "Allow delivery of PDF and
   ZIP files" in Cloudinary → Settings → Security (`CLOUDINARY_DOCUMENTS` is
   already `true`).
-- **The API is on Render's Starter plan ($7/month)**, so it stays awake. On
-  the free plan it sleeps after 15 minutes and the next visitor waits about a
-  minute.
-- **The database is on the free plan, which Render deletes 30 days after
-  creation**, CMS content included. Change `plan` under `databases` in
-  render.yaml to `basic-256mb` (about $6/month) before then.
+- **The API is on Render's free plan.** It sleeps after 15 minutes idle and
+  the next visitor waits about a minute while it wakes. Switching `plan` to
+  `starter` ($7/month) keeps it awake.
+- **The database is on Render's Basic 256 MB plan (about $6/month)**, so it is
+  kept indefinitely. Free Render databases are deleted after 30 days.
 
 ## Demo mode
 

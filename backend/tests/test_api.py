@@ -214,13 +214,43 @@ def test_upload_rejects_non_images(client, auth):
     assert r.status_code == 415
 
 
-def test_upload_stores_an_image(client, auth):
-    png = bytes.fromhex("89504e470d0a1a0a") + b"\x00" * 64
+PNG = bytes.fromhex("89504e470d0a1a0a") + b"\x00" * 64
+
+
+def test_upload_is_refused_without_cloudinary(client, auth, tmp_path, monkeypatch):
+    """No silent fallback to a disk the host will wipe."""
+    from app.settings import settings
+
+    monkeypatch.setattr(settings, "upload_dir", str(tmp_path))
     r = client.post("/api/media/image", headers=auth,
-                    files={"file": ("wall.png", png, "image/png")})
+                    files={"file": ("wall.png", PNG, "image/png")})
+    assert r.status_code == 503
+    assert "CLOUDINARY_API_KEY" in r.json()["detail"]
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_upload_sends_the_image_to_cloudinary(client, auth, monkeypatch):
+    """The real upload is stubbed: tests must not write to the client's account."""
+    from app.routers import upload
+    from app.settings import settings
+
+    for field in ("cloudinary_cloud_name", "cloudinary_api_key", "cloudinary_api_secret"):
+        monkeypatch.setattr(settings, field, "set")
+    sent = {}
+
+    def fake_store(data, filename, folder=""):
+        sent.update(filename=filename, folder=folder, size=len(data))
+        return {"url": "https://res.cloudinary.com/demo/image/upload/f_auto,q_auto/wall.png",
+                "public_id": "premierpower/wall", "width": 1, "height": 1,
+                "storage": "cloudinary"}
+
+    monkeypatch.setattr(upload, "_store_cloudinary", fake_store)
+    r = client.post("/api/media/image", headers=auth, data={"folder": "projects"},
+                    files={"file": ("wall.png", PNG, "image/png")})
     assert r.status_code == 201, r.text
-    assert r.json()["url"].startswith("/uploads/")
-    assert r.json()["storage"] == "local"
+    assert r.json()["storage"] == "cloudinary"
+    assert r.json()["url"].startswith("https://res.cloudinary.com/")
+    assert sent == {"filename": "wall.png", "folder": "projects", "size": len(PNG)}
 
 
 # ── audit & stats ───────────────────────────────────────────────────────

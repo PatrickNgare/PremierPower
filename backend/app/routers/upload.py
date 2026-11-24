@@ -1,9 +1,12 @@
 """Media upload.
 
-Cloudinary is used when configured; otherwise files land on local disk and are
-served from /uploads. The local path keeps the client able to add photographs
-before anyone has set up a CDN account — which matters here, because the site's
-whole argument depends on real installation photography.
+Photographs go to Cloudinary, always. There is no local-disk fallback: the
+host (Render) wipes its disk on every deploy and restart, so a photograph
+saved there would look uploaded and then disappear from the site days later.
+Without Cloudinary keys the upload is refused with a message saying which are
+missing — a loud failure now rather than a silent loss later.
+
+PDFs can still be kept locally (see CLOUDINARY_DOCUMENTS in settings).
 """
 
 import logging
@@ -57,17 +60,6 @@ def _looks_like_image(data: bytes, declared: str) -> bool:
     if data[4:8] == b"ftyp" and b"avif" in data[8:24]:
         return declared == "image/avif"
     return False
-
-
-def _store_local(file: UploadFile, data: bytes) -> dict:
-    root = Path(settings.upload_dir)
-    root.mkdir(parents=True, exist_ok=True)
-    # Name and extension are both generated; nothing from the caller reaches
-    # the filesystem path.
-    ext = ALLOWED[file.content_type]
-    name = f"{secrets.token_hex(12)}{ext}"
-    (root / name).write_bytes(data)
-    return {"url": f"/uploads/{name}", "public_id": name, "storage": "local"}
 
 
 def _public_id(filename: str) -> str:
@@ -159,6 +151,17 @@ def _store_document_cloudinary(data: bytes, filename: str) -> dict:
     }
 
 
+def _missing_cloudinary() -> list[str]:
+    """Names only — never the values."""
+    return [
+        name for name, value in (
+            ("CLOUDINARY_CLOUD_NAME", settings.cloudinary_cloud_name),
+            ("CLOUDINARY_API_KEY", settings.cloudinary_api_key),
+            ("CLOUDINARY_API_SECRET", settings.cloudinary_api_secret),
+        ) if not value
+    ]
+
+
 @router.post("/image", response_model=MediaOut, status_code=status.HTTP_201_CREATED)
 async def upload_image(
     request: Request,
@@ -189,11 +192,13 @@ async def upload_image(
             f"File is larger than the {settings.max_upload_mb}MB limit",
         )
 
-    stored = (
-        _store_cloudinary(data, file.filename or "upload", folder.strip())
-        if settings.cloudinary_configured
-        else _store_local(file, data)
-    )
+    if not settings.cloudinary_configured:
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE,
+            "Photo uploads go to Cloudinary, which is not set up on this server. "
+            f"Set {', '.join(_missing_cloudinary())} and restart.",
+        )
+    stored = _store_cloudinary(data, file.filename or "upload", folder.strip())
 
     asset = MediaAsset(
         url=stored["url"], public_id=stored.get("public_id", ""),
@@ -302,13 +307,7 @@ def storage(_: Admin = Depends(get_current_admin)) -> dict[str, object]:
         "documents_backend": "cloudinary" if settings.cloudinary_documents_enabled else "local",
         "cloud_name": settings.cloudinary_cloud_name or "",
         "max_upload_mb": settings.max_upload_mb,
-        "missing": [
-            name for name, value in (
-                ("CLOUDINARY_CLOUD_NAME", settings.cloudinary_cloud_name),
-                ("CLOUDINARY_API_KEY", settings.cloudinary_api_key),
-                ("CLOUDINARY_API_SECRET", settings.cloudinary_api_secret),
-            ) if not value
-        ],
+        "missing": _missing_cloudinary(),
     }
 
 
