@@ -25,4 +25,8 @@ RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
 USER appuser
 
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# PORT is set by hosts such as Render; compose leaves it unset and gets 8000.
+# Proxy headers are trusted because the app always sits behind one (nginx
+# locally, Vercel and Render's edge in production): without them request URLs
+# say http:// and the client address is the proxy's.
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

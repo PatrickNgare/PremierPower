@@ -43,8 +43,7 @@ npm run dev          # http://localhost:5173
 npm run build        # production build into dist/
 ```
 
-Deploys to Vercel as a static SPA. Set `VITE_API_URL` to the backend's
-`/api` origin; it falls back to a same-origin `/api` when unset.
+Deploys to Vercel as a static SPA — see [Hosting](#hosting-vercel--render).
 
 ### Backend
 
@@ -62,8 +61,45 @@ cp .env.example .env          # then edit it — see below
 and a generated `SECRET_KEY`. Tables and the site-settings rows are created on
 first startup.
 
-Deploys to Render as a web service with a managed Postgres instance; Render
-supplies `DATABASE_URL` automatically.
+Deploys to Render as a web service with a managed Postgres instance — see
+[Hosting](#hosting-vercel--render).
+
+## Hosting: Vercel + Render
+
+The frontend runs on Vercel and the API and database on Render. Vercel forwards
+`/api`, `/uploads`, `/sitemap.xml` and `/robots.txt` to Render
+([frontend/vercel.json](frontend/vercel.json)), so the browser only ever talks
+to one origin: no CORS, and no backend URL compiled into the bundle. Leave
+`VITE_API_URL` unset.
+
+**1. Render (API + Postgres).** Dashboard → New → Blueprint → this repository.
+[render.yaml](render.yaml) creates `premierpower-api` and `premierpower-db` in
+Frankfurt and asks for the admin login, Cloudinary keys and SMTP settings.
+`SECRET_KEY` is generated. When it is live, check
+`https://premierpower-api.onrender.com/api/health`.
+
+If Render gives the service a different address (the name was taken), replace
+`premierpower-api.onrender.com` in `frontend/vercel.json` to match.
+
+**2. Vercel (frontend).** New Project → this repository → Root Directory
+`frontend`. Vite is detected; no environment variables are needed.
+
+**3. Tie them together.** Set `CORS_ORIGINS` on Render to the Vercel address,
+and in the CMS set the site URL setting to it so the sitemap lists the right
+domain.
+
+Costs and limits:
+
+- **Cloudinary is required.** Render's disk is wiped on every deploy, so
+  uploads must go to Cloudinary. For PDFs, enable "Allow delivery of PDF and
+  ZIP files" in Cloudinary → Settings → Security (`CLOUDINARY_DOCUMENTS` is
+  already `true`).
+- **The API is on Render's Starter plan ($7/month)**, so it stays awake. On
+  the free plan it sleeps after 15 minutes and the next visitor waits about a
+  minute.
+- **The database is on the free plan, which Render deletes 30 days after
+  creation**, CMS content included. Change `plan` under `databases` in
+  render.yaml to `basic-256mb` (about $6/month) before then.
 
 ## Demo mode
 

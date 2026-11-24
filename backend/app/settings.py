@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -5,6 +6,17 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str = "postgresql+psycopg://premierpower:premierpower@localhost:5432/premierpower"
+
+    @field_validator("database_url")
+    @classmethod
+    def _psycopg_driver(cls, v: str) -> str:
+        """Hosts such as Render hand out `postgres://` or `postgresql://` URLs.
+        SQLAlchemy reads either as "use psycopg2", which is not installed, and
+        fails at the first connection. Name the installed psycopg 3 driver."""
+        for prefix in ("postgres://", "postgresql://"):
+            if v.startswith(prefix):
+                return "postgresql+psycopg://" + v[len(prefix):]
+        return v
 
     # Seed superuser, created on first startup if no admin exists.
     admin_username: str = "admin"

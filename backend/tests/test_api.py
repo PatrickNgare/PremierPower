@@ -264,3 +264,13 @@ def test_raw_admin_no_longer_answers_on_the_cms_path(client):
     """/admin belongs to the CMS. If the backend ever claims it again, the
     client's admin panel is replaced by a Bootstrap table view."""
     assert client.get("/admin/", follow_redirects=False).status_code == 404
+
+
+def test_database_url_gets_the_psycopg3_driver():
+    """Render's connection string must not select the missing psycopg2."""
+    from app.settings import Settings
+
+    for given in ("postgres://u:p@h:5432/d", "postgresql://u:p@h:5432/d",
+                  "postgresql+psycopg://u:p@h:5432/d"):
+        s = Settings(database_url=given, secret_key="x" * 40)
+        assert s.database_url == "postgresql+psycopg://u:p@h:5432/d"
