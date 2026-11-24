@@ -1,73 +1,16 @@
-# Deploying to AWS free tier
+# Deploying to one server
 
-A single EC2 instance running the same `docker compose` stack as your laptop,
+A single Ubuntu server running the same `docker compose` stack as your laptop,
 behind Caddy for HTTPS. Nothing about the application changes: nginx still
 serves the SPA and proxies `/api` on the compose network, and no host URL is
 baked into the build — which is why the same image works on any domain.
 
-**Why one box rather than S3 + CloudFront + RDS.** Three services means three
-separate free-tier clocks and three things to debug on pitch day. RDS is also
-the component most likely to keep billing after the free window. One instance
-is less to go wrong, and this site's traffic during a pitch is a rounding
-error.
+## 1. The server
 
-## Cost
+Any VPS will do: Ubuntu Server 24.04, 1 GB of RAM, 20 GB of disk, a static
+public IP, and SSH key access.
 
-Free for 12 months at 750 hours/month — enough for one instance running
-continuously. After that a `t3.micro` is roughly **$8–9/month**.
-
-AWS changed the free tier in mid-2025: accounts created since then get a
-credit-based plan with a shorter window instead of the classic 12 months.
-Check which one your account is on before assuming twelve months.
-
-**Set a billing alarm before you start.** Billing → Budgets → create a zero-spend
-budget, or a $1 alarm. This is the single cheapest insurance available.
-
-## 0. One command, or by hand
-
-Everything in sections 1–3 is automated. Install the CLI, give it your keys —
-they stay on your machine, nothing is sent anywhere — and run one script:
-
-```bash
-# Ubuntu
-sudo apt-get install -y awscli        # or: pipx install awscli
-
-aws configure                          # access key, secret, region (e.g. eu-west-1)
-./deploy/aws-provision.sh
-```
-
-It creates the key pair, security group, Elastic IP and instance, then installs
-Docker, swap and this repository on the box. It prints a plan and asks before
-creating anything billable, and re-running finds what already exists rather
-than making a second copy.
-
-Then skip to section 2.
-
-To stop paying entirely, at any point:
-
-```bash
-./deploy/aws-teardown.sh               # terminates everything, releases the IP
-```
-
-Releasing the Elastic IP matters: an allocated address that is *not* attached
-to a running instance is billed by the hour, which is the classic way a torn
--down free-tier project keeps costing money.
-
-The rest of this section describes the same thing through the console, if you
-would rather see what is being made.
-
-## 1. The instance
-
-EC2 → Launch instance:
-
-| Setting | Value |
-|---|---|
-| AMI | Ubuntu Server 24.04 LTS |
-| Type | `t3.micro` (or `t2.micro` — whichever is free-tier eligible in your region) |
-| Key pair | Create one and keep the `.pem` safe; it is the only way in |
-| Storage | 20 GB gp3 (30 GB is the free-tier ceiling) |
-
-Security group — inbound only:
+Firewall — inbound only:
 
 | Port | Source | Why |
 |---|---|---|
@@ -78,38 +21,34 @@ Security group — inbound only:
 Do **not** open 5440, 8010 or 8090. The stack pins those to loopback (below),
 so nothing outside the box can reach Postgres or the API directly.
 
-Then allocate an **Elastic IP** and associate it with the instance, or the
-address changes on every reboot and your DNS goes stale. It is free while
-attached to a running instance and billed when it is not.
-
 ## 2. The domain
 
 Using a free subdomain from [duckdns.org](https://duckdns.org): sign in, create
-e.g. `premierpower`, and set its IP to the Elastic IP. It resolves in seconds
+e.g. `premierpower`, and set its IP to the server IP. It resolves in seconds
 and Let's Encrypt is happy to certify it.
 
 Verify before going further — Caddy will fail to get a certificate otherwise:
 
 ```bash
-dig +short premierpower.duckdns.org     # must print your Elastic IP
+dig +short premierpower.duckdns.org     # must print your server IP
 ```
 
 ## 3. Bootstrap
 
 ```bash
-ssh -i your-key.pem ubuntu@<elastic-ip>
+ssh -i your-key.pem ubuntu@<server-ip>
 curl -fsSL https://raw.githubusercontent.com/PatrickNgare/PremierPower/master/deploy/bootstrap.sh | bash
 exit          # docker group membership needs a fresh login
 ```
 
-The script adds **2 GB of swap**, which is not optional: the free-tier instance
-has 1 GB of RAM and `npm ci && vite build` inside Docker is killed without it,
+The script adds **2 GB of swap**, which is not optional: a 1 GB server
+has too little RAM and `npm ci && vite build` inside Docker is killed without it,
 with nothing but exit code 137 to explain itself.
 
 ## 4. Configure
 
 ```bash
-ssh -i your-key.pem ubuntu@<elastic-ip>
+ssh -i your-key.pem ubuntu@<server-ip>
 cd ~/PremierPower
 cp .env.example .env
 nano .env
@@ -154,7 +93,7 @@ CLOUDINARY_API_SECRET=...
 
 It refuses to start if the bind variables are missing, because publishing
 Postgres to the internet is the one mistake that turns a pitch site into an
-incident. First build takes several minutes on a `t3.micro`; subsequent ones
+incident. First build takes several minutes on a small server; subsequent ones
 are cached.
 
 Then open `https://premierpower.duckdns.org`. Caddy fetches the certificate on
@@ -178,7 +117,7 @@ The overlay runs a nightly `pg_dump` into `deploy/backups/`, keeping seven
 days. To pull one down:
 
 ```bash
-scp -i your-key.pem ubuntu@<elastic-ip>:~/PremierPower/deploy/backups/*.gz .
+scp -i your-key.pem ubuntu@<server-ip>:~/PremierPower/deploy/backups/*.gz .
 ```
 
 To restore:
@@ -193,7 +132,7 @@ gunzip -c deploy/backups/2026-09-01.sql.gz \
 **Build killed, exit 137** — out of memory. Confirm swap is on: `swapon --show`.
 
 **Caddy will not get a certificate** — DNS is not pointing here yet, or port 80
-is closed. Check `dig +short $SITE_DOMAIN` and the security group, then
+is closed. Check `dig +short $SITE_DOMAIN` and the firewall, then
 `docker compose logs caddy`.
 
 **502 from Caddy** — the API is still starting. `docker compose ps` will show

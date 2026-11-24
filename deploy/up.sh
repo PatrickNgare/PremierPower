@@ -16,7 +16,7 @@ done
 COMPOSE="docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml"
 mkdir -p deploy/backups
 
-echo "==> Building (this takes a few minutes on a t3.micro)"
+echo "==> Building (this takes a few minutes on a small server)"
 $COMPOSE build
 echo "==> Starting"
 $COMPOSE up -d

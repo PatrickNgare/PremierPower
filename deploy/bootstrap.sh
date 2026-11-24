@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# First-run setup for a fresh Ubuntu 24.04 EC2 instance (t3.micro / t2.micro).
+# First-run setup for a fresh Ubuntu 24.04 server (1GB RAM is enough).
 #
 #   curl -fsSL https://raw.githubusercontent.com/PatrickNgare/PremierPower/master/deploy/bootstrap.sh | bash
 #
@@ -14,11 +14,11 @@ DIR="${DIR:-$HOME/PremierPower}"
 say() { printf '\n\033[1;32m==>\033[0m %s\n' "$*"; }
 
 # ── swap ────────────────────────────────────────────────────────────────────
-# The free-tier instance has 1GB of RAM. `npm ci && vite build` inside Docker
+# A small server has 1GB of RAM. `npm ci && vite build` inside Docker
 # peaks well above that and the build is killed with an unhelpful exit 137.
 # Swap is slow but the build only runs at deploy time, so slow is fine.
 if ! swapon --show | grep -q /swapfile; then
-  say "Adding 2GB swap (the 1GB instance cannot build the frontend without it)"
+  say "Adding 2GB swap (a 1GB server cannot build the frontend without it)"
   sudo fallocate -l 2G /swapfile
   sudo chmod 600 /swapfile
   sudo mkswap /swapfile >/dev/null

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ship the working tree to the instance over SSH.
+# Ship the working tree to the server over SSH.
 #
 #   ./deploy/sync.sh <ip> [key]
 #

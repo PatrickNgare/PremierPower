@@ -1,6 +1,6 @@
 # Caddy gets and renews a Let's Encrypt certificate on its own. The only
 # requirements are that SITE_DOMAIN resolves to this machine and that ports 80
-# and 443 are open in the security group — HTTP-01 validation needs port 80
+# and 443 are open in the server's firewall — HTTP-01 validation needs port 80
 # reachable, which is why it is published even though everything redirects.
 
 {$SITE_DOMAIN} {
