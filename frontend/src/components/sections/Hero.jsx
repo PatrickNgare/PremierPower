@@ -15,6 +15,11 @@ import { cdnSrcSet, fallbackToLocal } from '@/utils/photo'
 // several rooms. The slide marker's fill runs on this same value.
 const AUTOPLAY_MS = 12000
 
+// The photograph's responsive widths. Shared by the <img> and the preloader
+// below: the same srcset and sizes make the browser pick the same file, so the
+// preloaded copy is the one the slide actually asks for.
+const HERO_WIDTHS = [640, 960, 1280, 1600, 1920, 2560]
+
 /*
  * The wipe between photographs: SpaceInfra's timing and curve, measured off its
  * live hero (1% across at 120ms, 7% at 300ms, half at 525ms, 93% at 750ms).
@@ -259,6 +264,28 @@ export default function Hero({ section }) {
   // The masks go on in the same render as the change. Switching them on from
   // an effect would leave one painted frame with the incoming word unmasked,
   // sitting below its line on top of the lede.
+  /*
+   * Fetch the photographs either side of this one while it is showing.
+   * Without this the wipe began before the incoming photograph had arrived:
+   * on a slow connection the curtain drew an empty dark room across the
+   * screen and the photograph popped in a second or two later. Twelve
+   * seconds is ample time to fetch one image ahead in either direction.
+   */
+  useEffect(() => {
+    if (n < 2) return
+    for (const k of new Set([(i + 1) % n, (i - 1 + n) % n])) {
+      const src = slides[k]?.image
+      if (!src) continue
+      const img = new Image()
+      // sizes and srcset before src, or the browser starts on the fallback
+      // file and then fetches the responsive one as well.
+      img.sizes = '100vw'
+      const set = cdnSrcSet(src, HERO_WIDTHS)
+      if (set) img.srcset = set
+      img.src = src
+    }
+  }, [i, n, slides])
+
   const go = useCallback((d) => {
     if (n < 2) return
     setMasked(true); setChanges((c) => c + 1); setDir(d); setI((p) => (p + d + n) % n)
@@ -545,7 +572,7 @@ export default function Hero({ section }) {
                 never a still frame between changes. */}
             <img onError={fallbackToLocal}
               src={slide.image}
-              srcSet={cdnSrcSet(slide.image, [640, 960, 1280, 1600, 1920, 2560])}
+              srcSet={cdnSrcSet(slide.image, HERO_WIDTHS)}
               sizes="100vw"
               alt=""
               aria-hidden="true"
