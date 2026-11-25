@@ -24,7 +24,7 @@ const published = { name: 'published', label: 'Published', type: FIELD.switch,
 export const collections = {
   banners: {
     path: '/banners',
-    title: 'Hero slides',
+    title: 'Slideshow photos',
     singular: 'slide',
     group: 'Pages',
     blurb: 'The rotating slides at the top of the home page.',
@@ -105,8 +105,8 @@ export const collections = {
 
   projects: {
     path: '/projects',
-    title: 'Installations',
-    singular: 'installation',
+    title: 'Projects',
+    singular: 'project',
     group: 'Content',
     blurb: 'Completed and ongoing projects.',
     orderable: true,
@@ -158,7 +158,7 @@ export const collections = {
 
   products: {
     path: '/products',
-    title: 'Lighting & fittings',
+    title: 'Products',
     singular: 'product',
     group: 'Catalogue',
     blurb: 'The fittings shown on the Lighting & fittings page.',

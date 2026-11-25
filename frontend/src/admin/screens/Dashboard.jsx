@@ -1,15 +1,25 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { AlertTriangle, ArrowRight, Inbox, TrendingUp } from 'lucide-react'
+import {
+  AlertTriangle, ArrowRight, FolderPlus, ImagePlus, Inbox, LayoutTemplate, PackagePlus, TrendingUp,
+} from 'lucide-react'
 import { api } from '../api'
 import { useAuth } from '../auth'
 import { Spinner, StatusPill } from '../components/ui'
 
+/** The jobs people actually come in for, one click each. */
+const ACTIONS = [
+  { to: '/admin/c/projects?new=1', label: 'Add a project', hint: 'A finished installation', icon: FolderPlus, editor: true },
+  { to: '/admin/c/products?new=1', label: 'Add a product', hint: 'A light or fitting', icon: PackagePlus, editor: true },
+  { to: '/admin/media', label: 'Upload photos', hint: 'Into the photo library', icon: ImagePlus },
+  { to: '/admin/homepage', label: 'Edit the home page', hint: 'Slideshow and blocks', icon: LayoutTemplate },
+]
+
 const card = 'rounded-2xl border border-line bg-surface/80 p-5 shadow-lift backdrop-blur-xl'
 
 export default function Dashboard() {
-  const { admin } = useAuth()
+  const { admin, can } = useAuth()
   const [state, setState] = useState({ loading: true })
 
   useEffect(() => {
@@ -46,9 +56,34 @@ export default function Dashboard() {
       <h1 className="font-display text-2xl font-extrabold text-body">
         {admin?.name ? `Hello, ${admin.name.split(' ')[0]}` : 'Hello'}
       </h1>
-      <p className="mt-1 text-sm text-muted">Here is what is waiting for you.</p>
+      <p className="mt-1 text-sm text-muted">What would you like to do?</p>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {ACTIONS.filter((x) => !x.editor || can('editor')).map((x, i) => (
+          <motion.div
+            key={x.to}
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Link
+              to={x.to}
+              className="group flex h-full flex-col gap-3 rounded-2xl border border-line bg-surface p-4 transition-all hover:-translate-y-0.5 hover:border-brand-fill/40 hover:shadow-raise sm:p-5"
+            >
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-fill/10 text-accent transition-colors group-hover:bg-brand-fill group-hover:text-white">
+                <x.icon size={19} aria-hidden="true" />
+              </span>
+              <span>
+                <span className="block font-display font-bold text-body">{x.label}</span>
+                <span className="mt-0.5 block text-xs text-muted sm:text-sm">{x.hint}</span>
+              </span>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+
+      <h2 className="mt-9 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted">Waiting for you</h2>
+
+      <div className="mt-3 grid gap-4 sm:grid-cols-3">
         {stats.map((s, i) => (
           <motion.div
             key={s.label}

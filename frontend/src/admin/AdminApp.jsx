@@ -9,6 +9,7 @@ const Dashboard = lazy(() => import('./screens/Dashboard'))
 const Collection = lazy(() => import('./screens/Collection'))
 const Inbox = lazy(() => import('./screens/Inbox'))
 const Homepage = lazy(() => import('./screens/Homepage'))
+const Pages = lazy(() => import('./screens/Pages'))
 const Menus = lazy(() => import('./screens/Menus'))
 const Media = lazy(() => import('./screens/Media'))
 const Settings = lazy(() => import('./screens/Settings'))
@@ -35,6 +36,7 @@ function Authenticated() {
           <Route index element={<Dashboard />} />
           <Route path="inbox" element={<Inbox />} />
           <Route path="inbox/:id" element={<Inbox />} />
+          <Route path="pages" element={<Pages />} />
           <Route path="homepage" element={<Homepage />} />
           {/* Every other page uses the same screen, keyed by its route. */}
           <Route path="pages/:page" element={<Homepage />} />

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion, Reorder, useDragControls } from 'framer-motion'
 import {
   ChevronDown, ChevronUp, FileText, GripVertical, Plus, Search, Trash2, Upload, X,
@@ -68,6 +68,7 @@ function payloadOf(def, row) {
 export default function Collection() {
   const { name } = useParams()
   const def = collections[name]
+  const [search, setSearch] = useSearchParams()
   const toast = useToast()
   const { can } = useAuth()
   const editable = can('editor')
@@ -100,6 +101,14 @@ export default function Collection() {
 
   // Reset everything when moving between content types.
   useEffect(() => { setQ(''); setFilter(''); setEditing(null) }, [name])
+  // ?new=1 opens a blank form straight away, so the shortcuts on the home
+  // screen ("Add a project") land on the form, not on the list above it.
+  useEffect(() => {
+    if (search.get('new') && def && editable) {
+      setEditing(blankOf(def))
+      setSearch({}, { replace: true })
+    }
+  }, [search, def, editable, setSearch])
   useEffect(() => {
     const t = setTimeout(load, q ? 250 : 0)
     return () => clearTimeout(t)

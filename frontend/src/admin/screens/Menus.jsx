@@ -84,7 +84,7 @@ export default function Menus() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold text-body">Navigation</h1>
+          <h1 className="font-display text-2xl font-extrabold text-body">Menu</h1>
           <p className="mt-1 text-sm text-muted">The links across the top of the site and in the footer.</p>
         </div>
         {editable && (

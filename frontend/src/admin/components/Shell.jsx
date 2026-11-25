@@ -1,44 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import {
-  Bell, ExternalLink, Eye, FileText, Image as ImageIcon, Inbox, LayoutDashboard,
-  LayoutTemplate, LogOut, Menu as MenuIcon, Package, ScrollText, Settings, Users,
-} from 'lucide-react'
+import { ArrowLeft, Bell, ExternalLink, Eye, LogOut, Menu as MenuIcon } from 'lucide-react'
 import { api } from '../api'
 import { useAuth } from '../auth'
-import { collections, GROUPS } from '../schema'
+import { NAV, sectionOf, tabsFor } from '../nav'
 import { Button, useToast } from './ui'
 import Logo from '@/components/layout/Logo'
 import { useTheme } from '@/hooks/useTheme'
 import ThemeToggle from '@/components/ui/ThemeToggle'
-
-const ICONS = {
-  banners: LayoutTemplate, sectors: LayoutTemplate, services: FileText,
-  projects: ImageIcon, 'product-categories': Package, products: Package,
-  testimonials: FileText, faqs: FileText, blog: FileText, team: Users,
-  documents: ScrollText, social: ExternalLink, seo: FileText,
-}
-
-/** Everything not driven by the collections schema. */
-const FIXED = [
-  { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin/inbox', label: 'Enquiries', icon: Inbox },
-  { to: '/admin/homepage', label: 'Home page', icon: LayoutTemplate, group: 'Pages' },
-  { to: '/admin/pages/services', label: 'Services page', icon: FileText, group: 'Pages' },
-  { to: '/admin/pages/products', label: 'Lighting & fittings page', icon: FileText, group: 'Pages' },
-  { to: '/admin/pages/portfolio', label: 'Installations page', icon: FileText, group: 'Pages' },
-  { to: '/admin/pages/safety', label: 'Safety page', icon: FileText, group: 'Pages' },
-  { to: '/admin/pages/about', label: 'About page', icon: FileText, group: 'Pages' },
-  { to: '/admin/pages/testimonials', label: 'Reviews page', icon: FileText, group: 'Pages' },
-  { to: '/admin/pages/faq', label: 'FAQ page', icon: FileText, group: 'Pages' },
-  { to: '/admin/pages/contact', label: 'Contact page', icon: FileText, group: 'Pages' },
-  { to: '/admin/menus', label: 'Navigation', icon: MenuIcon, group: 'Site' },
-  { to: '/admin/media', label: 'Photographs', icon: ImageIcon, group: 'Site' },
-  { to: '/admin/settings', label: 'Company details', icon: Settings, group: 'Site' },
-  { to: '/admin/users', label: 'People', icon: Users, group: 'Site', owner: true },
-  { to: '/admin/audit', label: 'Activity log', icon: ScrollText, group: 'Site', owner: true },
-]
 
 export function Shell({ children }) {
   const { isDark } = useTheme()
@@ -73,35 +43,17 @@ export function Shell({ children }) {
     }
   }
 
-  const groups = GROUPS.map((group) => ({
-    group,
-    items: [
-      ...FIXED.filter((f) => f.group === group && (!f.owner || can('owner')))
-        .map((f) => ({ ...f, key: f.to })),
-      ...Object.entries(collections)
-        .filter(([, def]) => def.group === group)
-        .map(([key, def]) => ({
-          key, to: `/admin/c/${key}`, label: def.title, icon: ICONS[key] ?? FileText,
-        })),
-    ],
-  })).filter((g) => g.items.length > 0)
+  const current = sectionOf(location.pathname)
 
   const nav = (
     <nav className="flex h-full flex-col gap-1 overflow-y-auto p-3">
       <div className="px-2 py-3"><Logo tone={isDark ? 'dark' : 'light'} /></div>
 
-      {FIXED.filter((f) => !f.group).map((f) => (
-        <NavItem key={f.to} {...f} />
-      ))}
-
-      {groups.map(({ group, items }) => (
-        <div key={group} className="mt-5">
-          <p className="px-3 pb-1.5 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-muted">
-            {group}
-          </p>
-          {items.map((item) => <NavItem key={item.key} {...item} />)}
-        </div>
-      ))}
+      <div className="mt-2 space-y-1">
+        {NAV.map((item) => (
+          <NavItem key={item.key} {...item} active={current === item.key} />
+        ))}
+      </div>
 
       <div className="mt-auto border-t border-neutral-200 pt-3">
         <div className="px-3 pb-2">
@@ -183,25 +135,71 @@ export function Shell({ children }) {
         </header>
 
         <main className="px-4 py-7 sm:px-6 lg:px-9">
-          <div className="mx-auto max-w-6xl">{children}</div>
+          <div className="mx-auto max-w-6xl">
+            <SectionTabs path={location.pathname} owner={can('owner')} />
+            {children}
+          </div>
         </main>
       </div>
     </div>
   )
 }
 
-function NavItem({ to, label, icon: Icon, end }) {
+function NavItem({ to, label, icon: Icon, active }) {
   return (
-    <NavLink
-      to={to} end={end}
-      className={({ isActive }) =>
-        `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-          isActive ? 'bg-ink-900 text-white' : 'text-body-soft hover:bg-neutral-100 hover:text-body'
-        }`
-      }
+    <Link
+      to={to}
+      aria-current={active ? 'page' : undefined}
+      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[0.95rem] font-medium transition-colors ${
+        active ? 'bg-ink-900 text-white' : 'text-body-soft hover:bg-neutral-100 hover:text-body'
+      }`}
     >
-      <Icon size={16} aria-hidden="true" className="shrink-0" />
+      <Icon size={18} aria-hidden="true" className="shrink-0" />
       <span className="truncate">{label}</span>
-    </NavLink>
+    </Link>
+  )
+}
+
+/**
+ * The tabs above a screen that belongs to a section: Products and Categories,
+ * the settings screens, the home page and its slideshow. Pages also get a way
+ * back to the list of pages.
+ */
+function SectionTabs({ path, owner }) {
+  const tabs = tabsFor(path)?.filter((t) => !t.owner || owner)
+  const inPages = sectionOf(path) === 'pages' && path !== '/admin/pages'
+
+  if (!tabs && !inPages) return null
+
+  return (
+    <div className="mb-6">
+      {inPages && (
+        <Link
+          to="/admin/pages"
+          className="group mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-body-soft hover:text-body"
+        >
+          <ArrowLeft size={15} aria-hidden="true" className="transition-transform group-hover:-translate-x-0.5" />
+          All pages
+        </Link>
+      )}
+      {tabs && (
+        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <nav aria-label="In this section" className="flex w-max gap-1 rounded-2xl border border-line bg-surface p-1">
+            {tabs.map((t) => (
+              <NavLink
+                key={t.to} to={t.to} end
+                className={({ isActive }) =>
+                  `whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors ${
+                    isActive ? 'bg-ink-900 text-white' : 'text-body-soft hover:bg-neutral-100 hover:text-body'
+                  }`
+                }
+              >
+                {t.label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+      )}
+    </div>
   )
 }

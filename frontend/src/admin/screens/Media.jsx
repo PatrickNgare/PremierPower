@@ -95,7 +95,7 @@ export default function Media() {
     <div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-extrabold text-body">Photographs</h1>
+          <h1 className="font-display text-2xl font-extrabold text-body">Photos</h1>
           <p className="mt-1 text-sm text-muted">
             Every image used across the site. Describe each one — it is read aloud to visitors
             using a screen reader, and shown if the image fails to load.

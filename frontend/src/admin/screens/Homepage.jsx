@@ -22,14 +22,14 @@ const SECTION_BLURBS = {
 /** Where a block's other content is edited, said plainly rather than left to
  *  be discovered. */
 const SECTION_NOTES = {
-  hero: 'The rotating photographs behind this are edited under Hero slides.',
-  stats: 'Each figure is taken from Company details, so a number is only ever typed once.',
-  cta: 'The phone number and WhatsApp number come from Company details.',
-  projects: 'The projects shown here are edited under Installations.',
-  solutions: 'The cards shown here are edited under Sectors.',
-  services: 'The service lines shown here are edited under Services.',
-  testimonials: 'The reviews shown here are edited under Reviews.',
-  about: 'The photographs and figures in this block come from Installations and Company details.',
+  hero: 'The rotating photographs behind this are edited under the Slideshow photos tab above.',
+  stats: 'Each figure is taken from Settings → Company details, so a number is only ever typed once.',
+  cta: 'The phone number and WhatsApp number come from Settings → Company details.',
+  projects: 'The projects shown here are edited under Projects.',
+  solutions: 'The cards shown here are edited under Settings → Sectors.',
+  services: 'The service lines shown here are edited under Settings → Services.',
+  testimonials: 'The reviews shown here are edited under Settings → Reviews.',
+  about: 'The photographs and figures in this block come from Projects and Settings → Company details.',
 }
 
 /** Titles are stored with "|" where the design breaks the heading in two. */
