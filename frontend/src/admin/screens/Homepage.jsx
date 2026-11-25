@@ -1,23 +1,46 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Reorder, useDragControls } from 'framer-motion'
-import { ChevronDown, Eye, EyeOff, GripVertical, Plus, Trash2 } from 'lucide-react'
+import { AlertTriangle, ChevronDown, Eye, EyeOff, GripVertical, MapPin, Plus, Trash2 } from 'lucide-react'
 import { api } from '../api'
 import { useAuth } from '../auth'
 import { Button, Spinner, useToast } from '../components/ui'
 
-/** Plain names for blocks whose heading is not their own words. */
+/** What each block is called, in words a person would use for it. */
 const SECTION_NAMES = {
-  hero: 'Hero', stats: 'Figures bar', lighting: 'Lighting showcase',
-  safety: 'Trust marks', cta: 'Closing call to action',
+  hero: 'Slideshow & headline', stats: 'Figures bar', about: 'About us', projects: 'Projects',
+  solutions: 'Sectors', lighting: 'Lighting showcase', safety: 'Trust marks', services: 'Services',
+  why: 'Why us — dark band', process: 'How it works', testimonials: 'Reviews',
+  cta: 'Closing call to action', reel: 'Showroom clips',
 }
 
+/** One line on what the block looks like on the page. */
 const SECTION_BLURBS = {
-  hero: 'The headline and buttons at the top of the page',
-  stats: 'The four figures on the dark band',
-  safety: 'The four trust marks below the lighting section',
-  cta: 'The closing panel with the phone and WhatsApp buttons',
+  hero: 'The big rotating photographs at the very top, with the main headline and buttons',
+  stats: 'The four numbers on the dark strip under the slideshow',
+  about: 'A short introduction beside a grid of project photographs',
+  projects: 'Large photo cards of finished projects, with a link to all of them',
+  solutions: 'Cards for each type of client: hotels, offices, homes and so on',
+  lighting: 'A dark band of lighting photographs',
+  safety: 'Four small badges: registration, testing, insurance and so on',
+  services: 'A large feature card and a list of every service line',
+  why: 'A dark band explaining why contractors choose one company for everything',
+  process: 'Four numbered steps from drawings to handover',
+  testimonials: 'Quotes from clients',
+  cta: 'The last panel on the page, with the phone and WhatsApp buttons',
+  reel: 'A sideways row of short showroom videos',
 }
+
+/** The same, for the pages other than home: there "hero" is a single banner
+ *  photograph, not the slideshow, and sectionN are plain text blocks. */
+const nameOf = (key, page) =>
+  page !== '/' && key === 'hero' ? 'Page banner'
+    : /^section\d+$/.test(key) ? `Text block ${key.slice(7)}`
+      : SECTION_NAMES[key] || key
+const blurbOf = (key, page) =>
+  page !== '/' && key === 'hero' ? 'The photograph and headline at the top of the page'
+    : /^section\d+$/.test(key) ? 'A heading and paragraph further down the page'
+      : SECTION_BLURBS[key] || ''
 
 /** Where a block's other content is edited, said plainly rather than left to
  *  be discovered. */
@@ -63,6 +86,16 @@ export default function Homepage() {
   const [loading, setLoading] = useState(true)
   const [openId, setOpenId] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [counts, setCounts] = useState({})
+
+  // How many items the list-driven blocks have, so a block that is switched
+  // on but has nothing to show can say so instead of silently vanishing.
+  useEffect(() => {
+    if (page !== '/') return
+    Promise.all(['testimonials', 'projects', 'sectors', 'services'].map((k) =>
+      api.get(`/${k}`).then((r) => [k, Array.isArray(r) ? r.length : 0]).catch(() => [k, null])))
+      .then((pairs) => setCounts(Object.fromEntries(pairs)))
+  }, [page])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -144,6 +177,8 @@ export default function Homepage() {
             onSave={() => save(row)}
             saving={saving}
             input={input}
+            page={page}
+            empty={EMPTY[row.key]?.(counts)}
           />
         ))}
       </Reorder.Group>
@@ -151,7 +186,15 @@ export default function Homepage() {
   )
 }
 
-function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, saving, input }) {
+/** Why a switched-on block shows nothing, if it does. */
+const EMPTY = {
+  testimonials: (c) => c.testimonials === 0 && 'Not showing yet: there are no reviews. Add one under Settings → Reviews.',
+  projects: (c) => c.projects === 0 && 'Not showing yet: there are no projects. Add one under Projects.',
+  solutions: (c) => c.sectors === 0 && 'Empty: there are no sectors. Add them under Settings → Sectors.',
+  services: (c) => c.services === 0 && 'Empty: there are no services. Add them under Settings → Services.',
+}
+
+function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, saving, input, page, empty }) {
   const controls = useDragControls()
   // Which blocks hold a list, and what to call it. A block not listed here is
   // heading-only.
@@ -185,14 +228,42 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
             className={`shrink-0 text-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           />
           <span className="min-w-0">
-            <span className={`block truncate font-semibold ${row.enabled ? 'text-body' : 'text-muted'}`}>
-              {row.title ? splitTitle(row.title) : row.eyebrow || SECTION_NAMES[row.key] || row.key}
+            <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="rounded-md bg-ink-900/[0.06] px-2 py-0.5 text-[0.7rem] font-bold uppercase tracking-wide text-body-soft">
+                {nameOf(row.key, page)}
+              </span>
+              {!row.enabled && (
+                <span className="text-[0.7rem] font-bold uppercase tracking-wide text-muted">Hidden</span>
+              )}
             </span>
-            <span className="mt-0.5 block truncate text-xs text-muted">
-              {row.subtitle || SECTION_BLURBS[row.key] || row.key}
+            {/* Its own heading when it has one; blocks with no heading of their
+                own (the figures bar, the trust marks) just say what they are. */}
+            {(row.title || row.eyebrow) && (
+              <span className={`mt-1 block truncate font-semibold ${row.enabled ? 'text-body' : 'text-muted'}`}>
+                {row.title ? splitTitle(row.title) : row.eyebrow}
+              </span>
+            )}
+            <span className={`mt-0.5 block truncate ${row.title || row.eyebrow ? 'text-xs text-muted' : `mt-1 text-sm font-medium ${row.enabled ? 'text-body-soft' : 'text-muted'}`}`}>
+              {blurbOf(row.key, page) || row.subtitle || ''}
             </span>
+            {row.enabled && empty && (
+              <span className="mt-1.5 flex items-start gap-1.5 text-xs font-semibold text-lumen-700">
+                <AlertTriangle size={13} aria-hidden="true" className="mt-px shrink-0" />
+                <span className="whitespace-normal">{empty}</span>
+              </span>
+            )}
           </span>
         </button>
+
+        {page === '/' && row.enabled && (
+          <a
+            href={`/#section-${row.key}`} target="_blank" rel="noopener"
+            title="Open the home page at this block"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-body-soft transition-colors hover:bg-neutral-100 hover:text-body"
+          >
+            <MapPin size={14} aria-hidden="true" /> <span className="hidden sm:inline">See it</span>
+          </a>
+        )}
 
         <button
           type="button" onClick={onToggle} disabled={!editable}

@@ -1,5 +1,5 @@
-import { Fragment } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FiArrowRight } from 'react-icons/fi'
 import Hero from '@/components/sections/Hero'
@@ -199,6 +199,8 @@ export default function Home() {
   // code does not know is skipped rather than rendered as a gap.
   const sections = (Array.isArray(data) && data.length ? data : DEFAULTS)
     .filter((s) => BLOCKS[s.key])
+  const { hash } = useLocation()
+  useSpotlight(hash, Array.isArray(data))
 
   return (
     <>
@@ -208,7 +210,44 @@ export default function Home() {
         canonical={"https://premierpower.co.ke/"}
       />
 
-      {sections.map((s) => <Fragment key={s.key}>{BLOCKS[s.key](s)}</Fragment>)}
+      {/* Each block carries an id so the CMS's "See it" button can land on
+          it: /#section-stats scrolls to the figures bar and outlines it. */}
+      {sections.map((s) => (
+        <div key={s.key} id={`section-${s.key}`} className="scroll-mt-24">
+          {BLOCKS[s.key](s)}
+        </div>
+      ))}
     </>
   )
+}
+
+/**
+ * Arriving from the CMS at /#section-<key>: scroll to that block and outline
+ * it for a few seconds with its name, so someone editing "Figures bar" can see
+ * which band of the page that is. Waits for the CMS's section list, since the
+ * blocks — and their order — come from it.
+ */
+const SPOT_NAMES = {
+  hero: 'Slideshow & headline', stats: 'Figures bar', about: 'About us', projects: 'Projects',
+  solutions: 'Sectors', lighting: 'Lighting showcase', safety: 'Trust marks', services: 'Services',
+  why: 'Why us', process: 'How it works', testimonials: 'Reviews', cta: 'Closing call to action',
+}
+
+function useSpotlight(hash, ready) {
+  useEffect(() => {
+    if (!ready || !hash.startsWith('#section-')) return
+    const key = hash.slice('#section-'.length)
+    let el, t1, t2
+    // A beat for the blocks to lay out (and the lazy photographs to claim
+    // their height) before measuring where to scroll.
+    t1 = setTimeout(() => {
+      el = document.getElementById(`section-${key}`)
+      if (!el) return
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      el.dataset.spotName = SPOT_NAMES[key] ?? key
+      el.classList.add('section-spotlight')
+      t2 = setTimeout(() => el.classList.remove('section-spotlight'), 6000)
+    }, 600)
+    return () => { clearTimeout(t1); clearTimeout(t2); el?.classList.remove('section-spotlight') }
+  }, [hash, ready])
 }
