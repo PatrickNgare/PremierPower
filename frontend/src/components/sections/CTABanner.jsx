@@ -43,7 +43,10 @@ export default function CTABanner() {
         <motion.div
           initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
           whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          viewport={{ once: true, amount: 0.4 }}
+          // Any part in view, not 40%: on a short page (an empty product
+          // list, say) this banner sits right at the bottom of a phone screen,
+          // and waiting for 40% of it left a blank band there until a scroll.
+          viewport={{ once: true, amount: 'some' }}
           transition={{ duration: 0.8, ease: EASE }}
           className="mx-auto max-w-3xl text-center"
         >
