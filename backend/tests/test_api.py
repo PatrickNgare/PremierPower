@@ -197,6 +197,28 @@ def test_lead_rejects_missing_fields(client):
     assert client.post("/api/leads", json={"name": "", "phone": "x"}).status_code == 422
 
 
+def test_lead_rejects_a_name_of_only_spaces(client):
+    assert client.post("/api/leads", json={"name": "   ", "phone": "0722111222"}).status_code == 422
+
+
+def test_lead_rejects_a_bad_email_and_a_phone_without_digits(client):
+    r = client.post("/api/leads", json={"name": "A", "phone": "0722111222", "email": "abc"})
+    assert r.status_code == 422
+    r = client.post("/api/leads", json={"name": "A", "phone": "call me!"})
+    assert r.status_code == 422
+
+
+def test_lead_accepts_a_blank_email(client):
+    assert client.post("/api/leads", json={"name": "A", "phone": "+254 722 111 222", "email": ""}).status_code == 201
+
+
+def test_lead_honeypot_is_dropped_quietly(client, auth):
+    r = client.post("/api/leads", json={"name": "Bot Botson", "phone": "0722111222", "website": "http://spam"})
+    assert r.status_code == 201
+    leads = client.get("/api/leads", headers=auth).json()
+    assert not any(l["name"] == "Bot Botson" for l in leads)
+
+
 # ── newsletter ──────────────────────────────────────────────────────────
 def test_subscribe_is_idempotent(client):
     assert client.post("/api/newsletter/subscribe", json={"email": "a@b.com"}).status_code == 201

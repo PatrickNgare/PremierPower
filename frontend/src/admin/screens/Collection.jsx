@@ -7,7 +7,7 @@ import {
 import { api } from '../api'
 import { useAuth } from '../auth'
 import { collections, FIELD } from '../schema'
-import { Field } from '../components/Field'
+import { Field, slugify } from '../components/Field'
 import { Button, Confirm, EmptyState, Spinner, StatusPill, useToast } from '../components/ui'
 
 /**
@@ -115,9 +115,28 @@ export default function Collection() {
   }, [load, q])
 
   const save = async () => {
+    // A web address left blank is made from the title, which is what the
+    // "From title" button would do; nobody should have to press it to save.
+    let row = editing
+    for (const f of def.fields) {
+      if (f.type === FIELD.slug && !String(row[f.name] ?? '').trim() && row[f.from]) {
+        row = { ...row, [f.name]: slugify(row[f.from]) }
+      }
+    }
+    // Name every required field still empty, by its label, before sending.
+    const missing = def.fields.filter((f) =>
+      f.required && !f.section && f.type !== FIELD.switch && !String(row[f.name] ?? '').trim()
+      // A web address is made from its source field, so only ask for that.
+      && !(f.type === FIELD.slug && f.from))
+    if (missing.length) {
+      toast.error(`Please fill in: ${missing.map((f) => f.label).join(', ')}.`)
+      setEditing(row)
+      return
+    }
+    setEditing(row)
     setSaving(true)
     try {
-      const body = payloadOf(def, editing)
+      const body = payloadOf(def, row)
       if (editing.id) {
         await api.put(`${def.path}/${editing.id}`, body)
         toast.ok('Saved')
@@ -128,7 +147,13 @@ export default function Collection() {
       setEditing(null)
       load()
     } catch (e) {
-      toast.error(e.message)
+      // Server messages name fields by their code name ("slug: ..."); swap
+      // in the label the form shows ("Web address: ...").
+      let msg = e.message
+      for (const f of def.fields) {
+        if (f.name && f.label) msg = msg.replaceAll(`${f.name}: `, `${f.label}: `)
+      }
+      toast.error(msg)
     } finally {
       setSaving(false)
     }

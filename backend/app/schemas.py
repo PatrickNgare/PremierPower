@@ -1,4 +1,6 @@
+import re
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
@@ -195,6 +197,9 @@ class SettingOut(SettingIn):
 
 
 # ── leads & newsletter ──────────────────────────────────────────────────
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+
 class LeadIn(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     company: str = Field(default="", max_length=160)
@@ -204,12 +209,31 @@ class LeadIn(BaseModel):
     project_type: str = Field(default="", max_length=80)
     property: str = Field(default="", max_length=60)
     message: str = Field(default="", max_length=4000)
-    kind: str = "enquiry"
+    kind: Literal["enquiry", "quote", "callback"] = "enquiry"
+    # Honeypot: a field hidden from people, so only a bot fills it in. The
+    # router drops such a submission while still answering 201.
+    website: str = Field(default="", max_length=200, exclude=True)
 
-    @field_validator("name", "company", "email", "phone", "area", "project_type", "property", "message")
+    # Before the length checks, not after: stripping afterwards let a name of
+    # three spaces pass min_length and then be saved as "".
+    @field_validator("name", "company", "email", "phone", "area", "project_type", "property", "message", mode="before")
     @classmethod
-    def strip(cls, v: str) -> str:
-        return v.strip()
+    def strip(cls, v):
+        return v.strip() if isinstance(v, str) else v
+
+    @field_validator("email")
+    @classmethod
+    def email_shape(cls, v: str) -> str:
+        if v and not EMAIL_RE.match(v):
+            raise ValueError("Enter a full email address, like name@company.co.ke")
+        return v
+
+    @field_validator("phone")
+    @classmethod
+    def phone_digits(cls, v: str) -> str:
+        if sum(c.isdigit() for c in v) < 7:
+            raise ValueError("Enter a phone number we can call, with at least 7 digits")
+        return v
 
 
 class LeadOut(BaseModel):

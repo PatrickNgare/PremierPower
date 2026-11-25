@@ -14,9 +14,9 @@ export function ToastProvider({ children }) {
   const push = useCallback((message, tone = 'ok') => {
     const id = Math.random().toString(36).slice(2)
     setItems((t) => [...t, { id, message, tone }])
-    // Errors stay until dismissed. A message telling someone their work did
-    // not save should not disappear while they are reading it.
-    if (tone !== 'error') setTimeout(() => dismiss(id), 4000)
+    // Errors stay longer, but not forever: a message left standing covered
+    // whatever sat under it until someone found its close button.
+    setTimeout(() => dismiss(id), tone === 'error' ? 9000 : 4000)
   }, [dismiss])
 
   const value = useMemo(() => ({
@@ -28,15 +28,18 @@ export function ToastProvider({ children }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed bottom-5 right-5 z-[60] flex w-full max-w-sm flex-col gap-2">
+      {/* Top centre, below the header. Bottom right sat exactly on the Save
+          button of the editing panel, so a "please fill in" message blocked
+          the very button needed to try again. */}
+      <div className="pointer-events-none fixed left-1/2 top-20 z-[60] flex w-[calc(100%-2.5rem)] max-w-sm -translate-x-1/2 flex-col gap-2">
         <AnimatePresence initial={false}>
           {items.map((t) => (
             <motion.div
               key={t.id}
               layout
-              initial={{ opacity: 0, y: 14, scale: 0.97 }}
+              initial={{ opacity: 0, y: -14, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.98, transition: { duration: 0.16 } }}
+              exit={{ opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.16 } }}
               transition={{ type: 'spring', stiffness: 380, damping: 30 }}
               className={`pointer-events-auto flex items-start gap-3 rounded-xl border p-3.5 pr-2.5 shadow-raise backdrop-blur-xl ${
                 t.tone === 'error'

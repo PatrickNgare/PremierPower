@@ -7,19 +7,24 @@ import { useId, useState } from 'react'
  */
 export function Field({
   label, name, type = 'text', required = false, autoComplete,
-  as = 'input', rows = 4, options, className = '', ...rest
+  as = 'input', rows = 4, options, className = '', error, ...rest
 }) {
   const id = useId()
+  const errId = `${id}-error`
   const [filled, setFilled] = useState(false)
 
   const shared = {
     id, name, required, autoComplete,
-    onChange: (e) => setFilled(Boolean(e.target.value)),
-    className:
-      'peer w-full rounded-xl border border-line bg-surface px-4 pb-2.5 pt-6 text-[0.95rem] ' +
-      'text-body outline-none transition-all duration-300 ' +
-      'hover:border-line focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10',
+    'aria-invalid': error ? true : undefined,
+    'aria-describedby': error ? errId : undefined,
     ...rest,
+    onChange: (e) => { setFilled(Boolean(e.target.value)); rest.onChange?.(e) },
+    className:
+      'peer w-full rounded-xl border bg-surface px-4 pb-2.5 pt-6 text-[0.95rem] ' +
+      'text-body outline-none transition-all duration-300 focus:ring-4 ' +
+      (error
+        ? 'border-brand-fill focus:border-brand-fill focus:ring-brand-fill/15'
+        : 'border-line hover:border-line focus:border-brand-fill focus:ring-brand-fill/10'),
   }
 
   return (
@@ -43,6 +48,9 @@ export function Field({
       >
         {label}{required && <span aria-hidden="true" className="text-accent"> *</span>}
       </label>
+      {error && (
+        <p id={errId} className="mt-1.5 px-1 text-sm font-medium text-accent">{error}</p>
+      )}
     </div>
   )
 }

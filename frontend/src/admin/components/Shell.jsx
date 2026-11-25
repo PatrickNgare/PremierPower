@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, Bell, ExternalLink, Eye, LogOut, Menu as MenuIcon } from 'lucide-react'
+import { ArrowLeft, Bell, ExternalLink, Eye, KeyRound, LogOut, Menu as MenuIcon } from 'lucide-react'
 import { api } from '../api'
 import { useAuth } from '../auth'
 import { NAV, sectionOf, tabsFor } from '../nav'
@@ -17,6 +17,7 @@ export function Shell({ children }) {
   const location = useLocation()
   const [open, setOpen] = useState(false)
   const [unread, setUnread] = useState(0)
+  const [pwOpen, setPwOpen] = useState(false)
 
   // Close the mobile drawer whenever the route changes, or it stays open
   // covering the page the client just chose.
@@ -61,6 +62,12 @@ export function Shell({ children }) {
           <p className="text-xs capitalize text-muted">{admin?.role}</p>
         </div>
         <button
+          type="button" onClick={() => setPwOpen(true)}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-body-soft transition-colors hover:bg-neutral-100 hover:text-body"
+        >
+          <KeyRound size={16} aria-hidden="true" /> Change password
+        </button>
+        <button
           type="button" onClick={signOut}
           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-body-soft transition-colors hover:bg-neutral-100 hover:text-body"
         >
@@ -72,6 +79,7 @@ export function Shell({ children }) {
 
   return (
     <div className="min-h-screen bg-page-warm">
+      <ChangePassword open={pwOpen} onClose={() => setPwOpen(false)} onDone={signOut} />
       {/* Desktop rail */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-neutral-200 bg-surface lg:block">
         {nav}
@@ -200,6 +208,88 @@ function SectionTabs({ path, owner }) {
           </nav>
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * Change your own password. Changing it signs out every session, this one
+ * included (the server bumps the token version), so the dialog says so and
+ * then returns to the sign-in page.
+ */
+function ChangePassword({ open, onClose, onDone }) {
+  const toast = useToast()
+  const [form, setForm] = useState({ current: '', next: '', again: '' })
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    if (open) { setForm({ current: '', next: '', again: '' }); setError('') }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
+  if (!open) return null
+
+  const submit = async (e) => {
+    e.preventDefault()
+    if (form.next.length < 10) return setError('The new password needs at least 10 characters.')
+    if (form.next !== form.again) return setError('The two new passwords do not match.')
+    if (form.next === form.current) return setError('Choose a password different from the current one.')
+    setError('')
+    setBusy(true)
+    try {
+      await api.post('/admin/change-password', { current_password: form.current, new_password: form.next })
+      toast.ok('Password changed. Sign in again with the new one.')
+      onClose()
+      onDone()
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const input = 'mt-1.5 w-full rounded-xl border border-neutral-200 bg-surface px-3.5 py-2.5 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-ink-950/45 p-5 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <form onSubmit={submit} role="dialog" aria-modal="true" aria-labelledby="cp-title"
+        className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-raise">
+        <h2 id="cp-title" className="font-display text-lg font-bold text-body">Change password</h2>
+        <p className="mt-1 text-sm text-muted">You will be signed out everywhere and asked to sign in again.</p>
+        <div className="mt-5 space-y-3">
+          <div>
+            <label htmlFor="cp-current" className="text-sm font-semibold text-body-strong">Current password</label>
+            <input id="cp-current" type="password" required autoComplete="current-password" autoFocus className={input}
+              value={form.current} onChange={(e) => setForm({ ...form, current: e.target.value })} />
+          </div>
+          <div>
+            <label htmlFor="cp-next" className="text-sm font-semibold text-body-strong">New password</label>
+            <input id="cp-next" type="password" required minLength={10} autoComplete="new-password" className={input}
+              value={form.next} onChange={(e) => setForm({ ...form, next: e.target.value })} />
+            <p className="mt-1 text-xs text-muted">At least 10 characters.</p>
+          </div>
+          <div>
+            <label htmlFor="cp-again" className="text-sm font-semibold text-body-strong">New password again</label>
+            <input id="cp-again" type="password" required autoComplete="new-password" className={input}
+              value={form.again} onChange={(e) => setForm({ ...form, again: e.target.value })} />
+          </div>
+        </div>
+        {error && (
+          <p role="alert" className="mt-4 rounded-xl bg-brand-deep/8 px-3.5 py-2.5 text-sm font-medium text-accent">{error}</p>
+        )}
+        <div className="mt-6 flex justify-end gap-2.5">
+          <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button type="submit" variant="primary" busy={busy}>Change password</Button>
+        </div>
+      </form>
     </div>
   )
 }

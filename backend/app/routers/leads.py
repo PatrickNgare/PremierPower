@@ -33,6 +33,12 @@ def create_lead(
         log.warning("throttled lead submission from %s", ip)
         return {"ok": True}
 
+    if payload.website:
+        # The hidden honeypot was filled in: a bot. Same answer as a real
+        # submission, so it has no signal to adapt to; nothing is saved.
+        log.warning("dropped honeypot lead submission from %s", ip)
+        return {"ok": True}
+
     lead = Lead(**payload.model_dump())
     db.add(lead)
     db.flush()   # assigns the id the notification links to

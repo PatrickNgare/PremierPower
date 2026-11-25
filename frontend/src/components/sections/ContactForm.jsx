@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import { Field } from '@/components/ui/Field'
@@ -19,23 +19,73 @@ const PROJECT_TYPES = [
   'Other',
 ]
 
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/
+
+/** The same rules the server applies, checked first so a mistake is named
+ *  beside the field instead of coming back as "that did not send". */
+function check(d) {
+  const e = {}
+  if (!d.name?.trim()) e.name = 'Please enter your name.'
+  if ((d.phone ?? '').replace(/\D/g, '').length < 7) e.phone = 'Please enter a phone number we can call.'
+  if (d.email?.trim() && !EMAIL_RE.test(d.email.trim())) e.email = 'That email address looks incomplete.'
+  return e
+}
+
+// The API sleeps on Render's free plan and can take up to a minute to answer
+// the first request after a quiet spell.
+const WAKING_AFTER = 4000
+const GIVE_UP_AFTER = 90000
+
 export default function ContactForm() {
   const reduce = useReducedMotion()
   const site = useSite()
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
+  const [errors, setErrors] = useState({})
+  const [waking, setWaking] = useState(false)
+  const formRef = useRef(null)
   const wa = whatsappLink(site)
+
+  // Clear a field's message as soon as it is being fixed.
+  const clear = (name) => () => setErrors((x) => (x[name] ? { ...x, [name]: undefined } : x))
 
   async function onSubmit(e) {
     e.preventDefault()
-    setStatus('sending'); setError('')
     const data = Object.fromEntries(new FormData(e.currentTarget))
+    const found = check(data)
+    setErrors(found)
+    if (Object.keys(found).length) {
+      setStatus('idle')
+      // Put the cursor in the first field that needs attention.
+      const first = ['name', 'email', 'phone'].find((k) => found[k])
+      formRef.current?.querySelector(`[name="${first}"]`)?.focus()
+      return
+    }
+
+    setStatus('sending'); setError('')
+    const slow = setTimeout(() => setWaking(true), WAKING_AFTER)
+    const abort = new AbortController()
+    const giveUp = setTimeout(() => abort.abort(), GIVE_UP_AFTER)
     try {
       const res = await fetch(`${API}/leads`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
+        signal: abort.signal,
       })
+      if (res.status === 422) {
+        // The server disagreed with something the checks above let through.
+        // Show its reason beside the field rather than a generic failure.
+        const body = await res.json().catch(() => null)
+        const server = {}
+        for (const d of body?.detail ?? []) {
+          const field = d.loc?.[d.loc.length - 1]
+          if (field) server[field] = String(d.msg).replace(/^Value error, /, '')
+        }
+        setErrors(server)
+        setStatus('idle')
+        return
+      }
       if (!res.ok) throw new Error(String(res.status))
       setStatus('sent')
     } catch {
@@ -45,6 +95,8 @@ export default function ContactForm() {
           ? 'That did not send. Message us on WhatsApp instead and it will reach us immediately.'
           : 'That did not send. Please try again in a moment.',
       )
+    } finally {
+      clearTimeout(slow); clearTimeout(giveUp); setWaking(false)
     }
   }
 
@@ -95,6 +147,7 @@ export default function ContactForm() {
         ) : (
           <motion.form
             key="form"
+            ref={formRef}
             onSubmit={onSubmit}
             noValidate
             initial={{ opacity: 0 }}
@@ -103,16 +156,28 @@ export default function ContactForm() {
             className="card-lift p-6 sm:p-8"
           >
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Your name" name="name" required autoComplete="name" />
-              <Field label="Company" name="company" autoComplete="organization" />
-              <Field label="Email" name="email" type="email" autoComplete="email" />
-              <Field label="Phone" name="phone" type="tel" required autoComplete="tel" />
-              <Field label="Location" name="area" />
+              <Field label="Your name" name="name" required autoComplete="name"
+                error={errors.name} onChange={clear('name')} maxLength={120} />
+              <Field label="Company" name="company" autoComplete="organization"
+                error={errors.company} maxLength={160} />
+              <Field label="Email" name="email" type="email" autoComplete="email" inputMode="email"
+                error={errors.email} onChange={clear('email')} maxLength={200} />
+              <Field label="Phone" name="phone" type="tel" required autoComplete="tel" inputMode="tel"
+                error={errors.phone} onChange={clear('phone')} maxLength={60} />
+              <Field label="Location" name="area" error={errors.area} maxLength={120} />
               <Field label="Project type" name="project_type" as="select" options={PROJECT_TYPES} />
               <Field
                 label="Tell us about the project" name="message" as="textarea" rows={5}
-                className="sm:col-span-2"
+                className="sm:col-span-2" error={errors.message} maxLength={4000}
               />
+            </div>
+
+            {/* Spam trap: off-screen and skipped by keyboard and screen
+                readers, so only a bot fills it in. The server quietly drops
+                any enquiry that has it. */}
+            <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+              <label htmlFor="cf-website">Website</label>
+              <input id="cf-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
             </div>
 
             <AnimatePresence>
@@ -149,7 +214,11 @@ export default function ContactForm() {
                   )}
                 </button>
               </Magnetic>
-              <p className="text-sm text-muted">We reply to every enquiry.</p>
+              <p className="text-sm text-muted" role="status">
+                {waking
+                  ? 'Still sending — the first message after a quiet spell can take up to a minute.'
+                  : 'We reply to every enquiry.'}
+              </p>
             </div>
           </motion.form>
         )}
