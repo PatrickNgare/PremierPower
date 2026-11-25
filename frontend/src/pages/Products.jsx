@@ -89,6 +89,11 @@ export default function Products() {
             <motion.ul
               variants={stagger(0.06)}
               {...inView}
+              // Any part in view, not 20%: the grid is several rows tall, so
+              // 20% of it is ~400px and the cards stayed invisible under the
+              // filters until the visitor had scrolled — an empty band at the
+              // fold of a 1366x768 laptop.
+              viewport={{ once: true, amount: 'some' }}
               className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3"
             >
               {/* Filtering used to rebuild the grid in one frame: tiles that no

@@ -5,6 +5,12 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { fadeUp, stagger, inView } from '@/utils/motion'
+
+// Reveal as soon as any part is on screen. On the services page this grid
+// starts right at the fold of a 1366x768 laptop: the feature card is ~700px
+// tall, so the shared 20% threshold left a blank strip there until the
+// visitor scrolled.
+const EDGE = { once: true, amount: 'some' }
 import { services as fallback } from '@/data/services'
 import { useApi } from '@/hooks/useApi'
 import { photo, fallbackToLocal } from '@/utils/photo'
@@ -43,7 +49,7 @@ export default function Services() {
     <div className="mt-10 grid gap-3 sm:mt-14 sm:gap-4 lg:grid-cols-3">
       {/* Feature — the work everything else attaches to. */}
       <motion.article
-        variants={fadeUp} {...inView}
+        variants={fadeUp} {...inView} viewport={EDGE}
         className="group relative isolate overflow-hidden rounded-[var(--radius-card)] border border-white/10 lg:col-span-2 lg:row-span-2"
       >
         <img onError={fallbackToLocal}
@@ -68,7 +74,7 @@ export default function Services() {
         const Icon = icons[s.slug] ?? Zap
         return (
           <motion.article
-            key={s.slug} variants={fadeUp} {...inView}
+            key={s.slug} variants={fadeUp} {...inView} viewport={EDGE}
             // lit-card: was a bespoke hover-only glow span here, visible to a
             // mouse and invisible to the touch majority — same gap as the
             // Solutions cards. One shared utility now carries both a hover
@@ -84,7 +90,7 @@ export default function Services() {
 
       {/* The remainder as a ruled list — dense, scannable, not five more cards. */}
       <motion.ul
-        variants={stagger(0.05)} {...inView}
+        variants={stagger(0.05)} {...inView} viewport={EDGE}
         className="divide-y divide-ink-900/10 overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface lg:col-span-3"
       >
         {list.map((s) => {
