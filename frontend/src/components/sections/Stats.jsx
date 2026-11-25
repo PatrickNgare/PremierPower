@@ -20,7 +20,7 @@ const FIELD = {
 
 /**
  * Figures the client has to supply. Nothing here is invented: an unconfirmed
- * figure renders as an em dash with a note, never as a plausible number.
+ * figure is left off the bar, never filled with a plausible number.
  */
 const rows = [
   { field: 'years_trading', label: 'Years trading', icon: CalendarClock },
@@ -59,7 +59,11 @@ export default function Stats() {
   const derived = (r) =>
     (r.field === 'projects_completed' || r.href === 'projects_completed') &&
     isPending(site.installsCompleted) && listed > 0
-  const anyPending = items.some((r) => resolve(r) === null)
+  // A figure nobody has supplied is left off, not shown as a dash with an
+  // apology under it; the row closes up around the ones that are filled in.
+  const shown = items.map((r) => ({ r, v: resolve(r) })).filter(({ v }) => v)
+  if (!shown.length) return null
+  const cols = { 1: 'lg:grid-cols-1', 2: 'lg:grid-cols-2', 3: 'lg:grid-cols-3' }[shown.length] ?? 'lg:grid-cols-4'
 
   return (
     <section className="on-dark relative isolate overflow-hidden bg-ink-950">
@@ -67,16 +71,15 @@ export default function Stats() {
       <div aria-hidden="true" className="grain absolute inset-0 -z-10" />
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px rule-fade text-white/20" />
 
-      <motion.div variants={stagger(0.08)} {...inView} className="container-x grid gap-8 py-14 sm:grid-cols-2 sm:gap-10 sm:py-20 lg:grid-cols-4">
-        {items.map((r) => {
-          const v = resolve(r)
+      <motion.div variants={stagger(0.08)} {...inView} className={`container-x grid gap-8 py-14 sm:gap-10 sm:py-20 ${shown.length > 1 ? 'sm:grid-cols-2' : ''} ${cols}`}>
+        {shown.map(({ r, v }) => {
           const Icon = ICONS[r.icon] ?? r.icon ?? Layers
           return (
             <motion.div key={r.title ?? r.label} variants={fadeUp} className="group relative">
               <Icon size={22} className="text-lumen-500 transition-transform duration-500 group-hover:-translate-y-0.5" aria-hidden="true" />
-              <p className={`mt-4 font-display text-[2.25rem] font-extrabold leading-none sm:mt-5 sm:text-[2.75rem] ${v ? 'text-white' : 'text-white/25'}`}>
-                {v ? <Counter value={v} /> : '—'}
-                {v && DEMO && !(r.value ?? r.literal) && (
+              <p className="mt-4 font-display text-[2.25rem] font-extrabold leading-none text-white sm:mt-5 sm:text-[2.75rem]">
+                <Counter value={v} />
+                {DEMO && !(r.value ?? r.literal) && (
                   <span
                     className="ml-1 align-super text-base font-bold text-lumen-500"
                     title="Placeholder figure, awaiting confirmation"
@@ -94,11 +97,9 @@ export default function Stats() {
         })}
       </motion.div>
 
-      {(anyPending || DEMO) && (
+      {DEMO && (
         <p className="container-x pb-10 text-xs text-white/30">
-          {DEMO
-            ? 'Figures marked * are placeholders awaiting confirmation from the client; — means not yet supplied.'
-            : 'Figures shown as — are awaiting confirmation from the client.'}
+          Figures marked * are placeholders awaiting confirmation from the client.
         </p>
       )}
     </section>

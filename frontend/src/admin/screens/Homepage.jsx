@@ -42,11 +42,31 @@ const blurbOf = (key, page) =>
     : /^section\d+$/.test(key) ? 'A heading and paragraph further down the page'
       : SECTION_BLURBS[key] || ''
 
+/**
+ * Which of the text fields a home block actually draws. The figures bar, the
+ * trust marks and the closing panel draw none of them, so offering a heading
+ * box there only invited typing into something that never appears.
+ * Pages other than home keep every field.
+ */
+const HOME_FIELDS = {
+  hero: ['eyebrow', 'title', 'subtitle', 'link'],
+  lighting: ['eyebrow', 'title', 'subtitle', 'link'],
+  projects: ['eyebrow', 'title', 'subtitle', 'link'],
+  services: ['eyebrow', 'title', 'subtitle', 'link'],
+  about: ['eyebrow', 'title', 'subtitle'],
+  solutions: ['eyebrow', 'title', 'subtitle'],
+  why: ['eyebrow', 'title', 'subtitle'],
+  process: ['eyebrow', 'title', 'subtitle'],
+  testimonials: ['eyebrow', 'title', 'subtitle'],
+  stats: [], safety: [], cta: [],
+}
+const ALL_FIELDS = ['eyebrow', 'title', 'subtitle', 'link']
+
 /** Where a block's other content is edited, said plainly rather than left to
  *  be discovered. */
 const SECTION_NOTES = {
   hero: 'The rotating photographs behind this are edited under the Slideshow photos tab above.',
-  stats: 'Each figure is taken from Settings → Company details, so a number is only ever typed once.',
+  stats: 'Type each number below. A figure left blank is left off the site.',
   cta: 'The phone number and WhatsApp number come from Settings → Company details.',
   projects: 'The projects shown here are edited under Projects.',
   solutions: 'The cards shown here are edited under Settings → Sectors.',
@@ -203,6 +223,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
     reel: 'Showroom clips',
   }
   const listLabel = LIST[row.key]
+  const fields = page === '/' ? (HOME_FIELDS[row.key] ?? ALL_FIELDS) : ALL_FIELDS
 
   return (
     <Reorder.Item
@@ -281,40 +302,50 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
               {SECTION_NOTES[row.key]}
             </p>
           )}
-          <div>
-            <label className="text-sm font-semibold text-body-strong">Small label</label>
-            <input className={`${input} mt-1.5`} value={row.eyebrow ?? ''}
-              onChange={(e) => onPatch('eyebrow', e.target.value)} disabled={!editable} />
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-body-strong">Heading</label>
-            <input className={`${input} mt-1.5`} value={row.title ?? ''}
-              onChange={(e) => onPatch('title', e.target.value)} disabled={!editable} />
-          </div>
-          <div>
-            <label className="text-sm font-semibold text-body-strong">Supporting paragraph</label>
-            <textarea rows={3} className={`${input} mt-1.5`} value={row.subtitle ?? ''}
-              onChange={(e) => onPatch('subtitle', e.target.value)} disabled={!editable} />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          {fields.includes('eyebrow') && (
             <div>
-              <label className="text-sm font-semibold text-body-strong">Link text</label>
-              <input className={`${input} mt-1.5`} value={row.cta_label ?? ''}
-                onChange={(e) => onPatch('cta_label', e.target.value)} disabled={!editable} />
+              <label className="text-sm font-semibold text-body-strong">Small label</label>
+              <input className={`${input} mt-1.5`} value={row.eyebrow ?? ''}
+                onChange={(e) => onPatch('eyebrow', e.target.value)} disabled={!editable} />
             </div>
+          )}
+          {fields.includes('title') && (
             <div>
-              <label className="text-sm font-semibold text-body-strong">Link address</label>
-              <input className={`${input} mt-1.5`} value={row.cta_href ?? ''}
-                onChange={(e) => onPatch('cta_href', e.target.value)} disabled={!editable} />
+              <label className="text-sm font-semibold text-body-strong">Heading</label>
+              <input className={`${input} mt-1.5`} value={row.title ?? ''}
+                onChange={(e) => onPatch('title', e.target.value)} disabled={!editable} />
             </div>
-          </div>
-          {editable && (
+          )}
+          {fields.includes('subtitle') && (
+            <div>
+              <label className="text-sm font-semibold text-body-strong">Supporting paragraph</label>
+              <textarea rows={3} className={`${input} mt-1.5`} value={row.subtitle ?? ''}
+                onChange={(e) => onPatch('subtitle', e.target.value)} disabled={!editable} />
+            </div>
+          )}
+          {fields.includes('link') && (
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label className="text-sm font-semibold text-body-strong">Link text</label>
+                <input className={`${input} mt-1.5`} value={row.cta_label ?? ''}
+                  onChange={(e) => onPatch('cta_label', e.target.value)} disabled={!editable} />
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-body-strong">Link address</label>
+                <input className={`${input} mt-1.5`} value={row.cta_href ?? ''}
+                  onChange={(e) => onPatch('cta_href', e.target.value)} disabled={!editable} />
+              </div>
+            </div>
+          )}
+          {editable && fields.length > 0 && (
             <div className="flex justify-end pt-1">
               <Button variant="primary" onClick={onSave} busy={saving}>Save</Button>
             </div>
           )}
 
-          {listLabel && <SectionItems section={row.key} label={listLabel} editable={editable} />}
+          {row.key === 'stats' && page === '/'
+            ? <FiguresEditor editable={editable} />
+            : listLabel && <SectionItems section={row.key} label={listLabel} editable={editable} />}
         </div>
       )}
     </Reorder.Item>
@@ -432,6 +463,116 @@ function SectionItems({ section, label, editable }) {
           </li>
         ))}
       </ul>
+    </div>
+  )
+}
+
+/**
+ * The four numbers on the figures bar, each with a box to type it in.
+ *
+ * Some figures are company details (years trading, projects delivered,
+ * response time) that the site uses elsewhere too. Their box writes the
+ * company detail itself, so the number is still only stored once, but nobody
+ * has to know that or go to Settings to change it.
+ */
+function FiguresEditor({ editable }) {
+  const toast = useToast()
+  const [rows, setRows] = useState([])
+  const [details, setDetails] = useState({})
+  const [draft, setDraft] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    try {
+      const [items, settings] = await Promise.all([
+        api.get('/section-items/all?limit=100'),
+        api.get('/settings/all'),
+      ])
+      const figures = items.items.filter((r) => r.section === 'stats')
+        .sort((a, b) => a.position - b.position)
+      const byKey = Object.fromEntries(settings.map((x) => [x.key, x]))
+      setRows(figures)
+      setDetails(byKey)
+      setDraft(Object.fromEntries(figures.map((r) => [r.id, {
+        title: r.title ?? '',
+        number: r.href ? String(byKey[r.href]?.value ?? '') : String(r.value || r.body || ''),
+      }])))
+    } catch (e) {
+      toast.error(e.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [toast])
+
+  useEffect(() => { load() }, [load])
+
+  const set = (id, k, v) => setDraft((d) => ({ ...d, [id]: { ...d[id], [k]: v } }))
+
+  const saveAll = async () => {
+    setSaving(true)
+    try {
+      for (const r of rows) {
+        const { title, number } = draft[r.id]
+        const n = number.trim()
+        if (r.href) {
+          const before = String(details[r.href]?.value ?? '')
+          if (n !== before) {
+            await api.put(`/settings/${encodeURIComponent(r.href)}`, {
+              key: r.href, value: n, note: details[r.href]?.note ?? '',
+            })
+          }
+        }
+        const value = r.href ? '' : n
+        if (title !== (r.title ?? '') || (!r.href && value !== (r.value || r.body || ''))) {
+          await api.put(`/section-items/${r.id}`, {
+            section: r.section, title, body: value, icon: r.icon,
+            image_url: r.image_url, image_alt: r.image_alt, href: r.href,
+            value, position: r.position, published: r.published,
+          })
+        }
+      }
+      toast.ok('Figures saved')
+      load()
+    } catch (e) {
+      toast.error(e.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const box = 'w-full rounded-lg border border-neutral-200 bg-surface px-3 py-2 outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10'
+
+  if (loading) return <p className="pt-2 text-sm text-muted">Loading figures…</p>
+
+  return (
+    <div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {rows.map((r, i) => (
+          <div key={r.id} className="rounded-xl border border-neutral-200 bg-neutral-50/60 p-3">
+            <p className="text-[0.7rem] font-bold uppercase tracking-[0.14em] text-muted">Figure {i + 1}</p>
+            <label className="mt-2 block text-xs font-semibold text-body-soft" htmlFor={`fig-n-${r.id}`}>Number</label>
+            <input
+              id={`fig-n-${r.id}`} className={`${box} mt-1 font-display text-xl font-extrabold`}
+              value={draft[r.id]?.number ?? ''} disabled={!editable}
+              onChange={(e) => set(r.id, 'number', e.target.value)}
+              placeholder={r.href === 'response_time' ? 'e.g. 24 hrs' : 'e.g. 15+'}
+            />
+            <label className="mt-2 block text-xs font-semibold text-body-soft" htmlFor={`fig-t-${r.id}`}>Label under it</label>
+            <input
+              id={`fig-t-${r.id}`} className={`${box} mt-1 text-sm`}
+              value={draft[r.id]?.title ?? ''} disabled={!editable}
+              onChange={(e) => set(r.id, 'title', e.target.value)}
+            />
+          </div>
+        ))}
+      </div>
+      {editable && (
+        <div className="mt-3 flex justify-end">
+          <Button variant="primary" onClick={saveAll} busy={saving}>Save figures</Button>
+        </div>
+      )}
     </div>
   )
 }
