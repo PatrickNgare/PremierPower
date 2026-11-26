@@ -157,6 +157,10 @@ export const ORGANIZATION = {
     addressCountry: 'KE',
   },
   areaServed: { '@type': 'Country', name: 'Kenya' },
+  // The Google Business Profile, so search engines tie the site and the
+  // listing together as one company.
+  hasMap: 'https://g.page/r/Ce4hbCGre_4GEBI',
+  sameAs: ['https://g.page/r/Ce4hbCGre_4GEBI'],
   openingHoursSpecification: [{
     '@type': 'OpeningHoursSpecification',
     dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],

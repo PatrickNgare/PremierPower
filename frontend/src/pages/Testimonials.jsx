@@ -5,6 +5,7 @@ import { photo } from '@/utils/photo'
 import Seo from '@/components/Seo'
 import { usePageSections } from '@/hooks/usePage'
 import { useApi } from '@/hooks/useApi'
+import { site } from '@/config/site'
 
 export default function Testimonials() {
   const { data: reviews, loading } = useApi('/testimonials', [])
@@ -27,6 +28,13 @@ export default function Testimonials() {
       <section className="section-tight">
         <div className="container-x">
           <TestimonialsStrip />
+          <p className="mt-10 text-center text-body-soft">
+            Worked with us?{' '}
+            <a href={site.googleReview} target="_blank" rel="noopener noreferrer"
+              className="font-semibold text-accent underline-offset-2 hover:underline">
+              Leave a review on Google
+            </a>
+          </p>
         </div>
       </section>
 

@@ -1,5 +1,5 @@
 import { FaWhatsapp } from 'react-icons/fa'
-import { FiPhone, FiMapPin, FiClock } from 'react-icons/fi'
+import { FiPhone, FiMapPin, FiClock, FiStar } from 'react-icons/fi'
 import PageHero from '@/components/ui/PageHero'
 import ContactForm from '@/components/sections/ContactForm'
 import LicenseBadge from '@/components/ui/LicenseBadge'
@@ -59,10 +59,11 @@ export default function Contact() {
                   {!isPending(site.street) && (
                     <>
                       <br />
-                      {/* A search link rather than an embedded map: no API key,
-                          no heavy iframe, and it opens the visitor's own maps app. */}
+                      {/* The Google Business Profile rather than an embedded map:
+                          no heavy iframe, it opens the visitor's own maps app on
+                          the real listing, and directions are one tap from there. */}
                       <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${value(site.street)}, ${value(site.locality)}, Kenya`)}`}
+                        href={site.googleProfile || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${value(site.street)}, ${value(site.locality)}, Kenya`)}`}
                         target="_blank" rel="noopener noreferrer"
                         className="mt-1 inline-block font-semibold text-accent underline-offset-2 hover:underline"
                       >
@@ -76,6 +77,18 @@ export default function Contact() {
                 <FiClock size={16} className="mt-0.5 shrink-0 text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
                 <span className="text-body-soft">Monday to Friday, 8am – 5pm<br />Saturday by arrangement</span>
               </li>
+              {site.googleReview && (
+                <li className="flex gap-3">
+                  <FiStar size={16} className="mt-0.5 shrink-0 text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
+                  <span className="text-body-soft">
+                    Worked with us?{' '}
+                    <a href={site.googleReview} target="_blank" rel="noopener noreferrer"
+                      className="font-semibold text-accent underline-offset-2 hover:underline">
+                      Leave a review on Google
+                    </a>
+                  </span>
+                </li>
+              )}
             </ul>
 
             <LicenseBadge className="mt-8" />

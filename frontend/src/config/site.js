@@ -53,6 +53,10 @@ const real = {
   yearsLicensed: pending('years trading — confirm with the client'),
   installsCompleted: pending('installations completed'),
   responseTime: pending('typical response time, e.g. "same day"'),
+
+  // --- Google Business Profile ---------------------------------------------
+  googleProfile: 'https://g.page/r/Ce4hbCGre_4GEBI',
+  googleReview: 'https://g.page/r/Ce4hbCGre_4GEBI/review',
 }
 
 /** Demo values fill the gaps only when VITE_DEMO=1. */
@@ -107,6 +111,11 @@ export function whatsappLink(
   message = "Hi PremierPower, I'd like to book a free site assessment.",
   from = site,
 ) {
+  // Most callers want the default message and pass only the live details:
+  // whatsappLink(site). Without this the details object became the message
+  // and WhatsApp opened with "[object Object]" typed in.
+  if (message && typeof message === 'object') [message, from] = [undefined, message]
+  message ??= "Hi PremierPower, I'd like to book a free site assessment."
   if (isPending(from.whatsapp)) return null
   return `https://wa.me/${from.whatsapp}?text=${encodeURIComponent(message)}`
 }
