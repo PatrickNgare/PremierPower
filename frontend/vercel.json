@@ -30,23 +30,23 @@
     },
     {
       "source": "/admin",
-      "destination": "/_shell.html"
+      "destination": "/_shell"
     },
     {
       "source": "/admin/:path*",
-      "destination": "/_shell.html"
+      "destination": "/_shell"
     },
     {
       "source": "/services/:slug",
-      "destination": "/_shell.html"
+      "destination": "/_shell"
     },
     {
       "source": "/products/:slug",
-      "destination": "/_shell.html"
+      "destination": "/_shell"
     },
     {
       "source": "/insights/:slug",
-      "destination": "/_shell.html"
+      "destination": "/_shell"
     }
   ],
   "headers": [
