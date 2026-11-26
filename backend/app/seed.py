@@ -30,10 +30,15 @@ CONTENT = Path(__file__).resolve().parent / "seed_content.json"
 # to draw — the CMS reorders, retitles, hides and shows these, but cannot
 # invent a new one, because a key nobody wrote renders as nothing and the
 # client has no way to tell why.
+# The home hero's small label is part of the page's H1. Seeded as the company
+# name, which the logo already says; replaced only while it still reads that.
+OLD_HERO_LABEL = "Premier Power Limited"
+NEW_HERO_LABEL = "Electrical engineering & power solutions in Kenya"
+
 HOMEPAGE = [
     # The hero's own words, which were hard-coded in Hero.jsx. The slides are
     # separate — they live in the banners table.
-    dict(key="hero", eyebrow="Premier Power Limited",
+    dict(key="hero", eyebrow=NEW_HERO_LABEL,
          title="Powering spaces.|Illuminating possibilities.",
          subtitle="Electrical engineering and lighting installation across Kenya — for hotels "
                   "and lodges, commercial interiors, institutions, healthcare, industrial sites "
@@ -186,6 +191,38 @@ FOOTER_MENU = [
     ("Reviews", "/testimonials"), ("FAQ", "/faq"), ("Contact", "/contact"),
 ]
 
+# The titles and descriptions every SEO row was first seeded with. They now
+# live in frontend/src/seo/pages.js, rewritten for search, and a CMS value
+# overrides them, so a row still holding this exact text is blanked on start
+# to let the new ones through. A row anyone has edited no longer matches and
+# is left alone.
+RETIRED_SEO = {
+    "/": ("Premier Power Limited — Electrical engineering & installation contractor, Kenya",
+          "Premier Power Limited is an NCA-registered electrical engineering contractor working "
+          "across Kenya — banks and commercial interiors, offices, hotels and lodges, institutions, "
+          "healthcare, industrial and residential developments."),
+    "/services": ("Services — Premier Power Limited",
+                  "Electrical installation, electronic security, solar photovoltaics, power continuity, "
+                  "vertical transport, transmission and distribution, energy retrofitting and gas."),
+    "/portfolio": ("Installations — Premier Power Limited",
+                   "Hospitality developments, commercial interiors and residential clusters across Kenya."),
+    "/safety": ("Safety & certification — Premier Power Limited",
+                "Every installation tested and certified before handover, whatever its size."),
+    "/about": ("About — Premier Power Limited",
+               "An NCA-registered electrical engineering contractor working in the corporate market "
+               "across Kenya."),
+    "/testimonials": ("Reviews — Premier Power Limited",
+                      "What clients say about delivery and reliability on programme."),
+    "/faq": ("Frequently asked questions — Premier Power Limited",
+             "Registration, coverage, working with main contractors and architects, and what a site "
+             "assessment involves."),
+    "/contact": ("Contact — Premier Power Limited",
+                 "Talk to an electrical engineering contractor about your project."),
+    "/products": ("Lighting & fittings — Premier Power Limited",
+                  "Chandeliers, pendants and linear lighting supplied and installed across Kenya for "
+                  "hospitality, commercial interiors and residential developments."),
+}
+
 # One row per page, so each is listed in the sitemap and can be overridden
 # from Settings → SEO. Title and description start blank: blank means "use
 # the site's own", which lives in frontend/src/seo/pages.js and is also
@@ -297,6 +334,18 @@ def seed_content(db: Session) -> None:
 
     # Per path, for the same reason: a page added later needs its row, and the
     # client's edits to existing rows must survive.
+    # Retire the original placeholder SEO text (see RETIRED_SEO) and the
+    # company-name hero label, on rows nobody has edited.
+    for row in db.scalars(select(SeoMeta)).all():
+        old = RETIRED_SEO.get(row.path)
+        if old and (row.title or "") == old[0] and (row.description or "") == old[1]:
+            row.title, row.description = "", ""
+            log.info("cleared placeholder SEO text for %s", row.path)
+    hero = db.scalar(select(PageSection).where(PageSection.page == "/", PageSection.key == "hero"))
+    if hero is not None and (hero.eyebrow or "").strip() == OLD_HERO_LABEL:
+        hero.eyebrow = NEW_HERO_LABEL
+        log.info("updated the home hero label")
+
     present = {r.path for r in db.scalars(select(SeoMeta)).all()}
     for path, title, description in SEO:
         if path in present:

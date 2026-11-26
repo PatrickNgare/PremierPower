@@ -539,3 +539,35 @@ def test_sitemap_lists_projects_only_once_they_have_a_write_up_and_a_photo(clien
     xml = client.get("/sitemap.xml").text
     assert "/portfolio/case-full</loc>" in xml and "/portfolio/case-gallery</loc>" in xml
     assert "/portfolio/case-no-photo</loc>" not in xml and "/portfolio/case-thin</loc>" not in xml
+
+
+def test_seed_retires_only_untouched_placeholder_seo_and_hero_label(client, auth):
+    from app.db import SessionLocal
+    from app.models import PageSection, SeoMeta
+    from app.seed import NEW_HERO_LABEL, OLD_HERO_LABEL, RETIRED_SEO, seed_content
+    from sqlalchemy import select
+
+    db = SessionLocal()
+    try:
+        about = db.scalar(select(SeoMeta).where(SeoMeta.path == "/about"))
+        faq = db.scalar(select(SeoMeta).where(SeoMeta.path == "/faq"))
+        about.title, about.description = RETIRED_SEO["/about"]
+        faq.title, faq.description = RETIRED_SEO["/faq"][0], "Our own words, typed in the CMS."
+        hero = db.scalar(select(PageSection).where(PageSection.page == "/", PageSection.key == "hero"))
+        hero.eyebrow = OLD_HERO_LABEL
+        db.commit()
+
+        seed_content(db)
+        db.commit()
+        db.refresh(about); db.refresh(faq); db.refresh(hero)
+        assert (about.title, about.description) == ("", "")          # untouched placeholder: cleared
+        assert faq.description == "Our own words, typed in the CMS."  # edited: kept
+        assert faq.title == RETIRED_SEO["/faq"][0]
+        assert hero.eyebrow == NEW_HERO_LABEL
+
+        hero.eyebrow = "Our own label"
+        db.commit()
+        seed_content(db); db.commit(); db.refresh(hero)
+        assert hero.eyebrow == "Our own label"
+    finally:
+        db.close()
