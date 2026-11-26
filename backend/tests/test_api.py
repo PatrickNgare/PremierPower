@@ -277,10 +277,48 @@ def test_upload_sends_the_image_to_cloudinary(client, auth, monkeypatch):
 
 # ── audit & stats ───────────────────────────────────────────────────────
 def test_writes_are_audited(client, auth):
-    entries = client.get("/api/audit", headers=auth).json()
+    entries = client.get("/api/audit?entity=service&page_size=200", headers=auth).json()["items"]
     actions = {(e["entity"], e["action"]) for e in entries}
     assert ("service", "create") in actions
     assert ("service", "delete") in actions
+
+
+def test_the_activity_log_comes_in_pages(client, auth):
+    first = client.get("/api/audit?page_size=2", headers=auth).json()
+    assert first["page"] == 1 and first["page_size"] == 2
+    assert first["total"] >= 3, "earlier tests leave plenty of entries"
+    assert first["pages"] == -(-first["total"] // 2)
+    assert first["retention_days"] == 183
+    assert len(first["items"]) == 2
+
+    second = client.get("/api/audit?page=2&page_size=2", headers=auth).json()
+    assert {e["id"] for e in first["items"]}.isdisjoint(e["id"] for e in second["items"])
+    # Newest first, across the page boundary too.
+    assert first["items"][-1]["created_at"] >= second["items"][0]["created_at"]
+
+    past_end = client.get(f"/api/audit?page={first['pages'] + 1}&page_size=2", headers=auth).json()
+    assert past_end["items"] == []
+    assert client.get("/api/audit?page=0", headers=auth).status_code == 422
+
+
+def test_activity_older_than_six_months_is_deleted():
+    from datetime import datetime, timedelta, timezone
+
+    from app.core.audit import prune_audit
+    from app.db import SessionLocal
+    from app.models import AuditLog
+
+    now = datetime.now(timezone.utc)
+    with SessionLocal() as db:
+        old = AuditLog(actor="t", action="update", entity="prune-test", created_at=now - timedelta(days=200))
+        recent = AuditLog(actor="t", action="update", entity="prune-test", created_at=now - timedelta(days=150))
+        db.add_all([old, recent])
+        db.commit()
+        old_id, recent_id = old.id, recent.id
+
+        assert prune_audit(db) >= 1
+        assert db.get(AuditLog, old_id) is None
+        assert db.get(AuditLog, recent_id) is not None
 
 
 def test_stats_report_pending_settings(client, auth):

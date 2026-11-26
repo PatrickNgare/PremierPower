@@ -12,13 +12,56 @@
  *   click_email      a mailto: link was tapped
  *   generate_lead    the enquiry form was sent successfully
  * Mark generate_lead (and the click events if wanted) as key events in GA4.
+ *
+ * Consent first. Nothing loads, and no cookie is set, until the visitor
+ * accepts in the cookie notice (components/ui/CookieConsent.jsx). The choice
+ * is kept in this browser; "Cookie settings" in the footer reopens the notice.
+ * See the Privacy page (/privacy) for what is collected.
  */
 const ID = import.meta.env.VITE_GA_ID
+const CONSENT_KEY = 'pp-analytics-consent'
+
+/** True when this build has an analytics ID, i.e. there is anything to consent to. */
+export const analyticsConfigured = Boolean(ID)
 
 let started = false
 
+/** 'granted', 'denied', or null when the visitor has not chosen yet. */
+export function getConsent() {
+  try {
+    const v = localStorage.getItem(CONSENT_KEY)
+    return v === 'granted' || v === 'denied' ? v : null
+  } catch { return null }
+}
+
+export function setConsent(choice) {
+  try { localStorage.setItem(CONSENT_KEY, choice) } catch { /* not remembered; asked again next visit */ }
+  if (choice === 'granted') {
+    if (ID) window[`ga-disable-${ID}`] = false
+    startAnalytics()
+    pageView(window.location.pathname)
+  } else if (ID) {
+    // Stop anything already running this visit, and clear what it stored.
+    window[`ga-disable-${ID}`] = true
+    const host = window.location.hostname.replace(/^www\./, '')
+    for (const c of document.cookie.split(';')) {
+      const name = c.split('=')[0].trim()
+      if (name === '_ga' || name.startsWith('_ga_')) {
+        for (const domain of ['', `; domain=.${host}`]) {
+          document.cookie = `${name}=; Max-Age=0; path=/${domain}`
+        }
+      }
+    }
+  }
+}
+
+/** Ask the cookie notice to show again (the footer's "Cookie settings"). */
+export const OPEN_CONSENT = 'pp:open-consent'
+export const reopenConsent = () => window.dispatchEvent(new Event(OPEN_CONSENT))
+
 export function startAnalytics() {
   if (!ID || started || typeof window === 'undefined') return
+  if (getConsent() !== 'granted') return
   // Never count the CMS or its users.
   if (window.location.pathname.startsWith('/admin')) return
   started = true

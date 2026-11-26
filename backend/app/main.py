@@ -58,6 +58,7 @@ async def lifespan(_: FastAPI):
     _seed_settings()
     _seed_superuser()
     _seed_content()
+    _prune_audit()
     yield
 
 
@@ -227,6 +228,18 @@ def _seed_settings() -> None:
         db.commit()
     finally:
         db.close()
+
+
+def _prune_audit() -> None:
+    """Clear activity-log entries past their six months. Never fatal."""
+    from .core.audit import prune_audit
+    try:
+        with SessionLocal() as db:
+            gone = prune_audit(db)
+        if gone:
+            log.info("deleted %d activity-log entries older than six months", gone)
+    except Exception:
+        log.exception("activity-log cleanup failed")
 
 
 def _seed_content() -> None:

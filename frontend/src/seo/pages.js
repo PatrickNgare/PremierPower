@@ -95,6 +95,12 @@ export const PAGES = {
       'Practical guides on planning, installing, testing and maintaining electrical systems in Kenyan buildings, from an NCA-registered contractor.',
     crumb: 'Insights',
   },
+  '/privacy': {
+    title: 'Privacy Policy | Premier Power Limited',
+    description:
+      'What personal information the Premier Power website collects, why, who handles it, and your rights under the Kenya Data Protection Act, 2019.',
+    crumb: 'Privacy',
+  },
 }
 
 /**

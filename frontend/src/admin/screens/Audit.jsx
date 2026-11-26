@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ScrollText } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ScrollText } from 'lucide-react'
 import { api } from '../api'
 import { EmptyState, Spinner, useToast } from '../components/ui'
 
@@ -11,26 +11,41 @@ const TONE = {
   login: 'bg-neutral-100 text-body-soft',
 }
 
+const PAGE_SIZE = 50
+
 /** Who changed what, and when. Read-only by design — an activity log that
- *  can be edited is not evidence of anything. */
+ *  can be edited is not evidence of anything. Entries are deleted by the
+ *  server after six months. */
 export default function Audit() {
   const toast = useToast()
-  const [rows, setRows] = useState([])
+  const [page, setPage] = useState(1)
+  const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api.get('/audit?limit=200')
-      .then(setRows)
+    let live = true
+    setLoading(true)
+    api.get(`/audit?page=${page}&page_size=${PAGE_SIZE}`)
+      .then((d) => { if (live) setData(d) })
       .catch((e) => toast.error(e.message))
-      .finally(() => setLoading(false))
-  }, [toast])
+      .finally(() => { if (live) setLoading(false) })
+    return () => { live = false }
+  }, [page, toast])
 
-  if (loading) return <Spinner label="Loading activity" />
+  if (!data) return loading ? <Spinner label="Loading activity" /> : null
+
+  const rows = data.items
+  const from = data.total ? (data.page - 1) * data.page_size + 1 : 0
+  const to = Math.min(data.page * data.page_size, data.total)
+  const go = (p) => { setPage(p); window.scrollTo({ top: 0 }) }
 
   return (
     <div>
       <h1 className="font-display text-2xl font-extrabold text-body">Activity log</h1>
-      <p className="mt-1 text-sm text-muted">Every change made through the admin, most recent first.</p>
+      <p className="mt-1 text-sm text-muted">
+        Every change made through the admin, most recent first.
+        Entries older than six months are deleted automatically.
+      </p>
 
       {rows.length === 0
         ? <div className="mt-6"><EmptyState icon={ScrollText} title="Nothing recorded yet" /></div>
@@ -57,6 +72,31 @@ export default function Audit() {
             ))}
           </ul>
         )}
+
+      {data.total > 0 && (
+        <nav aria-label="Activity log pages" className="mt-6 flex flex-wrap items-center justify-between gap-3">
+          <p className="tabular text-sm text-muted">
+            {from}–{to} of {data.total}
+          </p>
+          <div className={`flex items-center gap-2 ${loading ? 'opacity-60' : ''}`}>
+            <button
+              type="button" onClick={() => go(page - 1)} disabled={page <= 1 || loading}
+              className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 bg-surface px-3 py-2 text-sm font-semibold text-body transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft size={15} aria-hidden="true" /> Newer
+            </button>
+            <span className="tabular px-1 text-sm text-body-soft" aria-current="page">
+              Page {data.page} of {data.pages}
+            </span>
+            <button
+              type="button" onClick={() => go(page + 1)} disabled={page >= data.pages || loading}
+              className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 bg-surface px-3 py-2 text-sm font-semibold text-body transition-colors hover:bg-neutral-100 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Older <ChevronRight size={15} aria-hidden="true" />
+            </button>
+          </div>
+        </nav>
+      )}
     </div>
   )
 }

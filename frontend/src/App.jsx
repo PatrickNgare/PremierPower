@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer'
 import ScrollToTop from '@/components/layout/ScrollToTop'
 import FloatingActions from '@/components/layout/FloatingActions'
 import ExitIntentPopup from '@/components/ui/ExitIntentPopup'
+import CookieConsent from '@/components/ui/CookieConsent'
 import { Skeleton, SkeletonCard, LoadingRegion } from '@/components/ui/Skeleton'
 import PageTransition from '@/components/layout/PageTransition'
 import { pageView, startAnalytics } from '@/utils/analytics'
@@ -23,6 +24,7 @@ const ProductDetail = lazy(() => import('@/pages/ProductDetail'))
 const ServiceDetail = lazy(() => import('@/pages/ServiceDetail'))
 const ProjectDetail = lazy(() => import('@/pages/ProjectDetail'))
 const Insights = lazy(() => import('@/pages/Insights'))
+const Privacy = lazy(() => import('@/pages/Privacy'))
 const InsightDetail = lazy(() => import('@/pages/InsightDetail'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
@@ -35,7 +37,8 @@ const AdminApp = lazy(() => import('@/admin/AdminApp'))
 export default function App() {
   const location = useLocation()
 
-  // Analytics loads only if VITE_GA_ID is set (see utils/analytics.js). The
+  // Analytics loads only if VITE_GA_ID is set and the visitor has accepted
+  // the cookie notice (see utils/analytics.js). The
   // page view waits a moment so it carries the new page's title, which the
   // page sets as it renders.
   useEffect(() => { startAnalytics() }, [])
@@ -97,6 +100,7 @@ export default function App() {
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
             <Route path="/insights" element={<PageTransition><Insights /></PageTransition>} />
             <Route path="/insights/:slug" element={<PageTransition><InsightDetail /></PageTransition>} />
+            <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
             </Routes>
           </AnimatePresence>
@@ -105,6 +109,7 @@ export default function App() {
       <Footer />
       <FloatingActions />
       <ExitIntentPopup />
+      <CookieConsent />
     </>
   )
 }

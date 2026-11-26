@@ -309,6 +309,15 @@ class AuditLogOut(BaseModel):
     created_at: datetime | None = None
 
 
+class AuditPage(BaseModel):
+    items: list[AuditLogOut]
+    total: int
+    page: int
+    page_size: int
+    pages: int
+    retention_days: int
+
+
 # ── catalogue ───────────────────────────────────────────────────────────
 class ProductCategoryIn(BaseModel):
     slug: str = Field(min_length=1, max_length=80)

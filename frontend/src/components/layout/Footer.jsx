@@ -3,6 +3,7 @@ import { Phone, Mail, MapPin, MessageCircle, ArrowUpRight } from 'lucide-react'
 import Logo from './Logo'
 import { isPending, value, whatsappLink, telLink } from '@/config/site'
 import { useSite } from '@/hooks/useSite'
+import { analyticsConfigured, reopenConsent } from '@/utils/analytics'
 
 const columns = [
   {
@@ -171,10 +172,22 @@ export default function Footer() {
           </div>
         </div>
 
-        <p className="mt-12 border-t border-white/10 pt-7 text-sm text-muted">
-          © {new Date().getFullYear()} {isPending(site.legalName) ? site.name : value(site.legalName)}.
-          {' '}Electrical engineering service contractor, registered with the National Construction Authority.
-        </p>
+        {/* Links on the left, under the copyright: the bottom-right corner belongs
+            to the floating WhatsApp button, which would cover them. */}
+        <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-7 text-sm text-muted">
+          <p>
+            © {new Date().getFullYear()} {isPending(site.legalName) ? site.name : value(site.legalName)}.
+            {' '}Electrical engineering service contractor, registered with the National Construction Authority.
+          </p>
+          <div className="flex gap-6">
+            <Link to="/privacy" className="link-quiet text-muted hover:text-white">Privacy policy</Link>
+            {analyticsConfigured && (
+              <button type="button" onClick={reopenConsent} className="link-quiet text-muted hover:text-white">
+                Cookie settings
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </footer>
   )
