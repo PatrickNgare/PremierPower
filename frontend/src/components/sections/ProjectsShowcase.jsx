@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Expand, MapPin } from 'lucide-react'
 import Lightbox from '@/components/ui/Lightbox'
@@ -17,6 +18,7 @@ import Photo from '@/components/ui/Photo'
  * from the title, it is drawn from something the client actually typed.
  */
 const fromProject = (p) => ({
+  slug: p.slug,
   title: p.title,
   location: p.location,
   badge: p.year || (p.location ? p.location.split(',').pop().trim() : ''),
@@ -106,17 +108,30 @@ export default function ProjectsShowcase({ limit }) {
             )}
           </div>
 
-          <span
-            aria-hidden="true"
-            className="absolute right-5 top-5 flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white backdrop-blur-sm transition-all duration-500 group-hover:border-lumen-500 group-hover:bg-lumen-500 group-hover:text-ink-950"
-          >
-            <Expand size={13} className="transition-transform duration-500 group-hover:scale-110" />
-            View
-          </span>
-
+          {/* The tile opens the project's own page; the corner button opens
+              the photograph full screen, as the whole tile used to. Fallback
+              tiles (no CMS data, so no page) keep the viewer on the tile. */}
+          {p.slug && (
+            <Link
+              to={`/portfolio/${p.slug}`}
+              className="absolute inset-0"
+              aria-label={`${p.title}, ${p.location}: view project`}
+            />
+          )}
           {(() => {
             const pos = viewable.findIndex((v) => v.i === i)
-            return pos === -1 ? null : (
+            if (pos === -1) return null
+            return p.slug ? (
+              <button
+                type="button"
+                onClick={() => setOpen(pos)}
+                aria-label={`View ${p.title}, ${p.location}, larger`}
+                className="absolute right-5 top-5 z-[1] flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white backdrop-blur-sm transition-all duration-500 hover:border-lumen-500 hover:bg-lumen-500 hover:text-ink-950 group-hover:border-lumen-500"
+              >
+                <Expand size={13} aria-hidden="true" />
+                View
+              </button>
+            ) : (
               <button
                 type="button"
                 onClick={() => setOpen(pos)}

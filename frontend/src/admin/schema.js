@@ -15,7 +15,7 @@
 
 export const FIELD = {
   text: 'text', slug: 'slug', url: 'url', textarea: 'textarea', lines: 'lines',
-  number: 'number', switch: 'switch', select: 'select', image: 'image',
+  number: 'number', switch: 'switch', select: 'select', image: 'image', gallery: 'gallery',
 }
 
 const published = { name: 'published', label: 'Published', type: FIELD.switch,
@@ -123,13 +123,17 @@ export const collections = {
       { name: 'slug', label: 'Web address', type: FIELD.slug, from: 'title', required: true },
       { name: 'location', label: 'Location', type: FIELD.text, placeholder: 'Maiyan, Nanyuki, Laikipia' },
       { name: 'year', label: 'Year or status', type: FIELD.text, placeholder: 'Complete, Ongoing, 2024' },
-      { name: 'summary', label: 'Summary', type: FIELD.textarea, rows: 3 },
-      { name: 'body', label: 'Full description', type: FIELD.textarea, rows: 6 },
+      { name: 'summary', label: 'Summary', type: FIELD.textarea, rows: 3,
+        help: 'One or two sentences. Shown on the project card and at the top of its page.' },
+      { name: 'body', label: 'Full description', type: FIELD.textarea, rows: 10,
+        help: 'The project\'s own page: the building, the scope (what was installed), anything notable, the outcome. About 100 words or more, plus a photograph, and the page is listed in Google. A blank line starts a new paragraph. ## Heading, - for a bullet list, **bold**, [link text](/contact).' },
       { section: 'Photographs' },
       { name: 'image_open_url', label: 'Main photograph', type: FIELD.image },
       { name: 'image_open_alt', label: 'Describe the main photograph', type: FIELD.text },
       { name: 'image_finished_url', label: 'Second photograph', type: FIELD.image },
       { name: 'image_finished_alt', label: 'Describe the second photograph', type: FIELD.text },
+      { name: 'gallery', label: 'More photographs', type: FIELD.gallery,
+        help: 'Shown in a gallery on the project\'s page. Describe each one: what it shows matters to someone reading the page.' },
       { section: 'Visibility' },
       { name: 'featured', label: 'Feature this project', type: FIELD.switch },
       published,

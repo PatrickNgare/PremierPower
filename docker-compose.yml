@@ -63,6 +63,8 @@ services:
     volumes:
       # Locally stored photographs must survive a container rebuild.
       - uploads:/app/uploads
+      # Enquiry attachments when Cloudinary is not set; never served publicly.
+      - private:/app/private
     # Without this, nginx starts proxying before uvicorn is serving and the
     # first requests come back 502.
     healthcheck:
@@ -89,3 +91,4 @@ services:
 volumes:
   pgdata:
   uploads:
+  private:

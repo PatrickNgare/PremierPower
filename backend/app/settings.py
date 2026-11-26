@@ -56,6 +56,9 @@ class Settings(BaseSettings):
     # so each new page gets its pre-written HTML. See core/rebuild.py.
     vercel_deploy_hook: str = ""
     upload_dir: str = "uploads"
+    # Enquiry attachments when Cloudinary is not configured. Deliberately not
+    # under upload_dir, which the web server serves publicly.
+    private_dir: str = "private"
     max_upload_mb: int = 10
 
     @property

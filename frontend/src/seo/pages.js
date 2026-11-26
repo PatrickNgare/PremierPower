@@ -113,6 +113,17 @@ export const serviceMeta = (s) => ({
   description: (s.lede || s.body || '').replace(/\s+/g, ' ').trim().slice(0, 158),
 })
 
+/** Same bar for a project's own page, plus at least one photograph. */
+export const projectIsIndexable = (p) =>
+  `${p?.summary ?? ''} ${p?.body ?? ''}`.trim().length >= SERVICE_PAGE_MIN_CHARS
+  && Boolean(p?.image_open_url || p?.gallery?.length)
+
+export const projectMeta = (p) => ({
+  title: `${p.title}${p.location ? `, ${p.location.split(',')[0]}` : ''} | Premier Power Projects`.slice(0, 70),
+  description: (p.summary || `Electrical installation by Premier Power Limited${p.location ? ` at ${p.location}` : ''}.`)
+    .replace(/\s+/g, ' ').trim().slice(0, 158),
+})
+
 export const productMeta = (p) => ({
   title: `${p.name} | Lighting by Premier Power, Kenya`.slice(0, 70),
   description: (p.summary || `${p.name}, supplied and installed by Premier Power Limited across Kenya.`)

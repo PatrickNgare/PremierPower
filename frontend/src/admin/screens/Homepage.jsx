@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Reorder, useDragControls } from 'framer-motion'
 import { AlertTriangle, ChevronDown, Eye, EyeOff, GripVertical, MapPin, Plus, Trash2 } from 'lucide-react'
 import { api } from '../api'
+import { MediaPicker } from '../components/MediaPicker'
 import { useAuth } from '../auth'
 import { Button, Spinner, useToast } from '../components/ui'
 
@@ -12,6 +13,7 @@ const SECTION_NAMES = {
   solutions: 'Sectors', lighting: 'Lighting showcase', safety: 'Trust marks', services: 'Services',
   why: 'Why us — dark band', process: 'How it works', testimonials: 'Reviews',
   cta: 'Closing call to action', reel: 'Showroom clips',
+  clients: 'Client logos', quote: 'Quote form',
 }
 
 /** One line on what the block looks like on the page. */
@@ -29,6 +31,8 @@ const SECTION_BLURBS = {
   testimonials: 'Quotes from clients',
   cta: 'The last panel on the page, with the phone and WhatsApp buttons',
   reel: 'A sideways row of short showroom videos',
+  clients: 'A row of logos of clients and partners. Hidden until you add one',
+  quote: 'A short enquiry form: name, phone, project type, a line about the job and drawings',
 }
 
 /** The same, for the pages other than home: there "hero" is a single banner
@@ -59,6 +63,8 @@ const HOME_FIELDS = {
   process: ['eyebrow', 'title', 'subtitle'],
   testimonials: ['eyebrow', 'title', 'subtitle'],
   stats: [], safety: [], cta: [],
+  clients: ['eyebrow'],
+  quote: ['eyebrow', 'title', 'subtitle'],
 }
 const ALL_FIELDS = ['eyebrow', 'title', 'subtitle', 'link']
 
@@ -67,6 +73,8 @@ const ALL_FIELDS = ['eyebrow', 'title', 'subtitle', 'link']
 const SECTION_NOTES = {
   hero: 'The rotating photographs behind this are edited under the Slideshow photos tab above.',
   stats: 'Type each number below. A figure left blank is left off the site.',
+  clients: 'Add a logo for each client or partner, with their permission. Upload logos under Photos first; a PNG with a transparent background looks best. The row is hidden until there is at least one.',
+  quote: 'Enquiries sent from here arrive in Enquiries, the same as the Contact page form.',
   cta: 'The phone number and WhatsApp number come from Settings → Company details.',
   projects: 'The projects shown here are edited under Projects.',
   solutions: 'The cards shown here are edited under Settings → Sectors.',
@@ -220,7 +228,7 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
   // heading-only.
   const LIST = {
     safety: 'Trust marks', lighting: 'Lighting tiles', stats: 'Figures',
-    reel: 'Showroom clips',
+    reel: 'Showroom clips', clients: 'Logos',
   }
   const listLabel = LIST[row.key]
   const fields = page === '/' ? (HOME_FIELDS[row.key] ?? ALL_FIELDS) : ALL_FIELDS
@@ -361,6 +369,8 @@ function SectionRow({ row, editable, open, onOpen, onToggle, onPatch, onSave, sa
  */
 function SectionItems({ section, label, editable }) {
   const toast = useToast()
+  const withImage = section === 'clients' || section === 'lighting'
+  const [picking, setPicking] = useState(null)   // row id choosing an image
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -398,7 +408,7 @@ function SectionItems({ section, label, editable }) {
   const add = async () => {
     try {
       const created = await api.post('/section-items', {
-        section, title: 'New item', body: '', position: rows.length, published: true,
+        section, title: section === 'clients' ? 'Client name' : 'New item', body: '', position: rows.length, published: true,
       })
       setRows((r) => [...r, created])
     } catch (e) {
@@ -446,9 +456,30 @@ function SectionItems({ section, label, editable }) {
                 </button>
               )}
             </div>
+            {withImage && (
+              <div className="mt-2 flex items-center gap-3">
+                <div className="grid h-14 w-20 shrink-0 place-items-center overflow-hidden rounded-lg border border-neutral-200 bg-surface">
+                  {row.image_url
+                    ? <img src={row.image_url} alt="" className={`h-full w-full ${section === 'clients' ? 'object-contain p-1.5' : 'object-cover'}`} />
+                    : <span className="text-[0.65rem] text-muted">No image</span>}
+                </div>
+                {editable && (
+                  <Button type="button" variant="ghost" onClick={() => setPicking(row.id)}>
+                    {row.image_url ? 'Change' : section === 'clients' ? 'Choose logo' : 'Choose photograph'}
+                  </Button>
+                )}
+              </div>
+            )}
             {/* A figure taken from Company details has nothing to type here —
                 showing an empty body box would invite typing the number twice. */}
-            {row.href ? (
+            {section === 'clients' ? (
+              <input
+                className={`${input} mt-2`} value={row.href ?? ''} disabled={!editable}
+                onChange={(e) => patch(row.id, 'href', e.target.value)}
+                onBlur={() => save(row)} aria-label="Website (optional)"
+                placeholder="Website, optional — e.g. https://example.co.ke"
+              />
+            ) : row.href ? (
               <p className="mt-2 text-xs text-muted">
                 Figure taken from Company details: <span className="font-medium">{row.href}</span>
               </p>
@@ -463,6 +494,15 @@ function SectionItems({ section, label, editable }) {
           </li>
         ))}
       </ul>
+      <MediaPicker
+        open={picking !== null} onClose={() => setPicking(null)}
+        onPick={(url) => {
+          const row = rows.find((r) => r.id === picking)
+          if (!row) return
+          patch(row.id, 'image_url', url)
+          save(row, { image_url: url })
+        }}
+      />
     </div>
   )
 }

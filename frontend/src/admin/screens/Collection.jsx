@@ -42,7 +42,8 @@ function blankOf(def) {
       f.type === FIELD.switch ? (f.name === 'published' ? false : false)
         : f.type === FIELD.number ? (f.min ?? 0)
           : f.type === FIELD.select && f.optionsFrom ? null
-            : ''
+            : f.type === FIELD.gallery ? []
+              : ''
   }
   return row
 }
@@ -55,6 +56,7 @@ function payloadOf(def, row) {
     let v = row[f.name]
     // `lines` fields round-trip as an array out and text in.
     if (f.type === FIELD.lines && Array.isArray(v)) v = v.join('\n')
+    if (f.type === FIELD.gallery) v = (Array.isArray(v) ? v : []).filter((g) => g?.url)
     out[f.name] = v ?? (f.type === FIELD.switch ? false : f.type === FIELD.number ? 0 : '')
   }
   if ('position' in row) out.position = row.position ?? 0

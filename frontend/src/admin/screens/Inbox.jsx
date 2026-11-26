@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Inbox as InboxIcon, Mail, Phone, Search, Trash2, X } from 'lucide-react'
+import { Inbox as InboxIcon, Mail, Paperclip, Phone, Search, Trash2, X } from 'lucide-react'
 import { api } from '../api'
 import { useAuth } from '../auth'
 import { Button, Confirm, EmptyState, Spinner, useToast } from '../components/ui'
@@ -135,6 +135,13 @@ export default function Inbox() {
                         {[l.company, l.project_type, l.area].filter(Boolean).join(' · ') || l.phone}
                       </p>
                     </div>
+                    {l.attachments?.length > 0 && (
+                      <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-muted"
+                        title={`${l.attachments.length} attached file${l.attachments.length > 1 ? 's' : ''}`}>
+                        <Paperclip size={13} aria-hidden="true" /> {l.attachments.length}
+                        <span className="sr-only">attached</span>
+                      </span>
+                    )}
                     <span className={`shrink-0 rounded-full px-2.5 py-1 text-[0.7rem] font-bold uppercase tracking-wide ${TONE[l.status] ?? TONE.new}`}>
                       {(STAGES.find(([v]) => v === l.status)?.[1]) ?? l.status}
                     </span>
@@ -225,6 +232,10 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
                 ))}
               </dl>
 
+              {lead.attachments?.length > 0 && (
+                <Attachments lead={lead} />
+              )}
+
               {lead.message && (
                 <div>
                   <h3 className="text-sm font-semibold text-body-strong">What they wrote</h3>
@@ -278,5 +289,56 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
         </motion.div>
       )}
     </AnimatePresence>
+  )
+}
+
+/**
+ * Files sent with the enquiry. They are private: each one is fetched with the
+ * signed-in session and opened from memory, never from a public address.
+ */
+function Attachments({ lead }) {
+  const toast = useToast()
+  const [busy, setBusy] = useState(null)
+  const size = (b) => (b > 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`)
+
+  const open = async (n, name) => {
+    // Opened synchronously so the browser does not treat it as a popup.
+    const win = window.open('', '_blank')
+    setBusy(n)
+    try {
+      const blob = await api.blob(`/leads/${lead.id}/attachments/${n}`)
+      const url = URL.createObjectURL(blob)
+      if (win) win.location.href = url
+      else {
+        const a = document.createElement('a')
+        a.href = url; a.download = name; a.click()
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 60000)
+    } catch (e) {
+      win?.close()
+      toast.error(e.message)
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  return (
+    <div>
+      <h3 className="text-sm font-semibold text-body-strong">Attached files</h3>
+      <ul className="mt-2 space-y-2">
+        {lead.attachments.map((f, n) => (
+          <li key={`${f.name}-${n}`}>
+            <button
+              type="button" onClick={() => open(n, f.name)} disabled={busy === n}
+              className="flex w-full items-center gap-3 rounded-xl border border-neutral-200 bg-surface p-3 text-left text-sm transition-colors hover:border-neutral-300 disabled:opacity-60"
+            >
+              <Paperclip size={15} aria-hidden="true" className="shrink-0 text-muted" />
+              <span className="min-w-0 flex-1 truncate font-semibold text-body">{f.name}</span>
+              <span className="shrink-0 text-xs text-muted">{busy === n ? 'Opening…' : size(f.bytes || 0)}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

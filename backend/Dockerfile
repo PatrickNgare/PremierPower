@@ -20,7 +20,9 @@ RUN useradd --create-home --uid 10001 appuser
 # Docker seeds a fresh named volume from the image directory, ownership
 # included. Created by root at mount time, the unprivileged process cannot
 # write to it and every upload fails with a 500.
-RUN mkdir -p /app/uploads && chown -R appuser:appuser /app/uploads
+# private/ holds enquiry attachments when Cloudinary is not configured; it is
+# never served by the web server.
+RUN mkdir -p /app/uploads /app/private && chown -R appuser:appuser /app/uploads /app/private
 
 USER appuser
 

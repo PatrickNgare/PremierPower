@@ -41,6 +41,7 @@ HOMEPAGE = [
          cta_label="Explore our solutions", cta_href="/services",
          config={"secondary_label": "Talk to an expert"}),
     dict(key="stats", eyebrow="", title="", subtitle=""),
+    dict(key="clients", eyebrow="Trusted on projects for", title="", subtitle=""),
     dict(key="about", eyebrow="Who we are",
          title="A leading electrical engineering company in the corporate market.",
          subtitle="Premier Power Limited works on installation projects all over the country, "
@@ -52,6 +53,10 @@ HOMEPAGE = [
                   "Maiyan villas at Nanyuki and town houses in Lavington.",
          cta_label="View all installations", cta_href="/portfolio",
          config={"limit": 5}),
+    dict(key="quote", eyebrow="Request a quote",
+         title="Tell us about the project.",
+         subtitle="Name, number and a line about the job is enough to start. Attach drawings "
+                  "if you have them; we come back with scope and next steps."),
     dict(key="solutions", eyebrow="Solutions",
          title="Lighting and electrical solutions designed around you.",
          subtitle="Works undertaken by Premier Power span the corporate, commercial and "
@@ -229,6 +234,27 @@ def seed_content(db: Session) -> None:
             for i, row in enumerate(blocks)
         )
         log.info("seeded %d sections for %s", len(blocks), path)
+
+    # Home blocks added after a site was first seeded. Each is inserted once,
+    # straight after the block it belongs with, by moving the blocks below it
+    # down a place; nothing is reordered otherwise and no existing text is
+    # touched. Both render nothing until they have something to show (client
+    # logos) or can be hidden in the CMS (the quote form).
+    home = {r.key: r for r in db.scalars(select(PageSection).where(PageSection.page == "/")).all()}
+    if home:
+        by_key = {row["key"]: row for row in HOMEPAGE}
+        for key, after in (("clients", "stats"), ("quote", "projects")):
+            if key in home:
+                continue
+            anchor = home.get(after)
+            pos = (anchor.position + 1) if anchor else (max(r.position for r in home.values()) + 1)
+            for r in home.values():
+                if r.position >= pos:
+                    r.position += 1
+            row = PageSection(page="/", position=pos, enabled=True, **{"config": {}, **by_key[key]})
+            db.add(row)
+            home[key] = row
+            log.info("added home block %s after %s", key, after)
 
     # Per link, not per table. A table-level check means a database that
     # already has navigation never receives a link added later — which is

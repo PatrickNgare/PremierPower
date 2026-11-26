@@ -81,6 +81,21 @@ export const api = {
   patch: (p, body) => request(p, { method: 'PATCH', body }),
   del: (p) => request(p, { method: 'DELETE' }),
   upload: (p, formData) => request(p, { method: 'POST', form: formData }),
+  /** A file behind sign-in (enquiry attachments), as a Blob. */
+  blob: async (p) => {
+    const token = getToken()
+    const res = await fetch(`${BASE}${p}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+    if (res.status === 401) {
+      setToken(null)
+      onUnauthorized()
+      throw new ApiError(401, 'Your session has ended. Please sign in again.')
+    }
+    if (!res.ok) {
+      const body = await res.json().catch(() => null)
+      throw new ApiError(res.status, readDetail(body, res.status))
+    }
+    return res.blob()
+  },
 }
 
 /** Sign in. The API expects OAuth2 form encoding, not JSON. */

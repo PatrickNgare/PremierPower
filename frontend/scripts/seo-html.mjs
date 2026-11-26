@@ -33,6 +33,7 @@ const seo = await import(pathToFileURL(join(root, 'src/seo/pages.js')).href)
 const {
   SITE_URL, SITE_NAME, DEFAULT_IMAGE, PAGES, ORGANIZATION, WEBSITE, breadcrumbs,
   serviceIsIndexable, serviceMeta, serviceSchema, productMeta, postMeta, articleSchema,
+  projectIsIndexable, projectMeta,
 } = seo
 
 const API = (process.env.SEO_API || 'https://premierpower-api.onrender.com/api').replace(/\/$/, '')
@@ -144,9 +145,9 @@ async function write(path, html) {
   await writeFile(file, html)
 }
 
-const [cms, services, products, posts, faqs, reviews, banners, sections] = await Promise.all([
+const [cms, services, products, posts, faqs, reviews, banners, sections, projects] = await Promise.all([
   get('/seo'), get('/services'), get('/products'), get('/blog'), get('/faqs'), get('/testimonials'), get('/banners'),
-  get('/page-sections'),
+  get('/page-sections'), get('/projects'),
 ])
 // The banner photograph the CMS has chosen for each page, if any.
 const cmsBanner = Object.fromEntries((sections ?? [])
@@ -187,6 +188,18 @@ for (const s of services ?? []) {
     path, ...meta, image: s.image_url || undefined, noindex: !indexable,
     trail: [['Services', '/services'], [s.title, path]],
     jsonLd: indexable ? [serviceSchema(s)] : [],
+  }), meta.title))
+  written.push(path)
+}
+
+// ── Projects ────────────────────────────────────────────────────────────
+for (const p of projects ?? []) {
+  const path = `/portfolio/${p.slug}`
+  const meta = projectMeta(p)
+  const image = mediaMap[p.image_open_url] ?? (p.image_open_url || undefined)
+  await write(path, page(head({
+    path, ...meta, image, noindex: !projectIsIndexable(p),
+    trail: [['Installations', '/portfolio'], [p.title, path]],
   }), meta.title))
   written.push(path)
 }

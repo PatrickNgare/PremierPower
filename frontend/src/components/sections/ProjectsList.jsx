@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { MapPin } from 'lucide-react'
 import { fadeUp, stagger, inView } from '@/utils/motion'
@@ -34,10 +35,16 @@ export default function ProjectsList() {
             <motion.li
               key={p.slug || p.title}
               variants={fadeUp}
-              className="grid gap-x-6 gap-y-1.5 border-b border-line py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:py-6"
+              className="relative grid gap-x-6 gap-y-1.5 border-b border-line py-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:py-6"
             >
               <div className="min-w-0">
-                <h3 className="font-display text-base font-bold tracking-tight sm:text-lg">{p.title}</h3>
+                <h3 className="font-display text-base font-bold tracking-tight sm:text-lg">
+                  {p.slug ? (
+                    <Link to={`/portfolio/${p.slug}`} className="after:absolute after:inset-0 hover:text-accent focus-visible:underline">
+                      {p.title}
+                    </Link>
+                  ) : p.title}
+                </h3>
                 {p.summary && (
                   <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">{p.summary}</p>
                 )}

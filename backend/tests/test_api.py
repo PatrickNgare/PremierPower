@@ -457,3 +457,85 @@ def test_sqladmin_still_admits_an_owner_over_https(database):
         }, follow_redirects=False)
         assert r.status_code == 302, r.text[:200]
         assert c.get("/sqladmin/", follow_redirects=False).status_code == 200
+
+
+# ── enquiry attachments ─────────────────────────────────────────────────
+PDF = b"%PDF-1.4\n%test drawing\n"
+
+
+@pytest.fixture(autouse=True)
+def _fresh_rate_limits():
+    """Every test client shares one address, so the enquiry limit (five an
+    hour) is reached partway through the suite and later submissions are
+    quietly accepted without being checked, exactly as a throttled bot's would."""
+    from app.core import throttle
+    throttle._hits.clear()
+    yield
+
+
+def test_enquiry_with_a_drawing_is_stored_privately_and_downloadable_by_staff(client, auth, tmp_path, monkeypatch):
+    from app.settings import settings
+    monkeypatch.setattr(settings, "private_dir", str(tmp_path))
+    r = client.post("/api/leads/with-files", data={"name": "Drawing Sender", "phone": "0722555666"},
+                    files=[("files", ("Ground floor plan.pdf", PDF, "application/pdf"))])
+    assert r.status_code == 201, r.text
+    lead = next(l for l in client.get("/api/leads", headers=auth).json() if l["name"] == "Drawing Sender")
+    assert lead["attachments"] == [{"name": "Ground floor plan.pdf", "bytes": len(PDF), "type": "application/pdf"}]
+    # Where it is stored is never part of the response.
+    assert "key" not in str(lead["attachments"]) and str(tmp_path) not in r.text
+
+    assert client.get(f"/api/leads/{lead['id']}/attachments/0").status_code == 401
+    got = client.get(f"/api/leads/{lead['id']}/attachments/0", headers=auth)
+    assert got.status_code == 200 and got.content == PDF
+    assert got.headers["content-type"] == "application/pdf"
+    assert client.get(f"/api/leads/{lead['id']}/attachments/1", headers=auth).status_code == 404
+    # Not reachable through the public uploads mount either.
+    assert list(tmp_path.iterdir())
+
+    assert client.delete(f"/api/leads/{lead['id']}", headers=auth).status_code == 204
+    assert not list(tmp_path.iterdir())
+
+
+def test_enquiry_files_are_checked_by_content_count_and_size(client, tmp_path, monkeypatch):
+    from app.core import attachments
+    from app.settings import settings
+    monkeypatch.setattr(settings, "private_dir", str(tmp_path))
+    base = {"name": "File Checks", "phone": "0722555777"}
+    r = client.post("/api/leads/with-files", data=base,
+                    files=[("files", ("plan.pdf", b"<html>not a pdf</html>", "application/pdf"))])
+    assert r.status_code == 415
+    r = client.post("/api/leads/with-files", data=base,
+                    files=[("files", (f"p{i}.pdf", PDF, "application/pdf")) for i in range(4)])
+    assert r.status_code == 422
+    monkeypatch.setattr(attachments, "MAX_BYTES", 10)
+    r = client.post("/api/leads/with-files", data=base,
+                    files=[("files", ("big.pdf", PDF, "application/pdf"))])
+    assert r.status_code == 413
+    assert not list(tmp_path.iterdir())
+
+
+def test_enquiry_with_files_validates_like_the_plain_form(client, auth):
+    r = client.post("/api/leads/with-files", data={"name": "", "phone": "12"})
+    assert r.status_code == 422
+    fields = {e["loc"][-1] for e in r.json()["detail"]}
+    assert {"name", "phone"} <= fields
+    r = client.post("/api/leads/with-files", data={"name": "Bot", "phone": "0722555888", "website": "x"})
+    assert r.status_code == 201
+    assert not any(l["name"] == "Bot" and l["phone"] == "0722555888"
+                   for l in client.get("/api/leads", headers=auth).json())
+
+
+def test_sitemap_lists_projects_only_once_they_have_a_write_up_and_a_photo(client, auth):
+    body = "What was installed, where, and how it was tested. " * 15
+    for slug, extra in (("case-full", {"body": body, "image_open_url": "https://x/y.jpg"}),
+                        ("case-no-photo", {"body": body}),
+                        ("case-thin", {"image_open_url": "https://x/y.jpg"})):
+        r = client.post("/api/projects", headers=auth, json={"slug": slug, "title": slug, "published": True, **extra})
+        assert r.status_code == 201, r.text
+    r = client.post("/api/projects", headers=auth, json={
+        "slug": "case-gallery", "title": "g", "published": True, "body": body,
+        "gallery": [{"url": "https://x/1.jpg", "alt": "Board"}, {"url": "https://x/2.jpg"}]})
+    assert r.status_code == 201 and r.json()["gallery"][0] == {"url": "https://x/1.jpg", "alt": "Board"}
+    xml = client.get("/sitemap.xml").text
+    assert "/portfolio/case-full</loc>" in xml and "/portfolio/case-gallery</loc>" in xml
+    assert "/portfolio/case-no-photo</loc>" not in xml and "/portfolio/case-thin</loc>" not in xml

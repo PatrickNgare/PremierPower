@@ -81,7 +81,9 @@ def lead_notification(lead) -> tuple[str, str]:
         ("Project", lead.project_type), ("Area", lead.area), ("Property", lead.property),
     ) if value]
 
-    groups = [contact, about, [lead.message or "(no message)"],
+    files = getattr(lead, "attachments", None) or []
+    attached = [f"Attached: {', '.join(f.get('name', 'file') for f in files)} (open the enquiry in the CMS)"] if files else []
+    groups = [contact, about, [lead.message or "(no message)"], attached,
               ["—", "Reply to this email to answer them directly."]]
     body = "\n\n".join("\n".join(g) for g in groups if g)
     return subject, body

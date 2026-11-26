@@ -13,6 +13,8 @@ import ProjectsShowcase from '@/components/sections/ProjectsShowcase'
 import ProcessSteps from '@/components/sections/ProcessSteps'
 import TestimonialsStrip from '@/components/sections/TestimonialsStrip'
 import CTABanner from '@/components/sections/CTABanner'
+import ClientsStrip from '@/components/sections/ClientsStrip'
+import ContactForm from '@/components/sections/ContactForm'
 import SectionHeader from '@/components/ui/SectionHeader'
 import PowerOnRule from '@/components/ui/PowerOnRule'
 import Button from '@/components/ui/Button'
@@ -31,7 +33,7 @@ import Seo from '@/components/Seo'
  * an unreachable API renders the page as written rather than empty.
  */
 const DEFAULTS = [
-  { key: 'hero' }, { key: 'stats' },
+  { key: 'hero' }, { key: 'stats' }, { key: 'clients', eyebrow: 'Trusted on projects for' },
   { key: 'about', eyebrow: 'Who we are',
     title: 'A leading electrical engineering company in the corporate market.',
     subtitle: 'Premier Power Limited works on installation projects all over the country, expanding across Kenya and beyond the border.' },
@@ -39,6 +41,8 @@ const DEFAULTS = [
     title: 'Delivered with the contractors and architects who designed them.',
     subtitle: 'Hospitality developments, commercial interiors and residential clusters across Kenya — from Nashulai Mara Safari Lodge and Hotel Meru to the Maiyan villas at Nanyuki and town houses in Lavington.',
     cta_label: 'View all installations', cta_href: '/portfolio', config: { limit: 5 } },
+  { key: 'quote', eyebrow: 'Request a quote', title: 'Tell us about the project.',
+    subtitle: 'Name, number and a line about the job is enough to start. Attach drawings if you have them; we come back with scope and next steps.' },
   { key: 'solutions', eyebrow: 'Solutions',
     title: 'Lighting and electrical solutions designed around you.',
     subtitle: 'Works undertaken by Premier Power span the corporate, commercial and residential markets — delivered with leading contractors in both the private and public sectors.',
@@ -68,6 +72,18 @@ const BLOCKS = {
   lighting: (s) => <LightingShowcase section={s} />,
   safety: (s) => <SafetyBar section={s} />,
   cta: (s) => <CTABanner section={s} />,
+  clients: (s) => <ClientsStrip section={s} />,
+
+  // Straight after the projects, where interest is highest: the short form,
+  // so asking for a quote does not mean leaving the page.
+  quote: (s) => (
+    <section className="section-tight bg-page-warm">
+      <div className="container-x grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start lg:gap-16">
+        <SectionHeader eyebrow={s.eyebrow} title={s.title} lede={s.subtitle} />
+        <ContactForm compact />
+      </div>
+    </section>
+  ),
 
   about: (s) => (
     <section className="section-tight">
@@ -227,6 +243,7 @@ const SPOT_NAMES = {
   hero: 'Slideshow & headline', stats: 'Figures bar', about: 'About us', projects: 'Projects',
   solutions: 'Sectors', lighting: 'Lighting showcase', safety: 'Trust marks', services: 'Services',
   why: 'Why us', process: 'How it works', testimonials: 'Reviews', cta: 'Closing call to action',
+  clients: 'Client logos', quote: 'Quote form',
 }
 
 function useSpotlight(hash, ready) {

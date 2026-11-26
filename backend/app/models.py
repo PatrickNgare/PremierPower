@@ -88,6 +88,8 @@ class Project(Base):
     image_finished_url: Mapped[str] = mapped_column(String(500), default="")
     image_finished_alt: Mapped[str] = mapped_column(String(300), default="")
     featured: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Extra photographs for the project's own page: [{"url": ..., "alt": ...}].
+    gallery: Mapped[list] = mapped_column(JSON, default=list, server_default="[]")
     position: Mapped[int] = mapped_column(Integer, default=0)
     published: Mapped[bool] = mapped_column(Boolean, default=False)
 
@@ -224,6 +226,10 @@ class Lead(Base):
     # new | in_progress | quoted | won | lost
     status: Mapped[str] = mapped_column(String(20), default="new", server_default="new")
     notes: Mapped[str] = mapped_column(Text, default="", server_default="")
+    # Drawings or documents sent with the enquiry, stored privately:
+    # [{"name", "bytes", "type", "storage", "key"}]. Never a public URL; the
+    # CMS asks the API for a short-lived link (routers/leads.py).
+    attachments: Mapped[list] = mapped_column(JSON, default=list, server_default="[]")
     handled: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

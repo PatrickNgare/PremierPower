@@ -17,7 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import BlogPost, Product, SeoMeta, Service, SiteSetting, Testimonial
+from ..models import BlogPost, Product, Project, SeoMeta, Service, SiteSetting, Testimonial
 
 router = APIRouter(tags=["seo"])
 
@@ -77,6 +77,17 @@ def sitemap(db: Session = Depends(get_db)) -> Response:
         ).all():
             if len(f"{svc.lede or ''} {svc.body or ''}".strip()) >= SERVICE_PAGE_MIN_CHARS:
                 paths.append((f"/services/{svc.slug}", "0.8", None))
+
+    # A project gets its own page in search once it has a write-up and a
+    # photograph: same 600-character bar as services (PROJECT_PAGE_MIN_CHARS
+    # in frontend/src/seo/pages.js).
+    if "/portfolio" in listed:
+        for prj in db.scalars(
+            select(Project).where(Project.published.is_(True)).order_by(Project.position, Project.id)
+        ).all():
+            if (len(f"{prj.summary or ''} {prj.body or ''}".strip()) >= SERVICE_PAGE_MIN_CHARS
+                    and (prj.image_open_url or prj.gallery)):
+                paths.append((f"/portfolio/{prj.slug}", "0.7", None))
 
     posts = db.scalars(
         select(BlogPost).where(BlogPost.published.is_(True))

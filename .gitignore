@@ -19,6 +19,7 @@ PREMIER.pdf
 # Runtime uploads. In production these live on a Docker volume, not in git —
 # committing them would put client photography into the repository by accident.
 backend/uploads/
+backend/private/
 
 # Supplier catalogue media for the lighting & fittings page — 25MB of stock
 # JPEGs and showroom videos, several carrying another brand's watermark. The

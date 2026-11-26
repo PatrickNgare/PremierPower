@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { Send, CheckCircle2, AlertCircle, Loader2, Paperclip, X } from 'lucide-react'
 import { Field } from '@/components/ui/Field'
 import Magnetic from '@/components/ui/Magnetic'
 import { whatsappLink } from '@/config/site'
@@ -32,13 +32,23 @@ function check(d) {
   return e
 }
 
+// Drawings and documents sent with an enquiry. Same limits as the server
+// (backend/app/core/attachments.py), checked here so a mistake is named at
+// once rather than after an upload.
+const MAX_FILES = 3
+const MAX_MB = 10
+const FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png']
+const prettySize = (b) => (b > 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`)
+
 // The API sleeps on Render's free plan and can take up to a minute to answer
 // the first request after a quiet spell.
 const WAKING_AFTER = 4000
 const GIVE_UP_AFTER = 90000
 
-export default function ContactForm() {
+export default function ContactForm({ compact = false }) {
   const reduce = useReducedMotion()
+  const [files, setFiles] = useState([])
+  const fileRef = useRef(null)
   const site = useSite()
   const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
@@ -46,6 +56,21 @@ export default function ContactForm() {
   const [waking, setWaking] = useState(false)
   const formRef = useRef(null)
   const wa = whatsappLink(site)
+
+  function addFiles(list) {
+    const picked = [...list]
+    const next = [...files]
+    let problem = ''
+    for (const f of picked) {
+      if (next.length >= MAX_FILES) { problem = `Attach up to ${MAX_FILES} files.`; break }
+      if (!FILE_TYPES.includes(f.type)) { problem = `${f.name} is not a PDF, JPG or PNG.`; continue }
+      if (f.size > MAX_MB * 1048576) { problem = `${f.name} is over ${MAX_MB} MB. Send larger drawings by email instead.`; continue }
+      next.push(f)
+    }
+    setFiles(next)
+    setErrors((x) => ({ ...x, files: problem || undefined }))
+    if (fileRef.current) fileRef.current.value = ''
+  }
 
   // Clear a field's message as soon as it is being fixed.
   const clear = (name) => () => setErrors((x) => (x[name] ? { ...x, [name]: undefined } : x))
@@ -68,12 +93,30 @@ export default function ContactForm() {
     const abort = new AbortController()
     const giveUp = setTimeout(() => abort.abort(), GIVE_UP_AFTER)
     try {
-      const res = await fetch(`${API}/leads`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-        signal: abort.signal,
-      })
+      let res
+      if (files.length) {
+        // Multipart only when there is something to attach; the plain JSON
+        // endpoint stays the common path.
+        const body = new FormData()
+        for (const [k, v] of Object.entries(data)) body.append(k, v)
+        files.forEach((f) => body.append('files', f, f.name))
+        res = await fetch(`${API}/leads/with-files`, { method: 'POST', body, signal: abort.signal })
+      } else {
+        res = await fetch(`${API}/leads`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+          signal: abort.signal,
+        })
+      }
+      if ([413, 415].includes(res.status) || (res.status === 422 && files.length)) {
+        const body = await res.clone().json().catch(() => null)
+        if (typeof body?.detail === 'string') {
+          setErrors({ files: body.detail })
+          setStatus('idle')
+          return
+        }
+      }
       if (res.status === 422) {
         // The server disagreed with something the checks above let through.
         // Show its reason beside the field rather than a generic failure.
@@ -89,7 +132,7 @@ export default function ContactForm() {
       }
       if (!res.ok) throw new Error(String(res.status))
       setStatus('sent')
-      track('generate_lead', { form: 'contact', project_type: data.project_type || '' })
+      track('generate_lead', { form: compact ? 'home' : 'contact', project_type: data.project_type || '', files: files.length })
     } catch {
       setStatus('error')
       setError(
@@ -160,18 +203,59 @@ export default function ContactForm() {
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Your name" name="name" required autoComplete="name"
                 error={errors.name} onChange={clear('name')} maxLength={120} />
-              <Field label="Company" name="company" autoComplete="organization"
-                error={errors.company} maxLength={160} />
-              <Field label="Email" name="email" type="email" autoComplete="email" inputMode="email"
-                error={errors.email} onChange={clear('email')} maxLength={200} />
               <Field label="Phone" name="phone" type="tel" required autoComplete="tel" inputMode="tel"
                 error={errors.phone} onChange={clear('phone')} maxLength={60} />
-              <Field label="Location" name="area" error={errors.area} maxLength={120} />
-              <Field label="Project type" name="project_type" as="select" options={PROJECT_TYPES} />
+              {!compact && (
+                <>
+                  <Field label="Company" name="company" autoComplete="organization"
+                    error={errors.company} maxLength={160} />
+                  <Field label="Email" name="email" type="email" autoComplete="email" inputMode="email"
+                    error={errors.email} onChange={clear('email')} maxLength={200} />
+                  <Field label="Location" name="area" error={errors.area} maxLength={120} />
+                </>
+              )}
+              <Field label="Project type" name="project_type" as="select" options={PROJECT_TYPES}
+                className={compact ? 'sm:col-span-2' : ''} />
               <Field
-                label="Tell us about the project" name="message" as="textarea" rows={5}
+                label="Tell us about the project" name="message" as="textarea" rows={compact ? 3 : 5}
                 className="sm:col-span-2" error={errors.message} maxLength={4000}
               />
+
+              {/* Drawings, tender documents, site photos. Kept private: only
+                  staff signed in to the CMS can open them. */}
+              <div className="sm:col-span-2">
+                <input
+                  ref={fileRef} id="cf-files" type="file" multiple className="sr-only"
+                  accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                  onChange={(e) => addFiles(e.target.files)}
+                  aria-describedby="cf-files-help"
+                />
+                <label
+                  htmlFor="cf-files"
+                  className={`inline-flex cursor-pointer items-center gap-2 rounded-xl border border-dashed px-4 py-2.5 text-sm font-semibold transition-colors ${
+                    files.length >= MAX_FILES ? 'pointer-events-none opacity-50' : 'hover:border-brand-fill hover:text-accent'
+                  } ${errors.files ? 'border-brand-fill text-accent' : 'border-line text-body-soft'}`}
+                >
+                  <Paperclip size={15} aria-hidden="true" /> Attach drawings or documents
+                </label>
+                <p id="cf-files-help" className="mt-1.5 text-xs text-muted">
+                  Optional. Up to {MAX_FILES} PDF, JPG or PNG files, {MAX_MB} MB each. Only our team can open them.
+                </p>
+                {errors.files && <p className="mt-1.5 text-sm font-medium text-accent" role="alert">{errors.files}</p>}
+                {files.length > 0 && (
+                  <ul className="mt-3 space-y-1.5">
+                    {files.map((f, i) => (
+                      <li key={`${f.name}-${i}`} className="flex items-center justify-between gap-3 rounded-lg bg-page-warm px-3 py-2 text-sm">
+                        <span className="min-w-0 truncate text-body">{f.name} <span className="text-muted">· {prettySize(f.size)}</span></span>
+                        <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))}
+                          aria-label={`Remove ${f.name}`} className="shrink-0 rounded-md p-1 text-muted hover:bg-surface hover:text-accent">
+                          <X size={14} aria-hidden="true" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
 
             {/* Spam trap: off-screen and skipped by keyboard and screen

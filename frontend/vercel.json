@@ -41,6 +41,10 @@
       "destination": "/_shell"
     },
     {
+      "source": "/portfolio/:slug",
+      "destination": "/_shell"
+    },
+    {
       "source": "/products/:slug",
       "destination": "/_shell"
     },

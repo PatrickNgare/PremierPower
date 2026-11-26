@@ -81,6 +81,11 @@ class ServiceOut(BaseModel):
         return v
 
 
+class GalleryImage(BaseModel):
+    url: str = Field(min_length=1, max_length=500)
+    alt: str = Field(default="", max_length=300)
+
+
 class ProjectIn(BaseModel):
     slug: str = Field(min_length=1, max_length=120)
     title: str = Field(min_length=1, max_length=160)
@@ -93,6 +98,7 @@ class ProjectIn(BaseModel):
     image_finished_url: str = ""
     image_finished_alt: str = ""
     featured: bool = False
+    gallery: list[GalleryImage] = Field(default_factory=list, max_length=30)
     position: int = 0
     published: bool = False
 
@@ -236,6 +242,13 @@ class LeadIn(BaseModel):
         return v
 
 
+class LeadAttachmentOut(BaseModel):
+    """What the CMS sees of an attachment: never where it is stored."""
+    name: str
+    bytes: int = 0
+    type: str = ""
+
+
 class LeadOut(BaseModel):
     model_config = ORM
     id: int
@@ -250,6 +263,7 @@ class LeadOut(BaseModel):
     kind: str = "enquiry"
     status: str = "new"
     notes: str = ""
+    attachments: list[LeadAttachmentOut] = []
     handled: bool
     created_at: datetime | None = None
 

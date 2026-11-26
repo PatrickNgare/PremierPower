@@ -21,6 +21,7 @@ const Contact = lazy(() => import('@/pages/Contact'))
 const Products = lazy(() => import('@/pages/Products'))
 const ProductDetail = lazy(() => import('@/pages/ProductDetail'))
 const ServiceDetail = lazy(() => import('@/pages/ServiceDetail'))
+const ProjectDetail = lazy(() => import('@/pages/ProjectDetail'))
 const Insights = lazy(() => import('@/pages/Insights'))
 const InsightDetail = lazy(() => import('@/pages/InsightDetail'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
@@ -88,6 +89,7 @@ export default function App() {
             <Route path="/products" element={<PageTransition><Products /></PageTransition>} />
             <Route path="/products/:slug" element={<PageTransition><ProductDetail /></PageTransition>} />
             <Route path="/portfolio" element={<PageTransition><Portfolio /></PageTransition>} />
+            <Route path="/portfolio/:slug" element={<PageTransition><ProjectDetail /></PageTransition>} />
             <Route path="/safety" element={<PageTransition><Safety /></PageTransition>} />
             <Route path="/about" element={<PageTransition><About /></PageTransition>} />
             <Route path="/testimonials" element={<PageTransition><Testimonials /></PageTransition>} />
