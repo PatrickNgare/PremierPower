@@ -63,8 +63,11 @@ def lead_notification(lead) -> tuple[str, str]:
     Written to be readable on a phone lock screen: who, what, and a number to
     call, before anything else.
     """
-    who = lead.name + (f" · {lead.company}" if lead.company else "")
-    subject = f"New {lead.kind}: {who}"
+    # Header values cannot hold line breaks (the email library refuses the
+    # whole message), and a name pasted from elsewhere can carry one.
+    one_line = lambda v: " ".join(str(v or "").split())  # noqa: E731
+    who = one_line(lead.name) + (f" · {one_line(lead.company)}" if lead.company else "")
+    subject = f"New {lead.kind}: {who}"[:200]
 
     # Grouped so an absent optional field collapses its whole line rather than
     # leaving a blank one, while the gaps between groups survive.

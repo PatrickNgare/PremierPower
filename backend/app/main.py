@@ -98,7 +98,7 @@ app.include_router(crud_router(model=FAQ, schema_in=FAQIn, schema_out=FAQOut,
                                filters={"category": FAQ.category}), prefix="/api/faqs")
 app.include_router(crud_router(model=BlogPost, schema_in=BlogPostIn, schema_out=BlogPostOut,
                                entity="post", search=("title", "excerpt", "author"),
-                               order_by=(BlogPost.created_at.desc(),)),
+                               order_by=(BlogPost.published_at.desc().nullslast(), BlogPost.created_at.desc())),
                    prefix="/api/blog")
 app.include_router(crud_router(model=TeamMember, schema_in=TeamMemberIn, schema_out=TeamMemberOut,
                                entity="team member", lookup="", search=("name", "role")),

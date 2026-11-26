@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { MenuLink } from './MenuLink'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FiX } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
@@ -20,7 +20,21 @@ export default function MobileMenu({ open, onClose }) {
 
   useEffect(() => {
     if (!open) return
-    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    const onKey = (e) => {
+      if (e.key === 'Escape') { onClose(); return }
+      // Keep Tab inside the open menu; otherwise focus walks off into the
+      // page hidden behind it.
+      if (e.key !== 'Tab' || !panelRef.current) return
+      const items = panelRef.current.querySelectorAll('a[href], button:not([disabled])')
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && (document.activeElement === first || document.activeElement === panelRef.current)) {
+        e.preventDefault(); last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault(); first.focus()
+      }
+    }
     document.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
     panelRef.current?.focus()
@@ -56,10 +70,8 @@ export default function MobileMenu({ open, onClose }) {
             <ul className="mt-6 flex flex-col overflow-y-auto">
               {navLinks.map((l) => (
                 <li key={l.to} className="border-b border-neutral-100">
-                  <Link to={l.to} onClick={onClose}
-                    className="block py-3.5 font-heading text-lg font-medium text-body hover:text-secondary-accent">
-                    {l.label}
-                  </Link>
+                  <MenuLink item={l} onClick={onClose}
+                    className="block py-3.5 font-heading text-lg font-medium text-body hover:text-secondary-accent" />
                 </li>
               ))}
             </ul>

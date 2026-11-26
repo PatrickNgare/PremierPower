@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from ..core.security import get_current_admin
+from ..core.security import get_current_admin, require_editor
 from ..db import get_db
 from ..models import Admin, NewsletterSubscriber
 from ..schemas import SubscriberIn, SubscriberOut
@@ -38,7 +38,7 @@ def list_subscribers(db: Session = Depends(get_db), _: Admin = Depends(get_curre
 
 
 @router.delete("/subscribers/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_subscriber(id: int, db: Session = Depends(get_db), _: Admin = Depends(get_current_admin)):
+def delete_subscriber(id: int, db: Session = Depends(get_db), _: Admin = Depends(require_editor)):
     row = db.get(NewsletterSubscriber, id)
     if row is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Subscriber not found")

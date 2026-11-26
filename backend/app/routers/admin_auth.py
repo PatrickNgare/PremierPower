@@ -46,6 +46,18 @@ def login(request: Request, form: OAuth2PasswordRequestForm = Depends(), db: Ses
             "Too many sign-in attempts. Try again shortly.",
         )
 
+    # Also per account, not only per address: the address comes from a
+    # forwarded header, which a caller reaching the API directly can vary
+    # on every request. Twenty tries an hour on one account still stops
+    # password guessing without locking out a person who mistypes.
+    if too_many(f"login-account:{(form.username or '').strip().lower()}", limit=20, window=3600.0):
+        log_action(db, actor=form.username or "unknown", action="login-throttled",
+                   entity="admin", ip=ip)
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS,
+            "Too many sign-in attempts for this account. Try again later.",
+        )
+
     admin = db.scalar(select(Admin).where(Admin.email == form.username))
     if admin is None or not admin.is_active or not verify_password(form.password, admin.password_hash):
         # One message for both cases: never reveal which accounts exist.

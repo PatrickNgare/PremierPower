@@ -154,7 +154,7 @@ for (const [device, opts] of DEVICES) {
   check(/Powering spaces/.test(spoken), `${device} / — headline is one stable sentence for screen readers`)
 
   // The marker's fill is the carousel's clock; 12s a photograph.
-  const clock = await page.$eval('[role=tab][aria-selected=true] span', (el) => getComputedStyle(el).animationDuration)
+  const clock = await page.$eval('[role=tab][aria-selected=true] [data-clock]', (el) => getComputedStyle(el).animationDuration)
   check(clock === '12s', `${device} / — each photograph shows for 12s (${clock})`)
 
   // The neighbours are fetched ahead, so a change never wipes in an empty room.
@@ -173,7 +173,7 @@ for (const [device, opts] of DEVICES) {
   const first = await selected(page)
   if (device === 'laptop') {
     await page.mouse.move(900, 300) // hover pauses autoplay
-    const state = await page.$eval('[role=tab][aria-selected=true] span', (el) => getComputedStyle(el).animationPlayState)
+    const state = await page.$eval('[role=tab][aria-selected=true] [data-clock]', (el) => getComputedStyle(el).animationPlayState)
     check(state === 'paused', `${device} / — hovering the hero pauses it`)
 
     await page.click('button[aria-label="Next slide"]')
@@ -185,7 +185,12 @@ for (const [device, opts] of DEVICES) {
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/${device}-home-slide2.png` })
 
     await page.click('button[aria-label="Previous slide"]')
-    await page.waitForTimeout(400)
+    // Poll rather than wait a fixed 400ms: on a loaded machine the wipe from
+    // the previous click can still be finishing, and the check raced it.
+    await page.waitForFunction(
+      (want) => document.querySelector('[role=tab][aria-selected=true]')?.getAttribute('aria-label') === want,
+      first, { timeout: 4000 },
+    ).catch(() => {})
     check((await selected(page)) === first, `${device} / — previous arrow goes back`)
 
     await page.click('li:last-child > [role=tab]')
@@ -228,7 +233,7 @@ for (const [device, opts] of DEVICES) {
   await page.goto(SITE + '/', { waitUntil: 'networkidle', timeout: RENDER_TIMEOUT })
   await page.waitForSelector('[role=tab]', { timeout: RENDER_TIMEOUT })
   await page.waitForTimeout(1500)
-  const anim = await page.$eval('[role=tab][aria-selected=true] span', (el) => getComputedStyle(el).animationName)
+  const anim = await page.$eval('[role=tab][aria-selected=true] [data-clock]', (el) => getComputedStyle(el).animationName)
   check(anim === 'none', 'reduced motion — no autoplay')
   const opacity = await page.$eval('h1 [aria-hidden=true]', (el) => getComputedStyle(el).opacity)
   check(Number(opacity) === 1, 'reduced motion — headline fully visible')

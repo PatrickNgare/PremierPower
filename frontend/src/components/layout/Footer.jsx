@@ -17,10 +17,11 @@ const columns = [
   {
     heading: 'Solutions',
     links: [
-      { to: '/services', label: 'Electrical installation' },
+      { to: '/services/electrical-installation', label: 'Electrical installation' },
       { to: '/products', label: 'Lighting & fittings' },
-      { to: '/services', label: 'Solar & power continuity' },
-      { to: '/services', label: 'Security systems' },
+      { to: '/services/solar-power', label: 'Solar power' },
+      { to: '/services/power-continuity', label: 'UPS & surge protection' },
+      { to: '/services/security-systems', label: 'Security systems' },
     ],
   },
   {

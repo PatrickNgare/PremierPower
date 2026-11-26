@@ -29,7 +29,7 @@ export function startAnalytics() {
   document.head.appendChild(s)
 
   window.dataLayer = window.dataLayer || []
-  window.gtag = function gtag() { window.dataLayer.push(arguments) } // eslint-disable-line prefer-rest-params
+  window.gtag = function gtag() { window.dataLayer.push(arguments) } // gtag needs the arguments object itself
   window.gtag('js', new Date())
   window.gtag('config', ID, { send_page_view: false })
 

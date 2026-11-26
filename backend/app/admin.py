@@ -11,7 +11,8 @@ from starlette.responses import RedirectResponse
 
 from sqlalchemy import select
 
-from .core.security import verify_password
+from .core.security import effective_role, verify_password
+from .core.throttle import too_many
 from .db import SessionLocal
 # Aliased: sqladmin exports its own `Admin` application class.
 from .models import Admin as AdminUser
@@ -23,13 +24,36 @@ from .settings import settings
 
 
 class AdminAuth(AuthenticationBackend):
+    """Owners only, rechecked on every request.
+
+    This panel edits every table directly, admin accounts included, so it is
+    held to the strictest rule in the app. It used to let in any active
+    account, which meant a viewer could open "Admin users" and tick their own
+    superuser box. It also trusted its session cookie for as long as the
+    cookie lived, so a deactivated account or a changed password kept access.
+    """
+
+    def __init__(self, secret_key: str) -> None:
+        super().__init__(secret_key)
+        from starlette.middleware import Middleware
+        from starlette.middleware.sessions import SessionMiddleware
+        # Short-lived, HTTPS-only, not readable by scripts on the page.
+        self.middlewares = [Middleware(
+            SessionMiddleware, secret_key=secret_key, session_cookie="sqladmin_session",
+            max_age=8 * 3600, https_only=True, same_site="strict",
+        )]
+
     async def login(self, request: Request) -> bool:
+        ip = request.client.host if request.client else "unknown"
+        if too_many(f"sqladmin:{ip}", limit=10, window=300.0):
+            return False
         form = await request.form()
         db = SessionLocal()
         try:
             admin = db.scalar(select(AdminUser).where(AdminUser.email == form.get("username")))
-            if admin and admin.is_active and verify_password(str(form.get("password")), admin.password_hash):
-                request.session.update({"authenticated": True, "email": admin.email})
+            if (admin and admin.is_active and effective_role(admin) == "owner"
+                    and verify_password(str(form.get("password")), admin.password_hash)):
+                request.session.update({"admin_id": admin.id, "ver": admin.token_version})
                 return True
             return False
         finally:
@@ -40,8 +64,17 @@ class AdminAuth(AuthenticationBackend):
         return True
 
     async def authenticate(self, request: Request):
-        if request.session.get("authenticated"):
-            return True
+        admin_id = request.session.get("admin_id")
+        if admin_id:
+            db = SessionLocal()
+            try:
+                admin = db.get(AdminUser, admin_id)
+                if (admin and admin.is_active and effective_role(admin) == "owner"
+                        and admin.token_version == request.session.get("ver")):
+                    return True
+            finally:
+                db.close()
+        request.session.clear()
         return RedirectResponse(request.url_for("admin:login"), status_code=302)
 
 

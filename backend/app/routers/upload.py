@@ -18,6 +18,7 @@ from fastapi import (
     APIRouter, Body, Depends, File, Form, HTTPException, Query, Request, UploadFile, status,
 )
 from sqlalchemy import func, or_, select
+from starlette.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from ..core.audit import log_action
@@ -75,6 +76,26 @@ def _public_id(filename: str) -> str:
     stem = Path(filename or "image").stem
     safe = re.sub(r"[^A-Za-z0-9_-]+", "-", stem).strip("-").lower()[:60]
     return f"{safe or 'image'}-{secrets.token_hex(4)}"
+
+
+def _folder(raw: str) -> str:
+    """The CMS folder label as a single safe Cloudinary folder name. Slashes and
+    dots are dropped so a crafted value cannot climb out of premierpower/.
+    The label itself is stored as typed, for the media library."""
+    return re.sub(r"[^A-Za-z0-9_-]+", "-", raw or "").strip("-").lower()[:60]
+
+
+async def _read_capped(file: UploadFile) -> bytes:
+    """Read at most the size limit plus one byte, so an oversized upload is
+    refused without first being held whole in memory."""
+    limit = settings.max_upload_mb * 1024 * 1024
+    data = await file.read(limit + 1)
+    if len(data) > limit:
+        raise HTTPException(
+            status.HTTP_413_CONTENT_TOO_LARGE,
+            f"File is larger than the {settings.max_upload_mb}MB limit",
+        )
+    return data
 
 
 def _configure_cloudinary() -> None:
@@ -178,18 +199,12 @@ async def upload_image(
             f"Unsupported type {file.content_type}. Allowed: {', '.join(sorted(ALLOWED))}",
         )
 
-    data = await file.read()
+    data = await _read_capped(file)
 
     if not _looks_like_image(data, file.content_type):
         raise HTTPException(
             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             "File contents do not match the declared image type.",
-        )
-    limit = settings.max_upload_mb * 1024 * 1024
-    if len(data) > limit:
-        raise HTTPException(
-            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            f"File is larger than the {settings.max_upload_mb}MB limit",
         )
 
     if not settings.cloudinary_configured:
@@ -198,14 +213,17 @@ async def upload_image(
             "Photo uploads go to Cloudinary, which is not set up on this server. "
             f"Set {', '.join(_missing_cloudinary())} and restart.",
         )
-    stored = _store_cloudinary(data, file.filename or "upload", folder.strip())
+    # In a worker thread: the Cloudinary client is blocking, and run inline it
+    # froze the whole server (one process) for the length of every upload.
+    folder = folder.strip()[:120]
+    stored = await run_in_threadpool(_store_cloudinary, data, file.filename or "upload", _folder(folder))
 
     asset = MediaAsset(
         url=stored["url"], public_id=stored.get("public_id", ""),
         filename=file.filename or "", bytes=len(data),
         width=stored.get("width", 0), height=stored.get("height", 0),
         storage=stored["storage"],
-        folder=folder.strip()[:120], alt=alt.strip()[:300], tags=tags.strip()[:300],
+        folder=folder, alt=alt.strip()[:300], tags=tags.strip()[:300],
     )
     db.add(asset)
     db.commit()
@@ -241,21 +259,15 @@ async def upload_document(
             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             "Only PDF documents can be uploaded.",
         )
-    data = await file.read()
+    data = await _read_capped(file)
     if not data.startswith(DOC_MAGIC):
         raise HTTPException(
             status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             "That file is not a PDF, whatever it is named.",
         )
-    limit = settings.max_upload_mb * 1024 * 1024
-    if len(data) > limit:
-        raise HTTPException(
-            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            f"File is larger than the {settings.max_upload_mb}MB limit",
-        )
 
     if settings.cloudinary_documents_enabled:
-        stored = _store_document_cloudinary(data, file.filename or "document.pdf")
+        stored = await run_in_threadpool(_store_document_cloudinary, data, file.filename or "document.pdf")
         file_url = stored["url"]
     else:
         root = Path(settings.upload_dir) / "docs"

@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom'
 import { FiChevronRight } from 'react-icons/fi'
 import { fadeUp, stagger } from '@/utils/motion'
 import TextReveal from './TextReveal'
-import { fallbackToLocal } from '@/utils/photo'
+import { cdnSrcSet, fallbackToLocal } from '@/utils/photo'
+
+// Shared with scripts/seo-html.mjs, which preloads the same file.
+export const BANNER_WIDTHS = [640, 960, 1280, 1600, 1920]
 
 /** The banner every interior page opens with, matching one rhythm. */
 export default function PageHero({ eyebrow, title, lede, crumb, image, imageAlt = '' }) {
@@ -17,6 +20,7 @@ export default function PageHero({ eyebrow, title, lede, crumb, image, imageAlt 
         <>
           <img onError={fallbackToLocal}
             src={image} alt={imageAlt} aria-hidden={imageAlt ? undefined : 'true'}
+            srcSet={cdnSrcSet(image, BANNER_WIDTHS)} sizes="100vw"
             className="absolute inset-0 h-full w-full object-cover"
             loading="eager" fetchPriority="high" decoding="async"
           />

@@ -5,6 +5,7 @@ import { Menu, Phone, ArrowRight } from 'lucide-react'
 import { useMenu } from '@/hooks/useMenu'
 import Logo from './Logo'
 import MobileMenu from './MobileMenu'
+import { MenuLink } from './MenuLink'
 import Magnetic from '@/components/ui/Magnetic'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { telLink } from '@/config/site'
@@ -66,6 +67,9 @@ export default function Navbar() {
             <ul className="hidden shrink-0 items-center gap-0.5 lg:flex xl:gap-1">
               {navLinks.map((l) => (
                 <li key={l.to}>
+                  {/^https?:\/\//.test(l.to) || l.newTab ? (
+                    <MenuLink item={l} className="relative whitespace-nowrap rounded-full px-2.5 py-2 text-[0.83rem] font-medium text-body-soft transition-colors duration-300 hover:text-body xl:px-3 xl:text-sm" />
+                  ) : (
                   <NavLink
                     to={l.to}
                     className={({ isActive }) =>
@@ -91,6 +95,7 @@ export default function Navbar() {
                       </>
                     )}
                   </NavLink>
+                  )}
                 </li>
               ))}
             </ul>

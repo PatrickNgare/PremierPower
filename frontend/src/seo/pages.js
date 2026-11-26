@@ -24,6 +24,8 @@ export const SITE_NAME = 'Premier Power Limited'
 export const DEFAULT_IMAGE =
   'https://res.cloudinary.com/diduc97on/image/upload/c_fill,g_auto,w_1200,h_630,f_jpg,q_auto/v1/premierpower/projects/resort-dusk-5e4e7628.jpg'
 
+// `banner` is each page's default banner photograph (the one its PageHero
+// falls back to); the build preloads it unless the CMS has set another.
 export const PAGES = {
   '/': {
     title: 'Electrical Contractors Kenya | Premier Power Limited',
@@ -32,53 +34,62 @@ export const PAGES = {
     crumb: 'Home',
   },
   '/services': {
+    banner: '/projects/panel-contactors.jpg',
     title: 'Electrical Engineering Services in Kenya | Premier Power',
     description:
       'Electrical installation, security systems, solar PV, UPS and surge protection, lifts, power distribution, energy retrofits and gas — one NCA-registered contractor.',
     crumb: 'Services',
   },
   '/products': {
+    banner: '/projects/stairwell.jpg',
     title: 'Lighting Supply & Installation Kenya | Premier Power',
     description:
       'Chandeliers, pendants and linear lighting supplied and installed across Kenya for hotels, commercial interiors and residential developments.',
     crumb: 'Lighting & fittings',
   },
   '/portfolio': {
+    banner: '/projects/resort-dusk.jpg',
     title: 'Electrical Installation Projects in Kenya | Premier Power',
     description:
       'Completed electrical and lighting installations at hotels, lodges, commercial interiors and residential developments across Kenya, with photographs.',
     crumb: 'Installations',
   },
   '/safety': {
+    banner: '/projects/testing.jpg',
     title: 'Electrical Testing, Certification & Safety | Premier Power',
     description:
       'How Premier Power tests and certifies every electrical installation before handover, and the registrations it works under in Kenya.',
     crumb: 'Safety',
   },
   '/about': {
+    banner: '/projects/villa-modern.jpg',
     title: 'About Premier Power | Electrical Engineering Company, Kenya',
     description:
       'An NCA-registered electrical engineering contractor based in Nairobi, working with contractors and architects on projects across Kenya.',
     crumb: 'About',
   },
   '/testimonials': {
+    banner: '/projects/dining.jpg',
     title: 'Client Reviews | Premier Power Limited',
     description: 'What clients say about working with Premier Power on electrical installation projects in Kenya.',
     crumb: 'Reviews',
   },
   '/faq': {
+    banner: '/projects/lodge-dusk.jpg',
     title: 'Electrical Contractor FAQs | Premier Power Limited',
     description:
       'Answers on registration, the areas we cover, working with main contractors and architects, and what a site assessment involves.',
     crumb: 'FAQ',
   },
   '/contact': {
+    banner: '/projects/technician.jpg',
     title: 'Contact an Electrical Contractor in Nairobi | Premier Power',
     description:
       'Request a quotation or a site visit from Premier Power Limited, Forest Court, Forest Road, Nairobi. Call, WhatsApp or send the project details.',
     crumb: 'Contact',
   },
   '/insights': {
+    banner: '/projects/board-terminations.jpg',
     title: 'Electrical Engineering Insights | Premier Power Limited',
     description:
       'Practical guides on planning, installing, testing and maintaining electrical systems in Kenyan buildings, from an NCA-registered contractor.',

@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..core.audit import log_action
-from ..core.security import client_ip, get_current_admin
+from ..core.security import client_ip, get_current_admin, require_editor
 from ..db import get_db
 from ..models import Admin, SiteSetting
 from ..schemas import SettingIn, SettingOut
@@ -27,7 +27,7 @@ def all_settings(db: Session = Depends(get_db), _: Admin = Depends(get_current_a
 @router.put("/{key}", response_model=SettingOut)
 def upsert(
     key: str, payload: SettingIn, request: Request,
-    db: Session = Depends(get_db), admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db), admin: Admin = Depends(require_editor),
 ):
     row = db.scalar(select(SiteSetting).where(SiteSetting.key == key))
     if row is None:

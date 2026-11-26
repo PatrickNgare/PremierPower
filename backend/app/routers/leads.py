@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from ..core.audit import log_action
 from ..core.mailer import lead_notification, send as send_mail
-from ..core.security import client_ip, get_current_admin
+from ..core.security import client_ip, get_current_admin, require_editor
 from ..core.throttle import too_many
 from ..db import get_db
 from ..models import Admin, Lead
@@ -95,7 +95,7 @@ def get_lead(id: int, db: Session = Depends(get_db), _: Admin = Depends(get_curr
 @router.patch("/{id}", response_model=LeadOut)
 def update_lead(
     id: int, payload: LeadUpdate, request: Request,
-    db: Session = Depends(get_db), admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db), admin: Admin = Depends(require_editor),
 ):
     """Move a request through the pipeline and keep a note against it.
 
@@ -118,7 +118,7 @@ def update_lead(
 @router.patch("/{id}/handled", response_model=LeadOut)
 def mark_handled(
     id: int, request: Request,
-    db: Session = Depends(get_db), admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db), admin: Admin = Depends(require_editor),
 ):
     lead = db.get(Lead, id)
     if lead is None:
@@ -134,7 +134,7 @@ def mark_handled(
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_lead(
     id: int, request: Request,
-    db: Session = Depends(get_db), admin: Admin = Depends(get_current_admin),
+    db: Session = Depends(get_db), admin: Admin = Depends(require_editor),
 ):
     lead = db.get(Lead, id)
     if lead is None:

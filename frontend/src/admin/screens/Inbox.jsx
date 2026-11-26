@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Inbox as InboxIcon, Mail, Phone, Search, Trash2, X } from 'lucide-react'
 import { api } from '../api'
+import { useAuth } from '../auth'
 import { Button, Confirm, EmptyState, Spinner, useToast } from '../components/ui'
 
 const STAGES = [
@@ -160,6 +161,9 @@ export default function Inbox() {
 }
 
 function Detail({ lead, onClose, onUpdate, onDelete }) {
+  // Viewers read enquiries; changing or deleting them needs an editor (the
+  // server refuses it too), so the controls are not offered.
+  const editable = useAuth().can('editor')
   const [notes, setNotes] = useState('')
   useEffect(() => { setNotes(lead?.notes ?? '') }, [lead])
 
@@ -236,6 +240,7 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
                   {STAGES.map(([v, label]) => (
                     <button
                       key={v} type="button" onClick={() => onUpdate(lead, { status: v })}
+                      disabled={!editable} aria-pressed={lead.status === v}
                       className={`rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors ${
                         lead.status === v ? 'bg-ink-900 text-white' : 'bg-surface text-body-soft shadow-lift hover:text-body'
                       }`}
@@ -248,20 +253,25 @@ function Detail({ lead, onClose, onUpdate, onDelete }) {
                 <label htmlFor="lead-notes" className="text-sm font-semibold text-body-strong">Your notes</label>
                 <textarea
                   id="lead-notes" rows={5} value={notes} onChange={(e) => setNotes(e.target.value)}
+                  readOnly={!editable}
                   placeholder="Quoted 14 March, waiting on drawings…"
                   className="mt-2 w-full rounded-xl border border-neutral-200 bg-surface px-3.5 py-2.5 text-sm outline-none transition-all focus:border-brand-fill focus:ring-4 focus:ring-brand-fill/10"
                 />
-                <Button
-                  className="mt-2" onClick={() => onUpdate(lead, { notes })}
-                  disabled={notes === (lead.notes ?? '')}
-                >Save notes</Button>
+                {editable && (
+                  <Button
+                    className="mt-2" onClick={() => onUpdate(lead, { notes })}
+                    disabled={notes === (lead.notes ?? '')}
+                  >Save notes</Button>
+                )}
               </div>
             </div>
 
             <footer className="flex justify-between border-t border-neutral-200 bg-surface px-6 py-4">
-              <Button variant="danger" onClick={onDelete}>
-                <Trash2 size={15} aria-hidden="true" /> Delete
-              </Button>
+              {editable ? (
+                <Button variant="danger" onClick={onDelete}>
+                  <Trash2 size={15} aria-hidden="true" /> Delete
+                </Button>
+              ) : <span />}
               <Button variant="ghost" onClick={onClose}>Close</Button>
             </footer>
           </motion.div>

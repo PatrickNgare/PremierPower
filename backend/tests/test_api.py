@@ -381,3 +381,79 @@ def test_rebuild_is_off_without_a_hook_and_debounced_with_one(monkeypatch):
     rebuild.schedule_rebuild("lead")   # not a page-affecting entity
     time.sleep(0.3)
     assert calls == [1]
+
+
+# ── roles ───────────────────────────────────────────────────────────────
+@pytest.fixture(scope="module")
+def viewer(client, auth):
+    email, password = "viewer-roles@example.com", "viewer-password-1"
+    r = client.post("/api/admin/users", headers=auth, json={
+        "email": email, "name": "Viewer", "password": password, "role": "viewer",
+    })
+    assert r.status_code in (201, 409), r.text
+    r = client.post("/api/admin/login", data={"username": email, "password": password})
+    assert r.status_code == 200, r.text
+    return {"headers": {"Authorization": f"Bearer {r.json()['access_token']}"},
+            "email": email, "password": password}
+
+
+def test_a_viewer_reads_but_cannot_change_leads_settings_or_see_the_audit_log(client, auth, viewer):
+    client.post("/api/leads", json={"name": "Role Check", "phone": "0722333444"})
+    lead = next(l for l in client.get("/api/leads", headers=auth).json() if l["name"] == "Role Check")
+    v = viewer["headers"]
+    assert client.get(f"/api/leads/{lead['id']}", headers=v).status_code == 200
+    assert client.patch(f"/api/leads/{lead['id']}", headers=v, json={"status": "won"}).status_code == 403
+    assert client.delete(f"/api/leads/{lead['id']}", headers=v).status_code == 403
+    assert client.put("/api/settings/phone", headers=v, json={"key": "phone", "value": "0"}).status_code == 403
+    assert client.get("/api/audit", headers=v).status_code == 403
+    # An owner still can.
+    assert client.get("/api/audit", headers=auth).status_code == 200
+
+
+def test_sqladmin_refuses_anyone_but_an_owner(client, viewer):
+    r = client.post("/sqladmin/login", data={"username": viewer["email"], "password": viewer["password"]},
+                    follow_redirects=False)
+    # A refused login re-renders the form (400); an accepted one redirects.
+    assert r.status_code != 302
+    assert client.get("/sqladmin/", follow_redirects=False).status_code == 302
+
+
+def test_upload_over_the_limit_is_refused_before_cloudinary(client, auth, monkeypatch):
+    from app.routers import upload
+    from app.settings import settings
+
+    for field in ("cloudinary_cloud_name", "cloudinary_api_key", "cloudinary_api_secret"):
+        monkeypatch.setattr(settings, field, "set")
+    monkeypatch.setattr(settings, "max_upload_mb", 1)
+    monkeypatch.setattr(upload, "_store_cloudinary", lambda *a, **k: pytest.fail("should not upload"))
+    big = PNG + b"\0" * (1024 * 1024 + 10)
+    r = client.post("/api/media/image", headers=auth, files={"file": ("big.png", big, "image/png")})
+    assert r.status_code == 413
+
+
+def test_upload_folder_cannot_escape_into_another_cloudinary_folder():
+    from app.routers.upload import _folder
+    assert _folder("../../other/Place") == "other-place"
+    assert "/" not in _folder("a/b/c")
+
+
+def test_lead_email_subject_survives_a_line_break_in_the_name():
+    from types import SimpleNamespace
+    from app.core.mailer import lead_notification
+    lead = SimpleNamespace(name="Jane\nDoe", company="Acme\r\nLtd", kind="enquiry", phone="0722",
+                           email="", project_type="", area="", property="", message="")
+    subject, _ = lead_notification(lead)
+    assert "\n" not in subject and "\r" not in subject
+    assert subject == "New enquiry: Jane Doe · Acme Ltd"
+
+
+def test_sqladmin_still_admits_an_owner_over_https(database):
+    import os
+    from fastapi.testclient import TestClient
+    from app.main import app
+    with TestClient(app, base_url="https://testserver") as c:
+        r = c.post("/sqladmin/login", data={
+            "username": os.environ["ADMIN_EMAIL"], "password": os.environ["ADMIN_PASSWORD"],
+        }, follow_redirects=False)
+        assert r.status_code == 302, r.text[:200]
+        assert c.get("/sqladmin/", follow_redirects=False).status_code == 200

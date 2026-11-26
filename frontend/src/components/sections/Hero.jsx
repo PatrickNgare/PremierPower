@@ -81,36 +81,44 @@ function HeroNav({ back, label, onClick }) {
 function SlideMarkers({ slides, i, n, onJump, reduce, paused, onCycleEnd, className = '' }) {
   return (
     <div className={`items-center gap-4 ${className}`}>
-      <ul role="tablist" aria-label="Slides" className="flex items-center gap-2">
+      {/* The tabs sit directly in the tablist (the <li>s are presentational),
+          and each button is a 24px-tall target around the thin visible bar:
+          the bar alone was 6x6px, too small to hit on a phone. */}
+      <ul role="tablist" aria-label="Slides" className="flex items-center gap-0.5">
         {slides.map((sl, idx) => (
-          <li key={sl.caption}>
+          <li key={sl.caption} role="presentation">
             <button
               type="button" role="tab" aria-selected={idx === i}
-              aria-label={`Slide ${idx + 1}: ${sl.caption}`}
+              aria-label={`Slide ${idx + 1}: ${String(sl.caption ?? '').trim()}`}
               onClick={() => onJump(idx)}
               onKeyDown={onEnter(() => onJump(idx))}
-              className={`block h-1.5 overflow-hidden rounded-full transition-all duration-500 ${
-                idx === i ? 'w-12 bg-white/25' : 'w-1.5 bg-white/30 hover:w-4 hover:bg-white/70'
-              }`}
+              className="group flex h-6 min-w-6 items-center justify-center px-[3px]"
             >
-              {idx === i && (
-                <span
-                  aria-hidden="true"
-                  onAnimationEnd={onCycleEnd}
-                  className="block h-full w-full origin-left rounded-full bg-lumen-500 shadow-[0_0_14px_rgba(245,201,123,0.9)]"
-                  style={
-                    // No animation under a reduced-motion preference or with a
-                    // single slide: the marker simply sits full, which is the
-                    // same end state the fill reaches.
-                    reduce || n < 2
-                      ? undefined
-                      : {
-                          animation: `heroProgress ${AUTOPLAY_MS}ms linear forwards`,
-                          animationPlayState: paused ? 'paused' : 'running',
-                        }
-                  }
-                />
-              )}
+              <span
+                aria-hidden="true"
+                className={`block h-1.5 overflow-hidden rounded-full transition-all duration-500 ${
+                  idx === i ? 'w-12 bg-white/25' : 'w-1.5 bg-white/30 group-hover:w-4 group-hover:bg-white/70'
+                }`}
+              >
+                {idx === i && (
+                  <span
+                    data-clock=""
+                    onAnimationEnd={onCycleEnd}
+                    className="block h-full w-full origin-left rounded-full bg-lumen-500 shadow-[0_0_14px_rgba(245,201,123,0.9)]"
+                    style={
+                      // No animation under a reduced-motion preference or with a
+                      // single slide: the marker simply sits full, which is the
+                      // same end state the fill reaches.
+                      reduce || n < 2
+                        ? undefined
+                        : {
+                            animation: `heroProgress ${AUTOPLAY_MS}ms linear forwards`,
+                            animationPlayState: paused ? 'paused' : 'running',
+                          }
+                    }
+                  />
+                )}
+              </span>
             </button>
           </li>
         ))}

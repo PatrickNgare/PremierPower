@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { FaWhatsapp } from 'react-icons/fa'
 import { FiPhone, FiCalendar } from 'react-icons/fi'
 import { whatsappLink, telLink } from '@/config/site'
@@ -51,9 +51,9 @@ export default function FloatingActions() {
                   <FaWhatsapp size={19} aria-hidden="true" /> WhatsApp
                 </span>
               )}
-              <a href="/contact" className="flex flex-col items-center gap-1 bg-secondary-dark py-2.5 text-[0.7rem] font-bold text-white active:brightness-110 [&>svg]:transition-transform [&>svg]:duration-150 [&>svg]:ease-out active:[&>svg]:scale-90 motion-reduce:active:[&>svg]:scale-100">
+              <Link to="/contact" className="flex flex-col items-center gap-1 bg-secondary-dark py-2.5 text-[0.7rem] font-bold text-white active:brightness-110 [&>svg]:transition-transform [&>svg]:duration-150 [&>svg]:ease-out active:[&>svg]:scale-90 motion-reduce:active:[&>svg]:scale-100">
                 <FiCalendar size={19} aria-hidden="true" /> Get a quote
-              </a>
+              </Link>
             </div>
           </div>
           <div aria-hidden="true" className="h-16 lg:hidden" />

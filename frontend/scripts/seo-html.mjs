@@ -106,6 +106,15 @@ const cdnAt = (url, w) => {
   if (/^[a-z]{1,3}_/.test(parts[0])) parts.shift()
   return `${head}f_auto,q_auto,c_limit,w_${w}/${parts.join('/')}`
 }
+const BANNER_WIDTHS = [640, 960, 1280, 1600, 1920]   // PageHero.jsx
+function imagePreload(src, widths) {
+  if (!src) return ''
+  const url = mediaMap[src] ?? src
+  if (!url.includes('res.cloudinary.com')) return ''
+  const set = widths.map((w) => `${cdnAt(url, w)} ${w}w`).join(', ')
+  return `<link rel="preload" as="image" imagesrcset="${esc(set)}" imagesizes="100vw" fetchpriority="high" />`
+}
+
 function heroPreload(banners) {
   const first = (banners ?? []).find((b) => b.image_url)
   if (!first) return ''
@@ -135,9 +144,13 @@ async function write(path, html) {
   await writeFile(file, html)
 }
 
-const [cms, services, products, posts, faqs, reviews, banners] = await Promise.all([
+const [cms, services, products, posts, faqs, reviews, banners, sections] = await Promise.all([
   get('/seo'), get('/services'), get('/products'), get('/blog'), get('/faqs'), get('/testimonials'), get('/banners'),
+  get('/page-sections'),
 ])
+// The banner photograph the CMS has chosen for each page, if any.
+const cmsBanner = Object.fromEntries((sections ?? [])
+  .filter((x) => x.key === 'hero' && x.image_url).map((x) => [x.page, x.image_url]))
 const override = Object.fromEntries((cms ?? []).map((r) => [r.path, r]))
 const written = []
 
@@ -161,7 +174,7 @@ for (const [path, base] of Object.entries(PAGES)) {
   const title = o.title?.trim() || base.title
   const description = o.description?.trim() || base.description
   await write(path, page(head({ path, title, description, image: o.og_image_url?.trim(), noindex, jsonLd }), title,
-    path === '/' ? heroPreload(banners) : ''))
+    path === '/' ? heroPreload(banners) : imagePreload(cmsBanner[path] || base.banner, BANNER_WIDTHS)))
   written.push(path)
 }
 

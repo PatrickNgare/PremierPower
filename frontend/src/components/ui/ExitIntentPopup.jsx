@@ -15,14 +15,18 @@ const EXCLUDED = ['/contact']
    as an offer. */
 const ARM_AFTER_MS = 15000
 
+/* Storage throws in some privacy modes; a thrown error inside an effect would
+   take the whole site down for the sake of a popup. */
+const readUntil = () => { try { return Number(localStorage.getItem(KEY) || 0) } catch { return 0 } }
+const writeUntil = (v) => { try { localStorage.setItem(KEY, String(v)) } catch { /* nothing to remember */ } }
+
 export default function ExitIntentPopup() {
   const { pathname } = useLocation()
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
     if (EXCLUDED.includes(pathname)) return
-    const until = Number(localStorage.getItem(KEY) || 0)
-    if (Date.now() < until) return
+    if (Date.now() < readUntil()) return
 
     const onLeave = (e) => {
       // relatedTarget is null only when the pointer leaves the document
@@ -38,9 +42,19 @@ export default function ExitIntentPopup() {
   }, [pathname])
 
   const dismiss = () => {
-    localStorage.setItem(KEY, String(Date.now() + COOLDOWN_DAYS * 864e5))
+    writeUntil(Date.now() + COOLDOWN_DAYS * 864e5)
     setOpen(false)
   }
+
+  // Escape closes it, and focus moves into the dialog so a keyboard user is
+  // not left behind it.
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => { if (e.key === 'Escape') dismiss() }
+    document.addEventListener('keydown', onKey)
+    document.getElementById('exit-cta')?.focus()
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open])
 
   return (
     <AnimatePresence>
@@ -58,14 +72,14 @@ export default function ExitIntentPopup() {
             </button>
             <span className="eyebrow">No obligation</span>
             <h2 id="exit-title" className="mt-3 font-heading text-2xl font-bold text-body">
-              Before you go — the assessment is free.
+              Before you go — site visits are free.
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-neutral-600">
-              We open the board, test what is there, photograph what we find, and put the
-              findings in writing. Including the parts that are fine.
+              Send drawings, a tender document or a short description of the project, and we
+              will come back with scope and next steps.
             </p>
-            <Button to="/contact" variant="primaryLg" className="mt-6 w-full" onClick={dismiss}>
-              Book my free assessment
+            <Button id="exit-cta" to="/contact" variant="primaryLg" className="mt-6 w-full" onClick={dismiss}>
+              Request a quote
             </Button>
             <LicenseBadge className="mt-4 w-full justify-center" />
           </motion.div>
