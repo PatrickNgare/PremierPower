@@ -56,6 +56,14 @@ services:
       - key: CLOUDINARY_DOCUMENTS
         value: "true"
 
+      # Optional. Vercel → premier-power → Settings → Git → Deploy Hooks →
+      # create one for "master" and paste its URL here. The site then rebuilds
+      # itself a few minutes after content edits, so a new service, product or
+      # article gets its own search title and link preview without a manual
+      # redeploy. Leave blank to skip.
+      - key: VERCEL_DEPLOY_HOOK
+        sync: false
+
       # Enquiry emails. Leave blank to skip: enquiries still save to the CMS.
       - key: NOTIFY_EMAIL
         sync: false

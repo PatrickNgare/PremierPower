@@ -175,7 +175,7 @@ function NavItem({ to, label, icon: Icon, active }) {
  */
 function SectionTabs({ path, owner }) {
   const tabs = tabsFor(path)?.filter((t) => !t.owner || owner)
-  const inPages = sectionOf(path) === 'pages' && path !== '/admin/pages'
+  const inPages = sectionOf(path) === 'pages' && path !== '/admin/pages' && !path.startsWith('/admin/c/blog')
 
   if (!tabs && !inPages) return null
 

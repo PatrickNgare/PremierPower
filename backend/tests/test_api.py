@@ -326,3 +326,58 @@ def test_database_url_gets_the_psycopg3_driver():
                   "postgresql+psycopg://u:p@h:5432/d"):
         s = Settings(database_url=given, secret_key="x" * 40)
         assert s.database_url == "postgresql+psycopg://u:p@h:5432/d"
+
+
+# ── sitemap ─────────────────────────────────────────────────────────────
+def test_sitemap_lists_full_service_pages_and_articles_only(client, auth):
+    long_body = "A full description of the service line. " * 20   # well over 600 characters
+    r = client.post("/api/services", headers=auth, json={
+        "slug": "sitemap-long", "title": "Long", "lede": "Long one.", "body": long_body, "published": True,
+    })
+    assert r.status_code == 201, r.text
+    r = client.post("/api/services", headers=auth, json={
+        "slug": "sitemap-short", "title": "Short", "lede": "Short one.", "body": "Two lines.", "published": True,
+    })
+    assert r.status_code == 201, r.text
+    r = client.post("/api/blog", headers=auth, json={
+        "slug": "sitemap-article", "title": "An article", "body": "Text.", "published": True,
+    })
+    assert r.status_code == 201, r.text
+    # Saving as published stamps the date, not only the publish toggle.
+    assert r.json()["published_at"]
+
+    xml = client.get("/sitemap.xml").text
+    assert "/services/sitemap-long</loc>" in xml
+    assert "/services/sitemap-short</loc>" not in xml
+    assert "/insights/sitemap-article</loc>" in xml
+    assert "/insights</loc>" in xml
+    assert "/admin" not in xml
+
+    reviews = client.get("/api/testimonials").json()
+    assert ("/testimonials</loc>" in xml) == bool(reviews)
+
+
+def test_robots_points_at_the_sitemap_and_keeps_admin_out(client):
+    txt = client.get("/robots.txt").text
+    assert "Disallow: /admin" in txt
+    assert "Sitemap: " in txt and txt.strip().endswith("/sitemap.xml")
+
+
+def test_rebuild_is_off_without_a_hook_and_debounced_with_one(monkeypatch):
+    from app.core import rebuild
+    calls = []
+    monkeypatch.setattr(rebuild, "_fire", lambda: calls.append(1))
+    monkeypatch.setattr(rebuild, "REBUILD_DELAY", 0.05)
+
+    monkeypatch.setattr(rebuild.settings, "vercel_deploy_hook", "")
+    rebuild.schedule_rebuild("service")
+    import time
+    time.sleep(0.2)
+    assert calls == []
+
+    monkeypatch.setattr(rebuild.settings, "vercel_deploy_hook", "https://example.invalid/hook")
+    for _ in range(5):
+        rebuild.schedule_rebuild("post")
+    rebuild.schedule_rebuild("lead")   # not a page-affecting entity
+    time.sleep(0.3)
+    assert calls == [1]

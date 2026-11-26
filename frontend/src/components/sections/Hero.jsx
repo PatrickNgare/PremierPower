@@ -655,14 +655,21 @@ export default function Hero({ section }) {
         className="container-x relative flex flex-1 flex-col justify-center py-16 md:px-[max(5rem,4vw)] lg:py-20"
       >
         <div className="max-w-2xl">
-          <motion.p variants={rise} className="eyebrow">
+          {/* The page's one H1 carries both the small label and the brand
+              line, so what the company does ("electrical engineering … in
+              Kenya") is part of the main heading rather than only the
+              slogan. Visually unchanged: the label still reads as the small
+              line above, the slogan as the large one. */}
+          <motion.h1 variants={{ hidden: {}, show: { transition: { staggerChildren: 0.09 } } }}>
+          <motion.span variants={rise} className="eyebrow font-sans leading-normal">
             <span aria-hidden="true" className="inline-block h-1.5 w-1.5 rounded-full bg-[rgb(var(--accent-rgb))]" />
-            {section?.eyebrow || 'Premier Power Limited'}
-          </motion.p>
+            {section?.eyebrow || 'Electrical engineering & power solutions in Kenya'}
+            <span className="sr-only"> — </span>
+          </motion.span>
 
-          <motion.h1
+          <motion.span
             variants={{ hidden: {}, show: { transition: { staggerChildren: 0.11 } } }}
-            className="mt-5 text-[clamp(2.5rem,5.4vw,4.6rem)] font-extrabold text-white"
+            className="mt-5 block text-[clamp(2.5rem,5.4vw,4.6rem)] font-extrabold leading-[1.05] text-white"
           >
             {/* One stable sentence for search engines and screen readers: the
                 brand line exactly as the CMS holds it. Everything that moves is
@@ -711,6 +718,7 @@ export default function Hero({ section }) {
                 </MaskLine>
               ))}
             </span>
+          </motion.span>
           </motion.h1>
 
           <motion.p variants={rise} className="mt-5 max-w-xl text-base leading-relaxed text-ink-300 sm:text-lg">

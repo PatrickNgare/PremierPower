@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import mediaMap from '@/data/mediaMap.json'
 
 const API = import.meta.env.VITE_API_URL ?? '/api'
 
@@ -30,6 +31,25 @@ export const isPreview = () => Boolean(PREVIEW)
  * unreachable or has nothing published yet. The fallback is never invented
  * content — it is the same honest, editable defaults shipped in src/data.
  */
+/**
+ * Swap any bundled photograph path in an API response for its Cloudinary
+ * copy. CMS rows still hold paths like "/projects/lodge.jpg" from before the
+ * photographs moved; served as-is they are full-size JPEGs from the web
+ * server, one size for every screen. The CDN copy is resized and delivered
+ * as WebP or AVIF, and lets the <img> tags offer a srcset. Paths with no CDN
+ * copy are left alone.
+ */
+function resolveMedia(v) {
+  if (typeof v === 'string') return mediaMap[v] ?? v
+  if (Array.isArray(v)) return v.map(resolveMedia)
+  if (v && typeof v === 'object') {
+    const out = {}
+    for (const k in v) out[k] = resolveMedia(v[k])
+    return out
+  }
+  return v
+}
+
 export function useApi(path, fallback) {
   const [data, setData] = useState(fallback)
   const [loading, setLoading] = useState(true)
@@ -42,8 +62,9 @@ export function useApi(path, fallback) {
     let alive = true
     fetch(`${API}${withPreview(path)}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
-      .then((json) => {
+      .then((raw) => {
         if (!alive) return
+        const json = resolveMedia(raw)
         // An empty published set means "nothing to show yet", not "use fallback".
         if (Array.isArray(json)) setData(json.length ? json : fallbackRef.current)
         else setData({ ...fallbackRef.current, ...json })

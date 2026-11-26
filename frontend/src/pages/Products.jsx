@@ -52,11 +52,7 @@ export default function Products() {
 
   return (
     <>
-      <Seo
-        title="Lighting &amp; fittings — Premier Power Limited"
-        description="Chandeliers, pendants and linear lighting supplied and installed across Kenya for hospitality, commercial interiors and residential developments."
-        canonical="https://premierpower.co.ke/products"
-      />
+      <Seo />
       <PageHero
         crumb={hero?.config?.crumb || 'Lighting & fittings'}
         eyebrow={hero?.eyebrow || 'Lighting & fittings'}

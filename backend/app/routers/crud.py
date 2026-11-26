@@ -17,6 +17,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from ..core.audit import log_action
+from ..core.rebuild import schedule_rebuild
 from ..core.security import client_ip, get_current_admin, preview_ok, require_editor
 from ..db import get_db
 from ..models import Admin
@@ -135,12 +136,19 @@ def crud_router(
                 raise HTTPException(status.HTTP_404_NOT_FOUND, f"{entity} not found")
             return row
 
+    def _stamp_published(row):
+        # Saving with "published" ticked counts as publishing, same as the
+        # toggle: an article needs its date for the page and for search.
+        if getattr(row, "published", False) and hasattr(row, "published_at") and row.published_at is None:
+            row.published_at = func.now()
+
     @router.post("", response_model=schema_out, status_code=status.HTTP_201_CREATED)
     def create(
         payload: schema_in, request: Request,
         db: Session = Depends(get_db), admin: Admin = Depends(require_editor),
     ):
         row = model(**payload.model_dump())
+        _stamp_published(row)
         db.add(row)
         try:
             db.commit()
@@ -150,6 +158,7 @@ def crud_router(
         db.refresh(row)
         log_action(db, actor=admin.email, action="create", entity=entity,
                    entity_id=row.id, detail=str(row), ip=client_ip(request))
+        schedule_rebuild(entity)
         return row
 
     @router.put("/{id}", response_model=schema_out)
@@ -162,6 +171,7 @@ def crud_router(
             raise HTTPException(status.HTTP_404_NOT_FOUND, f"{entity} not found")
         for k, v in payload.model_dump().items():
             setattr(row, k, v)
+        _stamp_published(row)
         try:
             db.commit()
         except Exception:
@@ -170,6 +180,7 @@ def crud_router(
         db.refresh(row)
         log_action(db, actor=admin.email, action="update", entity=entity,
                    entity_id=row.id, detail=str(row), ip=client_ip(request))
+        schedule_rebuild(entity)
         return row
 
     if gate:
@@ -190,6 +201,7 @@ def crud_router(
             db.refresh(row)
             log_action(db, actor=admin.email, action="publish" if value else "unpublish",
                        entity=entity, entity_id=row.id, detail=str(row), ip=client_ip(request))
+            schedule_rebuild(entity)
             return row
 
     if hasattr(model, "position"):
@@ -221,5 +233,6 @@ def crud_router(
         db.commit()
         log_action(db, actor=admin.email, action="delete", entity=entity,
                    entity_id=id, detail=detail, ip=client_ip(request))
+        schedule_rebuild(entity)
 
     return router

@@ -1,4 +1,4 @@
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Navbar from '@/components/layout/Navbar'
@@ -8,6 +8,7 @@ import FloatingActions from '@/components/layout/FloatingActions'
 import ExitIntentPopup from '@/components/ui/ExitIntentPopup'
 import { Skeleton, SkeletonCard, LoadingRegion } from '@/components/ui/Skeleton'
 import PageTransition from '@/components/layout/PageTransition'
+import { pageView, startAnalytics } from '@/utils/analytics'
 
 const Home = lazy(() => import('@/pages/Home'))
 const Services = lazy(() => import('@/pages/Services'))
@@ -19,6 +20,9 @@ const FAQ = lazy(() => import('@/pages/FAQ'))
 const Contact = lazy(() => import('@/pages/Contact'))
 const Products = lazy(() => import('@/pages/Products'))
 const ProductDetail = lazy(() => import('@/pages/ProductDetail'))
+const ServiceDetail = lazy(() => import('@/pages/ServiceDetail'))
+const Insights = lazy(() => import('@/pages/Insights'))
+const InsightDetail = lazy(() => import('@/pages/InsightDetail'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
 // The CMS. Lazy so none of it is downloaded by a visitor who only ever sees
@@ -29,6 +33,15 @@ const AdminApp = lazy(() => import('@/admin/AdminApp'))
 
 export default function App() {
   const location = useLocation()
+
+  // Analytics loads only if VITE_GA_ID is set (see utils/analytics.js). The
+  // page view waits a moment so it carries the new page's title, which the
+  // page sets as it renders.
+  useEffect(() => { startAnalytics() }, [])
+  useEffect(() => {
+    const t = setTimeout(() => pageView(location.pathname), 600)
+    return () => clearTimeout(t)
+  }, [location.pathname])
 
   if (location.pathname.startsWith('/admin')) {
     // Mounted under a splat route, not rendered bare: the CMS's own routes are
@@ -71,6 +84,7 @@ export default function App() {
             <Routes location={location} key={location.pathname}>
             <Route path="/" element={<PageTransition><Home /></PageTransition>} />
             <Route path="/services" element={<PageTransition><Services /></PageTransition>} />
+            <Route path="/services/:slug" element={<PageTransition><ServiceDetail /></PageTransition>} />
             <Route path="/products" element={<PageTransition><Products /></PageTransition>} />
             <Route path="/products/:slug" element={<PageTransition><ProductDetail /></PageTransition>} />
             <Route path="/portfolio" element={<PageTransition><Portfolio /></PageTransition>} />
@@ -79,6 +93,8 @@ export default function App() {
             <Route path="/testimonials" element={<PageTransition><Testimonials /></PageTransition>} />
             <Route path="/faq" element={<PageTransition><FAQ /></PageTransition>} />
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+            <Route path="/insights" element={<PageTransition><Insights /></PageTransition>} />
+            <Route path="/insights/:slug" element={<PageTransition><InsightDetail /></PageTransition>} />
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
             </Routes>
           </AnimatePresence>

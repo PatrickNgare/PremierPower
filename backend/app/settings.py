@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     # Turn this on only after enabling "Allow delivery of PDF and ZIP files"
     # under Settings -> Security in the Cloudinary console.
     cloudinary_documents: bool = False
+    # Optional: Vercel deploy hook URL, called (debounced) after content edits
+    # so each new page gets its pre-written HTML. See core/rebuild.py.
+    vercel_deploy_hook: str = ""
     upload_dir: str = "uploads"
     max_upload_mb: int = 10
 

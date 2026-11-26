@@ -148,7 +148,9 @@ for (const [device, opts] of DEVICES) {
   const cta = await page.locator('section a.btn-primary').first().boundingBox()
   check(cta && cta.y + cta.height <= l.vh, `${device} / — main call to action is above the fold`)
 
-  const spoken = await page.locator('h1 .sr-only').innerText()
+  // The last hidden phrase is the slogan; the first is the separator
+  // between the small label and the slogan, both inside the H1.
+  const spoken = await page.locator('h1 .sr-only').last().innerText()
   check(/Powering spaces/.test(spoken), `${device} / — headline is one stable sentence for screen readers`)
 
   // The marker's fill is the carousel's clock; 12s a photograph.

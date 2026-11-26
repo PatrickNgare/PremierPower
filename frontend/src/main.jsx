@@ -8,6 +8,12 @@ import { SiteProvider } from '@/hooks/useSite'
 import { SeoProvider } from '@/hooks/useSeo'
 import '@/index.css'
 
+// Each page's HTML arrives with its title, description, canonical and
+// sharing tags already written in (scripts/seo-html.mjs), for crawlers and
+// link previews that never run this code. The app is about to render its own
+// set for the same page, so drop the pre-written one rather than keep two.
+document.querySelectorAll('head [data-rh]').forEach((el) => el.remove())
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HelmetProvider>

@@ -22,11 +22,7 @@ export default function About() {
   const site = useSite()
   return (
     <>
-      <Seo
-        title={"About — Electrical engineering contractor in Kenya | Premier Power"}
-        description={"Premier Power Limited is a leading electrical engineering company in the corporate market, working on installation projects across Kenya. Our mission, vision and registration."}
-        canonical={"https://premierpower.co.ke/about"}
-      />
+      <Seo />
       <PageHero
         crumb={hero?.config?.crumb || "About"}
         eyebrow={hero?.eyebrow || "About us"}

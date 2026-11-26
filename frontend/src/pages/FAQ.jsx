@@ -102,12 +102,7 @@ export default function FAQ() {
 
   return (
     <>
-      <Seo
-        title="Questions — registration, sectors and how we work | Premier Power Limited"
-        description="Are you registered? Which sectors do you work in? Do you work with main contractors and architects? Straight answers about electrical installation across Kenya."
-        canonical="https://premierpower.co.ke/faq"
-      />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <Seo jsonLd={faqs.length ? [jsonLd] : []} />
 
       <PageHero
         crumb={hero?.config?.crumb || 'FAQ'}

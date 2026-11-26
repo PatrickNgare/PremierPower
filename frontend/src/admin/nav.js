@@ -10,9 +10,9 @@ import {
  * link they belong to. The routes themselves are unchanged, so an old
  * bookmark still opens the same screen, now with its tabs above it.
  *
- * News, Team, Documents and Social links are deliberately absent: the public
+ * Team, Documents and Social links are deliberately absent: the public
  * site shows none of them, so editing them changed nothing. Their routes still
- * work (/admin/c/blog etc.) for the day the site grows those sections.
+ * work (/admin/c/team etc.) for the day the site grows those sections.
  */
 
 export const NAV = [
@@ -20,7 +20,7 @@ export const NAV = [
   { key: 'inbox', to: '/admin/inbox', label: 'Enquiries', icon: Inbox, match: ['/admin/inbox'] },
   {
     key: 'pages', to: '/admin/pages', label: 'Website pages', icon: LayoutTemplate,
-    match: ['/admin/pages', '/admin/homepage', '/admin/c/banners'],
+    match: ['/admin/pages', '/admin/homepage', '/admin/c/banners', '/admin/c/blog'],
   },
   { key: 'projects', to: '/admin/c/projects', label: 'Projects', icon: FolderKanban, match: ['/admin/c/projects'] },
   {
@@ -39,6 +39,10 @@ export const NAV = [
 
 /** Tabs shown above the screens of a section. */
 export const TABS = {
+  pages: [
+    { to: '/admin/pages', label: 'Pages' },
+    { to: '/admin/c/blog', label: 'Insights articles' },
+  ],
   products: [
     { to: '/admin/c/products', label: 'Products' },
     { to: '/admin/c/product-categories', label: 'Categories' },
@@ -71,6 +75,9 @@ export function sectionOf(path) {
 /** The tab row for a path, if it has one. */
 export function tabsFor(path) {
   if (under(path, '/admin/homepage') || under(path, '/admin/c/banners')) return TABS.homepage
+  if (path === '/admin/pages' || under(path, '/admin/c/blog')) return TABS.pages
   const section = sectionOf(path)
+  // A single page's editor has the "All pages" link instead of tabs.
+  if (section === 'pages') return null
   return TABS[section] ?? null
 }

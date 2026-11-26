@@ -6,6 +6,7 @@ import Lightbox from '@/components/ui/Lightbox'
 import CTABanner from '@/components/sections/CTABanner'
 import Button from '@/components/ui/Button'
 import Seo from '@/components/Seo'
+import { productMeta } from '@/seo/pages'
 import NotFound from '@/pages/NotFound'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useApi } from '@/hooks/useApi'
@@ -56,11 +57,9 @@ export default function ProductDetail() {
   return (
     <>
       <Seo
-        title={`${product.name} — Lighting & fittings | Premier Power Limited`}
-        description={product.summary || `${product.name}, supplied and installed by Premier Power Limited.`}
-        canonical={`https://premierpower.co.ke/products/${product.slug}`}
+        {...productMeta(product)}
         image={product.image_url}
-        type="product"
+        trail={[['Lighting & fittings', '/products'], [product.name, `/products/${product.slug}`]]}
       />
 
       <div className="container-x pt-28 sm:pt-32">

@@ -11,11 +11,7 @@ export default function Portfolio() {
   const hero = sections.hero
   return (
     <>
-      <Seo
-        title={"Installations — Photographed before the plaster | Premier Power"}
-        description={"Residential rewiring and consumer unit installations in Nairobi, photographed open before plastering — the stage that determines whether an installation is safe."}
-        canonical={"https://premierpower.co.ke/portfolio"}
-      />
+      <Seo />
       <PageHero
         crumb={hero?.config?.crumb || "Installations"}
         eyebrow={hero?.eyebrow || "Our work"}

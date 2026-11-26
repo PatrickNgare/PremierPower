@@ -13,11 +13,7 @@ export default function Services() {
   const s1 = sections.section1
   return (
     <>
-      <Seo
-        title={"Services — Electrical, security, solar & power systems | Premier Power"}
-        description={"Electrical installation, CCTV and access control, solar photovoltaics, UPS and surge protection, lifts and escalators, transmission and distribution, energy retrofitting and gas installation. NCA-registered, nationwide."}
-        canonical={"https://premierpower.co.ke/services"}
-      />
+      <Seo />
       <PageHero
         crumb={hero?.config?.crumb || "Services"}
         eyebrow={hero?.eyebrow || "What we do"}

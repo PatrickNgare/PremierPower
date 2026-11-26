@@ -181,32 +181,15 @@ FOOTER_MENU = [
     ("Reviews", "/testimonials"), ("FAQ", "/faq"), ("Contact", "/contact"),
 ]
 
-# Titles and descriptions currently hard-coded into each page's <Helmet>.
+# One row per page, so each is listed in the sitemap and can be overridden
+# from Settings → SEO. Title and description start blank: blank means "use
+# the site's own", which lives in frontend/src/seo/pages.js and is also
+# written into each page's HTML at build time. A value typed in the CMS wins.
 SEO = [
-    ("/", "Premier Power Limited — Electrical engineering & installation contractor, Kenya",
-     "Premier Power Limited is an NCA-registered electrical engineering contractor working "
-     "across Kenya — banks and commercial interiors, offices, hotels and lodges, institutions, "
-     "healthcare, industrial and residential developments."),
-    ("/services", "Services — Premier Power Limited",
-     "Electrical installation, electronic security, solar photovoltaics, power continuity, "
-     "vertical transport, transmission and distribution, energy retrofitting and gas."),
-    ("/portfolio", "Installations — Premier Power Limited",
-     "Hospitality developments, commercial interiors and residential clusters across Kenya."),
-    ("/safety", "Safety & certification — Premier Power Limited",
-     "Every installation tested and certified before handover, whatever its size."),
-    ("/about", "About — Premier Power Limited",
-     "An NCA-registered electrical engineering contractor working in the corporate market "
-     "across Kenya."),
-    ("/testimonials", "Reviews — Premier Power Limited",
-     "What clients say about delivery and reliability on programme."),
-    ("/faq", "Frequently asked questions — Premier Power Limited",
-     "Registration, coverage, working with main contractors and architects, and what a site "
-     "assessment involves."),
-    ("/contact", "Contact — Premier Power Limited",
-     "Talk to an electrical engineering contractor about your project."),
-    ("/products", "Lighting & fittings — Premier Power Limited",
-     "Chandeliers, pendants and linear lighting supplied and installed across Kenya for "
-     "hospitality, commercial interiors and residential developments."),
+    (path, "", "") for path in (
+        "/", "/services", "/portfolio", "/safety", "/about", "/testimonials",
+        "/faq", "/contact", "/products",
+    )
 ]
 
 

@@ -26,11 +26,7 @@ export default function Safety() {
   const site = useSite()
   return (
     <>
-      <Seo
-        title={"Safety & compliance — NCA registered, tested and certified | Premier Power"}
-        description={"Our NCA registration, the tests every installation receives before certification, and our workmanship warranty terms — stated plainly."}
-        canonical={"https://premierpower.co.ke/safety"}
-      />
+      <Seo />
       <PageHero
         crumb={hero?.config?.crumb || "Safety"}
         eyebrow={hero?.eyebrow || "Compliance"}

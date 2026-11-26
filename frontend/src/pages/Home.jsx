@@ -204,11 +204,7 @@ export default function Home() {
 
   return (
     <>
-      <Seo
-        title={"Premier Power Limited — Electrical engineering & installation contractor, Kenya"}
-        description={"Premier Power Limited is an NCA-registered electrical engineering contractor working across Kenya — banks and commercial interiors, offices, hotels and lodges, institutions, healthcare, industrial and residential developments."}
-        canonical={"https://premierpower.co.ke/"}
-      />
+      <Seo />
 
       {/* Each block carries an id so the CMS's "See it" button can land on
           it: /#section-stats scrolls to the figures bar and outlines it. */}

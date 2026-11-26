@@ -10,7 +10,6 @@ edits are the rows listed here, and unchecking "hide from search engines"
 removes a page from the sitemap in the same edit.
 """
 
-from datetime import datetime, timezone
 from xml.sax.saxutils import escape
 
 from fastapi import APIRouter, Depends, Response
@@ -18,7 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import Product, SeoMeta, SiteSetting
+from ..models import BlogPost, Product, SeoMeta, Service, SiteSetting, Testimonial
 
 router = APIRouter(tags=["seo"])
 
@@ -31,6 +30,11 @@ DEFAULT_BASE = "https://premierpower.co.ke"
 PRIORITY = {"/": "1.0", "/services": "0.9", "/portfolio": "0.9",
             "/products": "0.9", "/contact": "0.8"}
 
+# A service gets its own page in search only once its description is long
+# enough to stand alone. Must match SERVICE_PAGE_MIN_CHARS in
+# frontend/src/seo/pages.js, which marks thinner ones noindex.
+SERVICE_PAGE_MIN_CHARS = 600
+
 
 def _base(db: Session) -> str:
     row = db.scalar(select(SiteSetting).where(SiteSetting.key == "site_url"))
@@ -40,32 +44,59 @@ def _base(db: Session) -> str:
 @router.get("/sitemap.xml", include_in_schema=False)
 def sitemap(db: Session = Depends(get_db)) -> Response:
     base = _base(db)
-    today = datetime.now(timezone.utc).date().isoformat()
 
     rows = db.scalars(
         select(SeoMeta).where(SeoMeta.noindex.is_(False)).order_by(SeoMeta.path)
     ).all()
-    paths = [(r.path, PRIORITY.get(r.path, "0.7")) for r in rows]
+    listed = {r.path for r in rows}
+
+    # A reviews page with no reviews is marked noindex by the page itself;
+    # suggesting it to search engines would contradict that.
+    has_reviews = db.scalar(select(Testimonial.id).where(Testimonial.published.is_(True)).limit(1))
+    # (path, priority, lastmod or None). lastmod only where a real date is
+    # known: a "changed today" stamp on every URL every day teaches search
+    # engines to ignore the field.
+    paths = [(r.path, PRIORITY.get(r.path, "0.7"), None) for r in rows
+             if not (r.path == "/testimonials" and not has_reviews)]
 
     # Detail pages have no seo_meta row of their own — there is one row for
     # /products, not one per fitting — so they would never be listed. Appended
     # here, and only while their parent page is itself indexable.
-    if any(r.path == "/products" and not r.noindex for r in rows):
+    if "/products" in listed:
         paths += [
-            (f"/products/{slug}", "0.6")
+            (f"/products/{slug}", "0.6", None)
             for slug in db.scalars(
                 select(Product.slug).where(Product.published.is_(True))
                 .order_by(Product.position, Product.id)
             ).all()
         ]
 
+    if "/services" in listed:
+        for svc in db.scalars(
+            select(Service).where(Service.published.is_(True)).order_by(Service.position, Service.id)
+        ).all():
+            if len(f"{svc.lede or ''} {svc.body or ''}".strip()) >= SERVICE_PAGE_MIN_CHARS:
+                paths.append((f"/services/{svc.slug}", "0.8", None))
+
+    posts = db.scalars(
+        select(BlogPost).where(BlogPost.published.is_(True))
+        .order_by(BlogPost.published_at.desc().nullslast(), BlogPost.id.desc())
+    ).all()
+    if posts:
+        newest = next((p.published_at for p in posts if p.published_at), None)
+        paths.append(("/insights", "0.7", newest.date().isoformat() if newest else None))
+        paths += [
+            (f"/insights/{p.slug}", "0.6", p.published_at.date().isoformat() if p.published_at else None)
+            for p in posts
+        ]
+
     urls = "\n".join(
         f"  <url>\n"
         f"    <loc>{escape(base + path)}</loc>\n"
-        f"    <lastmod>{today}</lastmod>\n"
-        f"    <priority>{priority}</priority>\n"
+        + (f"    <lastmod>{lastmod}</lastmod>\n" if lastmod else "")
+        + f"    <priority>{priority}</priority>\n"
         f"  </url>"
-        for path, priority in paths
+        for path, priority, lastmod in paths
     )
     body = (
         '<?xml version="1.0" encoding="UTF-8"?>\n'

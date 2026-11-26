@@ -5,6 +5,7 @@ import { Field } from '@/components/ui/Field'
 import Magnetic from '@/components/ui/Magnetic'
 import { whatsappLink } from '@/config/site'
 import { useSite } from '@/hooks/useSite'
+import { track } from '@/utils/analytics'
 
 const API = import.meta.env.VITE_API_URL ?? '/api'
 
@@ -88,6 +89,7 @@ export default function ContactForm() {
       }
       if (!res.ok) throw new Error(String(res.status))
       setStatus('sent')
+      track('generate_lead', { form: 'contact', project_type: data.project_type || '' })
     } catch {
       setStatus('error')
       setError(

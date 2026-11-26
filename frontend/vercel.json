@@ -4,35 +4,149 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://premierpower-api.onrender.com/api/:path*" },
-    { "source": "/uploads/:path*", "destination": "https://premierpower-api.onrender.com/uploads/:path*" },
-    { "source": "/sitemap.xml", "destination": "https://premierpower-api.onrender.com/sitemap.xml" },
-    { "source": "/robots.txt", "destination": "https://premierpower-api.onrender.com/robots.txt" },
-    { "source": "/sqladmin", "destination": "https://premierpower-api.onrender.com/sqladmin" },
-    { "source": "/sqladmin/:path*", "destination": "https://premierpower-api.onrender.com/sqladmin/:path*" },
-    { "source": "/((?!.*\\.[a-zA-Z0-9]+$).*)", "destination": "/index.html" }
+    {
+      "source": "/api/:path*",
+      "destination": "https://premierpower-api.onrender.com/api/:path*"
+    },
+    {
+      "source": "/uploads/:path*",
+      "destination": "https://premierpower-api.onrender.com/uploads/:path*"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://premierpower-api.onrender.com/sitemap.xml"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "https://premierpower-api.onrender.com/robots.txt"
+    },
+    {
+      "source": "/sqladmin",
+      "destination": "https://premierpower-api.onrender.com/sqladmin"
+    },
+    {
+      "source": "/sqladmin/:path*",
+      "destination": "https://premierpower-api.onrender.com/sqladmin/:path*"
+    },
+    {
+      "source": "/admin",
+      "destination": "/_shell.html"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/_shell.html"
+    },
+    {
+      "source": "/services/:slug",
+      "destination": "/_shell.html"
+    },
+    {
+      "source": "/products/:slug",
+      "destination": "/_shell.html"
+    },
+    {
+      "source": "/insights/:slug",
+      "destination": "/_shell.html"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/404",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/_shell",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    },
+    {
+      "source": "/admin",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/admin/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
       ]
     },
     {
       "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/uploads/(.*)",
       "headers": [
-        { "key": "Content-Disposition", "value": "inline" },
-        { "key": "Content-Security-Policy", "value": "default-src 'none'; img-src 'self'; sandbox" },
-        { "key": "Cache-Control", "value": "public, max-age=2592000" }
+        {
+          "key": "Content-Disposition",
+          "value": "inline"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; img-src 'self'; sandbox"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000"
+        }
       ]
+    }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "premier-power.vercel.app"
+        }
+      ],
+      "destination": "https://premierpower.co.ke/:path*",
+      "permanent": true
     }
   ]
 }

@@ -62,8 +62,8 @@ export default function Services() {
           <LeadIcon size={24} className="text-lumen-500" aria-hidden="true" />
           <h3 className="mt-5 font-display text-2xl font-bold text-white lg:text-3xl">{lead.title}</h3>
           <p className="mt-3 max-w-lg leading-relaxed text-ink-300">{lead.lede}</p>
-          <Link to="/services" className="link-arrow mt-5 !text-lumen-500">
-            All service lines
+          <Link to={`/services/${lead.slug}`} className="link-arrow mt-5 !text-lumen-500">
+            More on {lead.title.toLowerCase()}
             <ArrowUpRight size={15} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden="true" />
           </Link>
         </div>
@@ -82,7 +82,13 @@ export default function Services() {
             className="lit-card group relative overflow-hidden rounded-[var(--radius-card)] border border-line bg-surface p-6 transition-all duration-500 hover:-translate-y-1 sm:p-7"
           >
             <Icon size={20} strokeWidth={1.6} className="relative text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
-            <h3 className="relative mt-4 font-display text-lg font-bold text-body">{s.title}</h3>
+            <h3 className="relative mt-4 font-display text-lg font-bold text-body">
+              {/* The whole card is the link (the ::after stretches over it),
+                  so the heading reads as the link text. */}
+              <Link to={`/services/${s.slug}`} className="after:absolute after:inset-0 focus-visible:underline">
+                {s.title}
+              </Link>
+            </h3>
             <p className="relative mt-2 text-sm leading-relaxed text-body-soft">{s.lede}</p>
           </motion.article>
         )
@@ -97,9 +103,13 @@ export default function Services() {
           const Icon = icons[s.slug] ?? Zap
           return (
             <motion.li key={s.slug} variants={fadeUp}>
-              <div className="group flex flex-wrap items-center gap-x-6 gap-y-1.5 px-6 py-4 transition-colors duration-300 hover:bg-page-warm sm:px-7 sm:py-5">
+              <div className="group relative flex flex-wrap items-center gap-x-6 gap-y-1.5 px-6 py-4 transition-colors duration-300 hover:bg-page-warm sm:px-7 sm:py-5">
                 <Icon size={18} strokeWidth={1.6} className="shrink-0 text-[rgb(var(--accent-rgb))] transition-transform duration-300 group-hover:-translate-y-0.5" aria-hidden="true" />
-                <h3 className="w-full font-display text-base font-bold text-body sm:w-[15.5rem] sm:shrink-0">{s.title}</h3>
+                <h3 className="w-full font-display text-base font-bold text-body sm:w-[15.5rem] sm:shrink-0">
+                  <Link to={`/services/${s.slug}`} className="after:absolute after:inset-0 hover:text-accent focus-visible:underline">
+                    {s.title}
+                  </Link>
+                </h3>
                 <p className="min-w-0 flex-1 text-sm leading-relaxed text-body-soft sm:border-l sm:border-line sm:pl-6">{s.lede}</p>
               </div>
             </motion.li>

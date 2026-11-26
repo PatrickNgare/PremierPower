@@ -18,11 +18,7 @@ export default function Contact() {
 
   return (
     <>
-      <Seo
-        title={"Request a quote — project enquiries | Premier Power"}
-        description={"Send project drawings, tender documents or a description to Premier Power Limited — NCA-registered electrical engineering contractor working across Kenya. Free site visits, no obligation."}
-        canonical={"https://premierpower.co.ke/contact"}
-      />
+      <Seo />
       <PageHero
         crumb={hero?.config?.crumb || "Contact"}
         eyebrow={hero?.eyebrow || "Project enquiries"}
@@ -57,10 +53,24 @@ export default function Contact() {
             <ul className="mt-10 space-y-5 border-t border-line pt-8 text-sm">
               <li className="flex gap-3">
                 <FiMapPin size={16} className="mt-0.5 shrink-0 text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
-                <span className="text-body-soft">
-                  {isPending(site.street) ? 'Address pending' : value(site.street)}<br />
+                <address className="not-italic text-body-soft">
+                  {isPending(site.street) ? 'Address pending' : `${value(site.street)}, ${value(site.locality)}`}<br />
                   {isPending(site.serviceArea) ? '' : value(site.serviceArea)}
-                </span>
+                  {!isPending(site.street) && (
+                    <>
+                      <br />
+                      {/* A search link rather than an embedded map: no API key,
+                          no heavy iframe, and it opens the visitor's own maps app. */}
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${value(site.street)}, ${value(site.locality)}, Kenya`)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="mt-1 inline-block font-semibold text-accent underline-offset-2 hover:underline"
+                      >
+                        Get directions
+                      </a>
+                    </>
+                  )}
+                </address>
               </li>
               <li className="flex gap-3">
                 <FiClock size={16} className="mt-0.5 shrink-0 text-[rgb(var(--accent-rgb))]" aria-hidden="true" />
